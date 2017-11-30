@@ -1,0 +1,98 @@
+<page backtop="10mm" backleft="10mm" backright="10mm" backbottom="10mm" footer="page;">
+    <page_footer>
+        <hr />
+        <span>BALACCUL</span><span style="margin-left:550px;">GreenSoft-Team</span>
+    </page_footer>
+
+
+    <table>
+        <tr>
+            <td class="60p">
+                 <b>{{agency.abreviation}}</b> <br/>
+                 <b>{{agency.name}}</b> <br/>
+                 <b>{{agency.branch}}</b> <br/>
+                 <b>{{agency.phoneNumber}}</b>
+            </td>
+            <td  style="text-align: right;" class="40p">
+                <img style="height:80px;" src="./assets/images/users/logo_cu1.jpg"  alt="logo">
+            </td>
+        </tr>
+    </table>
+
+    <table class="info1" style="margin-top: 10px;">
+        <tr>
+            <td class="25p" style="text-align: left;"></td>
+            <td class="50p" style="text-align: center; font-size:20px"><strong>ACCOUNT STATEMENT</strong></td>
+            <td class="25p" style="text-align: right;"></td>
+        </tr>
+    </table><br><br>
+    <table class="info3">
+        <tr>
+            <td class="50p" style="text-align: left; border-top: none; font-size:15px">Owner: <b>
+                {% if account.physicalMember %}
+                    {{account.physicalMember}}
+                {% else %}
+                    {{account.moralMember}}
+                {% endif %}
+            </b></td>
+            <td class="50p" style="text-align: left; border-top: none; font-size:15px;">
+                Address:<b>
+                    {% if account.physicalMember %}
+                            {{account.physicalMember.address}}
+                    {% else %}
+                    {{account.moralMember.address}}
+                    {% endif %}
+                    
+                </b>
+            </td>
+        </tr>
+    </table><br>
+
+
+    <table>
+        <tr>
+            <td class="50p" style="text-align: left; border: none; font-size:15px">Account Number: <b>
+                {{account.accountNumber}}
+            </b>
+            </td>
+
+            <td class="50p" style="text-align: left; border: none; font-size:15px">Period: <b>
+                {{ displayDateStart}}</b> to <b>{{displayDateEnd}}</b>
+            </td>
+        </tr>
+    </table> <br> <br>
+
+    {% if operations %}
+    <table class="eleves">
+        <tr>
+            <th style="background: gray" class="15p">Date</th>
+            <th style="background: gray" class="15p">Type</th>
+            <th style="background: gray" class="35p">Amount</th>
+            <th style="background: gray" class="35p">Current Balance</th>
+        </tr>
+            
+            {% for operation in operations %} 
+                <tr>
+                    <td>{{operation.dateOperation |date('d-m-Y') }}</td>
+                    <td>{{operation.typeOperation}}</td>
+                    <td>
+                            {{operation.amount}}
+                    </td>
+                    <td>
+                            {{operation.currentBalance}}
+                    </td>
+                </tr>
+        {% endfor %}
+                
+    </table><br><br><br>
+    {% else %}
+                <h2 style="color: red; text-align:center">No results</h2>
+    {% endif %}
+    <table>
+        <tr>
+            <td class="100p" style="text-align:right">Done at: <b>{{agency.town}}</b> on <b>{{currentDate |date('d-m-Y')}}</b></td>
+        </tr>
+    </table>
+</page>
+
+{% include '/report/extra_file_report.css.html.twig' %}

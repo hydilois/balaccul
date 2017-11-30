@@ -1,0 +1,89 @@
+
+{% extends 'base.html.twig' %}
+{% block title %}{{parent()}} Add the agency informations{% endblock %}
+
+{% block contenu %}
+
+    <ol class="breadcrumb">
+        <li>
+            <a href="#">BALACCUL</a>
+        </li>
+        <li>
+            <a href="#">Agency</a>
+        </li>
+        <li class="active">
+            Agency Informations
+        </li>
+    </ol>
+
+        <!-- Forms -->
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card-box">
+                <div class="row">
+                    <div class="col-md-offset-2 col-md-8">
+                        <h4 class="m-t-0 header-title text-center"><b>Edit the infomartion of the agency</b></h4>
+                                      {{ form_start(edit_form) }}
+                                  <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                          <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                              <div class="form-group">
+                                                  {{form_label(edit_form.name)}}
+                                                  {{form_errors(edit_form.name)}}
+                                                  {{form_widget(edit_form.name, {'attr' : {'class':'form-control'}})}}
+                                              </div>
+                                          </div>
+                                          <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                              <div class="form-group">
+                                                  {{form_label(edit_form.abreviation)}}
+                                                  {{form_errors(edit_form.abreviation)}}
+                                                  {{form_widget(edit_form.abreviation, {'attr' : {'class':'form-control'}})}}
+                                              </div>
+                                          </div>
+                                          <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                              <div class="form-group">
+                                                  {{form_label(edit_form.code)}}
+                                                  {{form_errors(edit_form.code)}}
+                                                  {{form_widget(edit_form.code, {'attr' : {'class':'form-control'}})}}
+                                              </div>
+                                          </div>
+                                          <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                              <div class="form-group">
+                                                  {{form_label(edit_form.address)}}
+                                                  {{form_errors(edit_form.address)}}
+                                                  {{form_widget(edit_form.address, {'attr' : {'class':'form-control'}})}}
+                                              </div>
+                                          </div>
+                                          <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                              <div class="form-group">
+                                                  {{form_label(edit_form.town, "Town")}}
+                                                  {{form_errors(edit_form.town)}}
+                                                  {{form_widget(edit_form.town, {'attr' : {'class':'form-control'}})}}
+                                              </div>
+                                          </div>
+
+                                          <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                              <div class="form-group">
+                                                  {{form_label(edit_form.branch)}}
+                                                  {{form_errors(edit_form.branch)}}
+                                                  {{form_widget(edit_form.branch, {'attr' : {'class':'form-control'}})}}
+                                              </div>
+                                          </div>
+                                          <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                              <div class="form-group">
+                                                  {{form_label(edit_form.phoneNumber, "Phone number of the agency")}}
+                                                  {{form_errors(edit_form.phoneNumber)}}
+                                                  {{form_widget(edit_form.phoneNumber, {'attr' : {'class':'form-control'}})}}
+                                              </div>
+                                          </div>
+                                  </div>
+                                <div class="modal-footer">
+                                  <input class="btn btn-default" type="submit" value="Save" />
+                                  <a class="btn btn-primary" href="{{path('agency_index')}}">Back to the list</a>
+                                </div>
+                                {{ form_end(edit_form) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

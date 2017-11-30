@@ -1,0 +1,197 @@
+<page backtop="10mm" backleft="10mm" backright="10mm" backbottom="10mm" footer="page;">
+    <page_footer>
+        <hr />
+        <span>{{agency.abreviation}}</span><span style="margin-left:550px;">GreenSoft-Team</span>
+    </page_footer>
+
+
+    <table>
+        <tr>
+            <td class="60p">
+                 <b>{{agency.abreviation}}</b> <br/>
+                 <b>{{agency.name}}</b> <br/>
+                 <b>{{agency.branch}}</b> <br/>
+                 <b>{{agency.phoneNumber}}</b>
+            </td>
+            <td  style="text-align: right;" class="40p">
+                <img style="height:80px;" src="./assets/images/users/logo_cu1.jpg"  alt="logo">
+            </td>
+        </tr>
+    </table>
+
+    <table class="info1" style="margin-top: 10px;">
+        <tr>
+            <td class="25p" style="text-align: left;"></td>
+            <td class="50p" style="text-align: center; font-size:20px"><strong>DAILY REPORT</strong></td>
+            <td class="25p" style="text-align: right;"></td>
+        </tr>
+    </table><br><br>
+
+    <table>
+        <tr>
+            <td class="50p" style="text-align: left; border: none; font-size:15px">Date: <b>
+                {{ currentDate}}</b>
+            </td>
+        </tr>
+    </table> <br>
+    
+    {% if operations %}
+        <h2 style="text-align:center">Account Operations</h2>
+    <table class="eleves operations">
+        <tr>
+            <th style="background: gray" class="20p">Date</th>
+            <th style="background: gray" class="20p">Type of operation</th>
+            <th style="background: gray" class="20p">Amount</th>
+            <th style="background: gray" class="20p">Fees(for Debit or transfert)</th>
+            <th style="background: gray" class="20p">Observation</th>
+        </tr>
+            
+            {% for operation in operations %}
+                <tr>
+                    <td>{{operation.dateOperation |date('d-m-Y') }}</td>
+                    <td>{{operation.typeOperation}}</td>
+                    <td>
+                            {{operation.amount}}
+                    </td>
+                    <td>
+                        {% if operation.typeOperation == "DEBIT" %}
+                            {{operation.debitFees}}
+                        {% elseif operation.typeOperation == "TRANSFERT" %}
+                            {{operation.transferFees}}
+                        {% else %}
+                            //
+                        {% endif %}
+                    </td>
+                    <td></td>
+                </tr>
+        {% endfor %}
+                
+    </table><br>
+    {# {% else %} #}
+                {# <h2 style="color: red; text-align:center">No results</h2> #}
+    {% endif %}
+    
+
+    {% if loanHistory %}
+        <h2 style="text-align:center">Loan Operations</h2>
+        <table class="eleves">
+            <tr>
+                <th style="background: gray" class="20p">Date Of Operation</th>
+                <th style="background: gray" class="40p">Monthly Payment</th>
+                <th style="background: gray" class="20p">Interest Paid</th>
+                <th style="background: gray" class="20p">Observation</th>
+            </tr>
+            {% for item in loanHistory %}
+                <tr>
+                    <td>{{item.dateOperation |date("d-m-Y")}}</td>
+                    <td>{{item.monthlyPayement}}</td>
+                    <td>{{item.interest}}</td>
+                    <td></td>
+                </tr>
+            {% endfor %}
+        </table><br>
+    {% endif %}
+
+
+    {% if transIncome %}
+        <h2 style="text-align:center">Incomes</h2>
+        <table class="eleves operations">
+            <tr>
+                <th style="background: gray" class="15p">Date</th>
+                <th style="background: gray" class="10p">Amount</th>
+                <th style="background: gray" class="60p">Description</th>
+                <th style="background: gray" class="15p">Observation</th>
+            </tr>
+            {% for item in transIncome %}
+                <tr>
+                    <td>{{item.transactionDate |date("d-m-Y")}}</td>
+                    <td>{{item.amount}}</td>
+                    <td>{{item.description}}</td>
+                    <td></td>
+                </tr>
+            {% endfor %}
+        </table><br>
+    {% endif %}
+
+    {% if loans %}
+        <h2 style="text-align:center">Loans Contracted</h2>
+        <table class="eleves operations">
+            <tr>
+                <th style="background: gray" class="20p">Date</th>
+                <th style="background: gray" class="20p">Loan Code</th>
+                <th style="background: gray" class="20p">Amount</th>
+                <th style="background: gray" class="20p">Processing fees</th>
+                <th style="background: gray" class="20p">Observation</th>
+            </tr>
+            {% for item in loans %}
+                <tr>
+                    <td>{{item.dateLoan |date("d-m-Y")}}</td>
+                    <td>{{item.loanCode}}</td>
+                    <td>{{item.loanAmount}}</td>
+                    <td>{{item.loanProcessingFees}}</td>
+                    <td></td>
+                </tr>
+            {% endfor %}
+        </table><br>
+    {% endif %}
+
+    {% if dailyServices %}
+        <h2 style="text-align:center">Daily Service Operations</h2>
+        <table class="eleves operations">
+            <tr>
+                <th style="background: gray" class="20p">Date</th>
+                <th style="background: gray" class="30p">Client Name</th>
+                <th style="background: gray" class="15p">Operation</th>
+                <th style="background: gray" class="15p">Amount</th>
+                <th style="background: gray" class="20p">Observation</th>
+            </tr>
+            {% for item in dailyServices %}
+                <tr>
+                    <td>{{item.dateOperation |date("d-m-Y")}}</td>
+                    <td>{{item.client}}</td>
+                    <td>{{item.typeOperation}}</td>
+                    <td>{{item.fees}}</td>
+                    <td></td>
+                </tr>
+            {% endfor %}
+        </table><br>
+    {% endif %}
+
+    {% if phyMember or moMember %}
+        <h2 style="text-align:center">Member Registration Operations</h2>
+        <table class="eleves operations">
+            <tr>
+                <th style="background: gray" class="20p">Date</th>
+                <th style="background: gray" class="40p">Member Name</th>
+                <th style="background: gray" class="20p">Registration Fees</th>
+                <th style="background: gray" class="20p">Observation</th>
+            </tr>
+            {% for item in phyMember %}
+                <tr>
+                    <td>{{item.membershipDateCreation |date("d-m-Y")}}</td>
+                    <td>{{item.name}}</td>
+                    <td>{{item.registrationFees}}</td>
+                    <td></td>
+                </tr>
+            {% endfor %}
+            {% for item in moMember %}
+                <tr>
+                    <td>{{item.membershipDateCreation |date("d-m-Y")}}</td>
+                    <td>{{item.socialReason}}</td>
+                    <td>{{item.registrationFees}}</td>
+                    <td></td>
+                </tr>
+            {% endfor %}
+        </table><br>
+    {% endif %}
+
+    <table>
+        <tr>
+            <td class="100p" style="text-align:right">Done at: <b>{{agency.town}}</b> on <b>{{dateofDay|date('d-m-Y')}}</b></td>
+        </tr>
+    </table>
+
+    
+</page>
+
+{% include '/report/extra_file_report.css.html.twig' %}

@@ -1,0 +1,76 @@
+member_client:
+    resource: "@MemberBundle/Controller/ClientController.php"
+    type:     annotation
+
+account_report_item:
+    resource: "@AccountBundle/Controller/ReportItemController.php"
+    type:     annotation
+
+user_groupe:
+    resource: "@UserBundle/Controller/GroupeController.php"
+    type:     annotation
+
+config_transaction_income:
+    resource: "@ConfigBundle/Controller/TransactionIncomeController.php"
+    type:     annotation
+
+config_loan_parameter:
+    resource: "@ConfigBundle/Controller/LoanParameterController.php"
+    type:     annotation
+
+config_loan_parameter:
+    resource: "@ConfigBundle/Controller/LoanParameterController.php"
+    type:     annotation
+
+account_loan_history:
+    resource: "@AccountBundle/Controller/LoanHistoryController.php"
+    type:     annotation
+
+account_loan:
+    resource: "@AccountBundle/Controller/LoanController.php"
+    type:     annotation
+
+config_agency:
+    resource: "@ConfigBundle/Controller/AgencyController.php"
+    type:     annotation
+
+account:
+    resource: "@AccountBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
+report:
+    resource: "@ReportBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
+class:
+    resource: "@ClassBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
+config:
+    resource: "@ConfigBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
+member:
+    resource: "@MemberBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
+user_utilisateur:
+    resource: "@UserBundle/Controller/UtilisateurController.php"
+    type:     annotation
+
+user:
+    resource: "@UserBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
+app:
+    resource: "@AppBundle/Controller/"
+    type: annotation
+    
+fos_user:
+    resource: "@FOSUserBundle/Resources/config/routing/all.xml"

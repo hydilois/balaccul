@@ -1,0 +1,152 @@
+<page backtop="10mm" backleft="10mm" backright="10mm" backbottom="10mm" footer="page;">
+    <page_footer>
+        <hr />
+        <span>{{agency.abreviation}}</span><span style="margin-left:500px;">GreenSoft-Team</span>
+    </page_footer>
+
+
+    <table>
+        <tr>
+            <td class="60p">
+                 <b>{{agency.abreviation}}</b><br/>
+                 <b>{{agency.name}}</b><br>
+                 <b>{{agency.phoneNumber}}</b><br>
+
+            </td>
+            <td  style="text-align: right;" class="40p">
+                <img style="height:80px;" src="./assets/images/users/logo_cu1.jpg"  alt="logo">
+            </td>
+        </tr>
+    </table><br>
+
+    <table style="margin-top: 10px;">
+        <tr>
+            <td class="20p" style="text-align: left;"></td>
+            <td class="60p" style="text-align: center; font-size:20px"><strong>
+            REGISTRATION  RECEIPT
+            </strong></td>
+            <td class="20p" style="text-align: right;"></td>
+        </tr>
+    </table><br>
+    <table class="zone">
+        <tr>
+            <td class="50p">Name: <b>{{member.name}}</b></td>
+            <td class="50p">Address: <b>{{member.address}}</b></td>
+        </tr>
+        <tr>
+            <td class="50p">Occupation: <b>{{member.occupation}}</b></td>
+            <td class="50p">NIC Number: <b>{{member.nicNumber}}</b></td>
+        </tr>
+        <tr>
+            <td class="50p">Registration Date: <b>{{member.memberShipDateCreation |date('d-m-Y')}}</b></td>
+            <td class="50p">Phone Number: <b>{{member.phoneNumber}}</b></td>
+        </tr>
+        <tr>
+            <td class="50p">Amount Paid: <b>{{member.registrationFees}}</b></td>
+            <td class="50p">Member Number: <b>{{member.memberNumber}}</b></td>
+        </tr>
+
+    </table>
+<br><br>
+
+<table style="margin-bottom:0px">
+    <tr>
+        <td class="20p">XAF: <b>F CFA</b></td>
+        <td class="30p" style="text-align:right">Member Number: <b> {{member.memberNumber}} </b></td>
+        <td class="25p" style="text-align:right">
+            <b> {{member.name[:17]}} </b>
+        </td>
+        <td class="25p" style="text-align:right">
+            Amount: <b>{{member.registrationFees}}</b>
+        </td>
+    </tr>
+</table><br>
+    <table style="margin-bottom:0px">
+        <tr>
+            <td class="25p" style="border-bottom:1px dashed black;border-right:1px dashed black; text-align:center">CLIENT</td>
+            <td class="25p" style="border-bottom:1px dashed black; text-align:center;">MANAGER</td>
+        </tr>
+        <tr>
+            <td class="15p" style="border-right:1px dashed black">
+                <br><br>
+            </td>
+            <td class="15p">
+                <br><br>
+            </td>
+        </tr>
+    </table><br>
+
+    ------------------------------------------------------------------------------------------------------------------------------------------------------------<br><br><br>
+
+        <table>
+            <tr>
+                <td class="60p">
+                     <b>{{agency.abreviation}}</b><br/>
+                     <b>{{agency.name}}</b><br>
+                     <b>{{agency.phoneNumber}}</b><br>
+
+                </td>
+                <td  style="text-align: right;" class="40p">
+                    <img style="height:80px;" src="./assets/images/users/logo_cu1.jpg"  alt="logo">
+                </td>
+            </tr>
+        </table><br>
+
+        <table style="margin-top: 10px;">
+            <tr>
+                <td class="20p" style="text-align: left;"></td>
+                <td class="60p" style="text-align: center; font-size:20px"><strong>
+                REGISTRATION  RECEIPT
+                </strong></td>
+                <td class="20p" style="text-align: right;"></td>
+            </tr>
+        </table><br>
+        <table class="zone">
+            <tr>
+                <td class="50p">Name: <b>{{member.name}}</b></td>
+                <td class="50p">Address: <b>{{member.address}}</b></td>
+            </tr>
+            <tr>
+                <td class="50p">Occupation: <b>{{member.occupation}}</b></td>
+                <td class="50p">NIC Number: <b>{{member.nicNumber}}</b></td>
+            </tr>
+            <tr>
+                <td class="50p">Registration Date: <b>{{member.memberShipDateCreation |date('d-m-Y')}}</b></td>
+                <td class="50p">Phone Number: <b>{{member.phoneNumber}}</b></td>
+            </tr>
+            <tr>
+                <td class="50p">Amount Paid: <b>{{member.registrationFees}}</b></td>
+                <td class="50p">Member Number: <b>{{member.memberNumber}}</b></td>
+            </tr>
+
+        </table>
+    <br><br>
+
+    <table style="margin-bottom:0px">
+        <tr>
+            <td class="20p">XAF: <b>F CFA</b></td>
+            <td class="30p" style="text-align:right">Member Number: <b> {{member.memberNumber}} </b></td>
+            <td class="30p" style="text-align:right">
+                <b> {{member.name[:17]}} </b>
+            </td>
+            <td class="20p" style="text-align:right">
+                Amount: <b>{{member.registrationFees}}</b>
+            </td>
+        </tr>
+    </table><br>
+        <table style="margin-bottom:0px">
+            <tr>
+                <td class="25p" style="border-bottom:1px dashed black;border-right:1px dashed black; text-align:center">CLIENT</td>
+                <td class="25p" style="border-bottom:1px dashed black; text-align:center;">MANAGER</td>
+            </tr>
+            <tr>
+                <td class="15p" style="border-right:1px dashed black">
+                    <br><br>
+                </td>
+                <td class="15p">
+                    <br><br>
+                </td>
+            </tr>
+        </table>
+</page>
+{% include '/report/extra_file_report.css.html.twig' %}

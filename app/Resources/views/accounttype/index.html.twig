@@ -1,0 +1,84 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{parent()}} Account Type list{% endblock %}
+
+{% block contenu %}
+         <ol class="breadcrumb">
+        <li>
+          <a href="#">BALACCUL</a>
+        </li>
+        <li>
+          <a href="#">Account Types</a>
+        </li>
+        <li class="active">
+          Consult
+        </li>
+      </ol>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card-box table-responsive"><a name="add-account" class="btn btn-default pull-left">Add a new Account Type</a><br>
+                <h4 class="m-t-0 header-title text-center"><b>Account Types List</b></h4>
+                <table id="datatable-buttons" class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th style="width: 100px;">Actions</th>
+                            <th>Name</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    {% for accountType in accountTypes %}
+                        <tr>
+                            <td>
+                                <div class="input-group-btn">
+                                  <button type="button" class="btn btn-primary btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="true">Actions
+                                    <span class="fa fa-caret-down"></span></button>
+                                  <ul class="dropdown-menu">
+                                    <li><a href="#" data-account="{{accountType.id}}" name="accounttype-edit"><i class="fa fa-edit"></i> Edit</a></li>
+                                  </ul>
+                                </div>
+                        </td>
+                        <td>{{ accountType.name }}</td>
+                        <td>{{ accountType.description }}</td>
+                    </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    </div>
+
+    <!-- modal window to add a new account type -->
+    <div class="modal fade modal-add-accounttype" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog modal-lg" role="document">
+    <div class="col-md-offset-2 col-md-8">
+        <div class="modal-content">
+          <div class="modal-header">
+                <h3 class="text-center">Add a new Account Type</h3>
+          </div>
+          <div class="modal-body" id="account-form">
+
+          </div>
+        </div>
+      </div>
+        </div>
+    </div>
+
+
+    <!-- modal window to add a new paiement -->
+    <div class="modal fade modal-edit-account" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog modal-lg" role="document">
+    <div class="col-md-offset-2 col-md-8">
+        <div class="modal-content">
+          <div class="modal-header">
+                <h3 class="text-center">Edit an Account Type</h3>
+          </div>
+          <div class="modal-body" id="account-editform">
+
+          </div>
+        </div>
+      </div>
+        </div>
+    </div>
+</div>
+    {% include './accounttype/extras.css.html.twig' %}
+    {% include './accounttype/extras.js.html.twig' %}
+{% endblock %}

@@ -1,0 +1,198 @@
+<page backtop="10mm" backleft="10mm" backright="10mm" backbottom="10mm" footer="page;">
+    <page_footer>
+        <hr />
+        <span>{{agency.abreviation}}</span><span style="margin-left:500px;">GreenSoft-Team</span>
+    </page_footer>
+
+
+    <table>
+        <tr>
+            <td class="60p">
+                 <b>{{agency.abreviation}}</b><br/>
+                 <b>{{agency.name}}</b><br>
+                 <b>{{agency.phoneNumber}}</b><br>
+
+            </td>
+            <td  style="text-align: right;" class="40p">
+                <img style="height:80px;" src="./assets/images/users/logo_cu1.jpg"  alt="logo">
+            </td>
+        </tr>
+    </table><br>
+
+    <table style="margin-top: 10px;">
+        <tr>
+            <td class="20p" style="text-align: left;"></td>
+            <td class="60p" style="text-align: center; font-size:20px"><strong>
+            LOAN PROCCESSING FEES  RECEIPT
+            </strong></td>
+            <td class="20p" style="text-align: right;"></td>
+        </tr>
+    </table><br>
+    <table class="zone">
+        <tr>
+            <td class="50p">Code: <b>{{loan.loanCode}}</b></td>
+            <td class="50p">Date of loan: <b>{{loan.dateLoan|date('d-m-Y')}}</b></td>
+        </tr>
+        <tr>
+            <td class="50p">Deadline: <b>{{loan.deadline |date('d-m-Y')}}</b></td>
+            <td class="50p">Rate: <b>{{loan.rate ~"%"}}</b></td>
+        </tr>
+        <tr>
+            <td class="50p">Amount: <b>{{loan.loanAmount}}</b></td>
+            <td class="50p">Member: <b>
+                {% if loan.physicalMember %}
+                    {{loan.physicalMember}}
+                {% else %}
+                    {{loan.moralMember}}
+                {% endif %}
+            </b></td>
+        </tr>
+        <tr>
+            <td class="50p">Loan Proccessing fees: <b>{{loan.loanProcessingFees}}</b></td>
+            <td class="50p">Member Number: <b>
+                {% if loan.physicalMember %}
+                    {{loan.physicalMember.memberNumber}}
+                {% else %}
+                    {{loan.moralMember.memberNumber}}
+                {% endif %}
+            </b></td>
+        </tr>
+    </table>
+<br><br>
+
+<table style="margin-bottom:0px">
+    <tr>
+        <td class="20p">XAF: <b>F CFA</b></td>
+        <td class="30p" style="text-align:right">Member Number: <b> 
+        {% if loan.physicalMember %}
+            {{loan.physicalMember.memberNumber}}
+        {% else %}
+            {{loan.moralMember.memberNumber}}
+        {% endif %}
+         </b></td>
+        <td class="25p" style="text-align:right">
+            <b>
+                {% if loan.physicalMember %}
+                    {{loan.physicalMember[:17]}}
+                {% else %}
+                    {{loan.moralMember[:17]}}
+                {% endif %}
+             </b>
+        </td>
+        <td class="25p" style="text-align:right">
+            Amount: <b>{{loan.loanProcessingFees}}</b>
+        </td>
+    </tr>
+</table><br>
+    <table style="margin-bottom:0px">
+        <tr>
+            <td class="25p" style="border-bottom:1px dashed black;border-right:1px dashed black; text-align:center">MEMBER</td>
+            <td class="25p" style="border-bottom:1px dashed black; text-align:center;">MANAGER</td>
+        </tr>
+        <tr>
+            <td class="15p" style="border-right:1px dashed black">
+                <br><br>
+            </td>
+            <td class="15p">
+                <br><br>
+            </td>
+        </tr>
+    </table><br>
+
+    ------------------------------------------------------------------------------------------------------------------------------------------------------------<br><br><br>
+
+        <table>
+            <tr>
+                <td class="60p">
+                     <b>{{agency.abreviation}}</b><br/>
+                     <b>{{agency.name}}</b><br>
+                     <b>{{agency.phoneNumber}}</b><br>
+
+                </td>
+                <td  style="text-align: right;" class="40p">
+                    <img style="height:80px;" src="./assets/images/users/logo_cu1.jpg"  alt="logo">
+                </td>
+            </tr>
+        </table><br>
+
+        <table style="margin-top: 10px;">
+            <tr>
+                <td class="20p" style="text-align: left;"></td>
+                <td class="60p" style="text-align: center; font-size:20px"><strong>
+                LOAN PROCCESSING FEES  RECEIPT
+                </strong></td>
+                <td class="20p" style="text-align: right;"></td>
+            </tr>
+        </table><br>
+        <table class="zone">
+            <tr>
+                <td class="50p">Code: <b>{{loan.loanCode}}</b></td>
+                <td class="50p">Date of loan: <b>{{loan.dateLoan|date('d-m-Y')}}</b></td>
+            </tr>
+            <tr>
+                <td class="50p">Deadline: <b>{{loan.deadline |date('d-m-Y')}}</b></td>
+                <td class="50p">Rate: <b>{{loan.rate ~"%"}}</b></td>
+            </tr>
+            <tr>
+                <td class="50p">Amount: <b>{{loan.loanAmount}}</b></td>
+                <td class="50p">Member: <b>
+                    {% if loan.physicalMember %}
+                        {{loan.physicalMember}}
+                    {% else %}
+                        {{loan.moralMember}}
+                    {% endif %}
+                </b></td>
+            </tr>
+            <tr>
+                <td class="50p">Loan Proccessing fees: <b>{{loan.loanProcessingFees}}</b></td>
+                <td class="50p">Member Number: <b>
+                    {% if loan.physicalMember %}
+                        {{loan.physicalMember.memberNumber}}
+                    {% else %}
+                        {{loan.moralMember.memberNumber}}
+                    {% endif %}
+                </b></td>
+            </tr>
+        </table>
+    <br><br>
+
+    <table style="margin-bottom:0px">
+        <tr>
+            <td class="20p">XAF: <b>F CFA</b></td>
+            <td class="30p" style="text-align:right">Member Number: <b> 
+            {% if loan.physicalMember %}
+                {{loan.physicalMember.memberNumber}}
+            {% else %}
+                {{loan.moralMember.memberNumber}}
+            {% endif %}
+             </b></td>
+            <td class="25p" style="text-align:right">
+                <b>
+                    {% if loan.physicalMember %}
+                        {{loan.physicalMember[:17]}}
+                    {% else %}
+                        {{loan.moralMember[:17]}}
+                    {% endif %}
+                 </b>
+            </td>
+            <td class="25p" style="text-align:right">
+                Amount: <b>{{loan.loanProcessingFees}}</b>
+            </td>
+        </tr>
+    </table><br>
+        <table style="margin-bottom:0px">
+            <tr>
+                <td class="25p" style="border-bottom:1px dashed black;border-right:1px dashed black; text-align:center">MEMBER</td>
+                <td class="25p" style="border-bottom:1px dashed black; text-align:center;">MANAGER</td>
+            </tr>
+            <tr>
+                <td class="15p" style="border-right:1px dashed black">
+                    <br><br>
+                </td>
+                <td class="15p">
+                    <br><br>
+                </td>
+            </tr>
+        </table>
+</page>
+{% include '/report/extra_file_report.css.html.twig' %}

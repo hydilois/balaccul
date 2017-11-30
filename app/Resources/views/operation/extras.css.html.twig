@@ -1,0 +1,52 @@
+ {% block stylesheets %}
+
+<style type="text/css">
+
+	fieldset{
+	    border: 1px solid  #7266ba !important;
+	    padding: 0 1.4em 1.4em 1.4em !important;
+	    margin: 0 0 1.5em 0 !important;
+	}
+
+	legend{
+	    font-size: 1.2em !important;
+	    font-weight: bold !important;
+	    text-align: left !important;
+	    color: #7266ba;
+	}
+	.sweet-alert fieldset{
+		border: none !important;
+	}
+	
+	.btn-app > .fa{
+		-webkit-transition: all 0.3s ease;
+		-moz-transition: all 0.3s ease;
+		-o-transition: all 0.3s ease;
+		-ms-transition: all 0.3s ease;
+	}
+	.btn-app > .fa:hover{
+		font-size: 25px;
+	}
+
+	@media screen and (min-width: 768px) {
+		.modal-lg{
+			width:900px;
+		}
+
+		.modal-sm{
+			width:300px;
+		}
+	}
+	.no-display {
+	    display: none !important;
+	}
+
+	ul.pagination{
+		float: right !important;
+	}
+	
+	#datatable-buttons_filter label{
+		float: right !important;
+	}
+</style>
+{% endblock %}

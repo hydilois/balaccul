@@ -1,0 +1,110 @@
+{% extends 'base.html.twig' %}
+{% block title %}{{parent()}} New Account{% endblock %}
+
+{% block contenu %}
+
+    <ol class="breadcrumb">
+        <li>
+            <a href="#">BALACCUL</a>
+        </li>
+        <li>
+            <a href="#">Cash OUT</a>
+        </li>
+        <li>
+            <a href="#">Others</a>
+        </li>
+        <li class="active">
+            new Loan
+        </li>
+    </ol>
+
+        <!-- Forms -->
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card-box">
+                <div class="row">
+                    <div class="col-md-8">
+                    <fieldset>
+                      <legend>Add a new loan</legend>
+                                      {{ form_start(form) }}
+                                  <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                          <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                              <div class="form-group">
+                                                  {{form_label(form.loanCode)}}
+                                                  {{form_errors(form.loanCode)}}
+                                                  {{form_widget(form.loanCode, {'attr' : {'class':'form-control'}})}}
+                                              </div>
+                                          </div>
+                                          <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                              <div class="form-group">
+                                                  {{form_label(form.loanProcessingFees)}}
+                                                  {{form_errors(form.loanProcessingFees)}}
+                                                  {{form_widget(form.loanProcessingFees, {'attr' : {'class':'form-control'}})}}
+                                              </div>
+                                          </div>
+                                          <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                              <div class="form-group">
+                                                  {{form_label(form.moralMember)}}
+                                                  {{form_errors(form.moralMember)}}
+                                                  {{form_widget(form.moralMember, {'attr' : {'class':'form-control'}})}}
+                                              </div>
+                                          </div>
+                                          <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                              <div class="form-group">
+                                                  {{form_label(form.loanAmount)}}
+                                                  {{form_errors(form.loanAmount)}}
+                                                  {{form_widget(form.loanAmount, {'attr' : {'class':'form-control'}})}}
+                                              </div>
+                                          </div>
+                                          <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                              <div class="form-group">
+                                                  {{form_label(form.rate)}}
+                                                  {{form_errors(form.rate)}}
+                                                  {{form_widget(form.rate, {'attr' : {'class':'form-control'}})}}
+                                              </div>
+                                          </div>
+                                          <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                              <div class="form-group">
+                                                  {{form_label(form.monthlyPayment)}}
+                                                  {{form_errors(form.monthlyPayment)}}
+                                                  {{form_widget(form.monthlyPayment, {'attr' : {'class':'form-control'}})}}
+                                              </div>
+                                          </div>
+                                          <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                              <div class="form-group">
+                                                  {{form_label(form.deadline)}}
+                                                  {{form_errors(form.deadline)}}
+                                                  {{form_widget(form.deadline, {'attr' : {'class':'form-control'}})}}
+                                              </div>
+                                          </div>
+
+                                          <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                              <div class="form-group">
+                                                  {{form_label(form.status, "Active ?")}}
+                                                  {{form_errors(form.status)}}
+                                                  {{form_widget(form.status, {'attr' : {'class':'form-control'}})}}
+                                              </div>
+                                          </div>
+                                  </div>
+                                <div class="modal-footer">
+                                  <input class="btn btn-default" type="submit" value="Save" />
+                                  <a class="btn btn-primary" href="{{path('loan_index')}}">Back to the list</a>
+                                </div>
+                                {{ form_end(form) }}
+                    </fieldset>
+                    </div>
+
+                    <div class="col-md-4">
+                      <fieldset>
+                        <legend>Complementary Informations</legend>
+
+                      </fieldset>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% include './loan/extras.css.html.twig' %}
+
+{% endblock %}

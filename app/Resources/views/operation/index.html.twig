@@ -1,0 +1,81 @@
+
+{% extends 'base.html.twig' %}
+
+{% block title %}{{parent()}} Deposit accounts{% endblock %}
+
+{% block contenu %}
+         <ol class="breadcrumb">
+        <li>
+          <a href="#">BALACCUL</a>
+        </li>
+        <li>
+          <a href="#">Operations List</a>
+        </li>
+        <li class="active">
+          Consult
+        </li>
+      </ol>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card-box table-responsive">
+                <h4 class="m-t-0 header-title text-center"><b>Account Operations list</b></h4>
+                <table id="datatable-buttons" class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Actions</th>
+                            <th>Account Number</th>
+                            <th>Dest Account</th>
+                            <th>Amount</th>
+                            <th>Date of operation</th>
+                            <th>Type of operation</th>
+                            <th>User</th>
+                        </tr>
+                    </thead>
+                    {% for operation in operations %}
+                        <tr>
+                            <td>
+                              <div class="btn-group dropdown">
+                                <button type="button" class="btn btn-default waves-effect waves-light">Actions</button>
+                                <button type="button" class="btn btn-default dropdown-toggle waves-effect waves-light" data-toggle="dropdown" aria-expanded="false"><i class="caret"></i></button>
+                                <ul class="dropdown-menu fadeInUp animated" role="menu">
+                                  <li>
+                                    <a target="blank" href="{{path('operation_receipt',{id:operation.id})}}"class="text-center"><i class="fa fa-file-pdf-o"></i> Receipt</a>
+                                  </li>
+                               </ul>
+                            </div>
+                            </td>
+                            <td>
+                                {% if operation.savingAccount %}
+                                    {{operation.savingAccount}}
+                                {% elseif operation.shareAccount %}
+                                    {{operation.shareAccount}}
+                                {% else %}
+                                    {{operation.depositAccount}}
+                                {% endif %}
+                                
+                            </td>
+                            <td>
+                                {% if operation.receiveSavingAccount %}
+                                    {{operation.receiveSavingAccount}}
+                                {% elseif operation.receiveShareAccount %}
+                                    {{operation.receiveShareAccount}}
+                                {% else %}
+                                    {{operation.receiveDepositAccount}}
+                                {% endif %}
+                            </td>
+                            <td>{{ operation.amount }}</td>
+                            <td>
+                                {% if operation.dateOperation %}{{ operation.dateOperation|date('Y-m-d') }} {{ operation.dateOperation|date('H:m:s') }}
+                                {% endif %}
+                            </td>
+                            <td>{{ operation.typeOperation }}</td>
+                            <td>{{ operation.currentUser }}</td>
+                        </tr>
+                    {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    </div>
+    {% include './account/extras.css.html.twig' %}
+    {% include './account/extras.js.html.twig' %}
+{% endblock %}

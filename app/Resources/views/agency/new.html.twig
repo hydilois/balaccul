@@ -1,0 +1,90 @@
+
+{% extends 'base.html.twig' %}
+{% block title %}{{parent()}} Add the agency informations{% endblock %}
+
+{% block contenu %}
+
+    <ol class="breadcrumb">
+        <li>
+            <a href="#">BALACCUL</a>
+        </li>
+        <li>
+            <a href="#">Agency</a>
+        </li>
+        <li class="active">
+            Agency Informations
+        </li>
+    </ol>
+
+        <!-- Forms -->
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card-box">
+                <div class="row">
+                    <div class="col-md-offset-2 col-md-8">
+                        <h4 class="m-t-0 header-title text-center"><b>Give the infomartion of the agency</b></h4>
+                                      {{ form_start(form) }}
+                                  <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                          <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                              <div class="form-group">
+                                                  {{form_label(form.name)}}
+                                                  {{form_errors(form.name)}}
+                                                  {{form_widget(form.name, {'attr' : {'class':'form-control'}})}}
+                                              </div>
+                                          </div>
+                                          <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                              <div class="form-group">
+                                                  {{form_label(form.abreviation)}}
+                                                  {{form_errors(form.abreviation)}}
+                                                  {{form_widget(form.abreviation, {'attr' : {'class':'form-control'}})}}
+                                              </div>
+                                          </div>
+                                          <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                              <div class="form-group">
+                                                  {{form_label(form.code)}}
+                                                  {{form_errors(form.code)}}
+                                                  {{form_widget(form.code, {'attr' : {'class':'form-control'}})}}
+                                              </div>
+                                          </div>
+                                          <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                              <div class="form-group">
+                                                  {{form_label(form.address)}}
+                                                  {{form_errors(form.address)}}
+                                                  {{form_widget(form.address, {'attr' : {'class':'form-control'}})}}
+                                              </div>
+                                          </div>
+                                          <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                              <div class="form-group">
+                                                  {{form_label(form.town, "Town")}}
+                                                  {{form_errors(form.town)}}
+                                                  {{form_widget(form.town, {'attr' : {'class':'form-control'}})}}
+                                              </div>
+                                          </div>
+
+                                          <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                              <div class="form-group">
+                                                  {{form_label(form.branch)}}
+                                                  {{form_errors(form.branch)}}
+                                                  {{form_widget(form.branch, {'attr' : {'class':'form-control'}})}}
+                                              </div>
+                                          </div>
+                                          <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                              <div class="form-group">
+                                                  {{form_label(form.phoneNumber, "Phone number of the agency")}}
+                                                  {{form_errors(form.phoneNumber)}}
+                                                  {{form_widget(form.phoneNumber, {'attr' : {'class':'form-control'}})}}
+                                              </div>
+                                          </div>
+                                  </div>
+                                <div class="modal-footer">
+                                  <input class="btn btn-default" type="submit" value="Save" />
+                                  <a class="btn btn-primary" href="{{path('agency_index')}}">Back to the list</a>
+                                </div>
+                                {{ form_end(form) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+

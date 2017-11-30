@@ -1,0 +1,72 @@
+{% extends 'base.html.twig' %}
+{% block title %}{{parent()}} moral members list{% endblock %}
+{% block contenu %}
+     <ol class="breadcrumb">
+    <li>
+      <a href="#">BALACCUL</a>
+    </li>
+    <li>
+      <a href="#">Moral Members</a>
+    </li>
+    <li class="active">
+      Consult
+    </li>
+  </ol>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card-box table-responsive"><a href="{{path('moralmember_new')}}" class="btn btn-default pull-left">Add a new member</a><br>
+            <h4 class="m-t-0 header-title text-center"><b>Moral Members list</b></h4>
+            <table id="datatable-buttons" class="table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th style="width: 200px;">Actions</th>
+                        <th>Socialreason</th>
+                        <th>Dateofcreation</th>
+                        <th>Address</th>
+                        <th>Proposedby</th>
+                        <th>Isaproved</th>
+                        <th>Aprovedby</th>
+                        <th>Membernumber</th>
+                        <th>Doneat</th>
+                        <th>Membershipdatecreation</th>
+                        <th>Witnessname</th>
+                        <th>Phonenumber</th>
+                    </tr>
+                </thead>
+                {% for moralMember in moralMembers %}
+                    <tr>
+                        <td>
+                            <div class="input-group-btn">
+                              <button type="button" class="btn btn-primary btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="true">Actions
+                                <span class="fa fa-caret-down"></span></button>
+                              <ul class="dropdown-menu fadeInDown animated">
+                                <li>
+                                    <a name="show-member" data-member="{{moralMember.id}}" href="{{path('moralmember_show', {id:moralMember.id})}}"><i class="fa fa-eye"></i> Show</a>
+                                </li>
+                                <li><a href="{{ path('moralmember_edit', { 'id': moralMember.id }) }}"><i class="fa fa-edit"></i> Edit</a></li>
+                                <li><a target="_blank" href="{{ path('moralmember_registration_receipt', { 'id': moralMember.id }) }}"><i class="fa fa-file-pdf-o"></i> Receipt</a></li>
+                              </ul>
+                            </div>
+                    </td>
+                    <td>{{ moralMember.socialReason }}</td>
+                    <td>{% if moralMember.dateOfCreation %}{{ moralMember.dateOfCreation|date('Y-m-d') }}{% endif %}</td>
+                    <td>{{ moralMember.address }}</td>
+                    <td>{{ moralMember.proposedBy }}</td>
+                    <td>{% if moralMember.isAproved %}Yes{% else %}No{% endif %}</td>
+                    <td>{{ moralMember.aprovedBy }}</td>
+                    <td>{{ moralMember.memberNumber }}</td>
+                    <td>{{ moralMember.doneAt }}</td>
+                    <td>{% if moralMember.membershipDateCreation %}{{ moralMember.membershipDateCreation|date('Y-m-d') }}{% endif %}</td>
+                    <td>{{ moralMember.witnessName }}</td>
+                    <td>{{ moralMember.phoneNumber }}</td>
+                </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+</div>
+</div>
+        
+    {% include './moralmember/extras.css.html.twig' %}
+    {% include './moralmember/extras.js.html.twig' %}
+{% endblock %}

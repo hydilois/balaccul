@@ -1,0 +1,95 @@
+<page backtop="10mm" backleft="10mm" backright="10mm" backbottom="10mm" footer="page;">
+    <page_footer>
+        <hr />
+        <span>BALACCUL</span><span style="margin-left:550px;">GreenSoft-Team</span>
+    </page_footer>
+
+    <table>
+        <tr>
+            <td class="100p">
+                <h2 style="text-align:center"><strong>BALATCHI COOPERATIVE CREDIT UNION LTD</strong></h2>
+            </td>
+        </tr>
+        <tr>
+            <td class="100p">
+                <h3 style="text-align:center"><strong>TRIAL BALANCE</strong></h3>
+            </td>
+        </tr>
+    </table>
+
+    <table>
+        <tr>
+            <td class="50p">Printed By: <strong>{{currentUser}}</strong> </td>
+            <td class="25p">Printed On: <strong>{{date |date('d-m-Y')}}</strong></td>
+            <td class="25p">XAF:<strong> F CFA</strong></td>
+        </tr>
+    </table> <br>
+
+
+    <table >
+        <tr>
+            <td class="50p" style="text-align: left; border: none">From: <b>
+                {{ displayDateStart}}</b> to <b>{{displayDateEnd}}</b>
+            </td>
+        </tr>
+    </table>
+
+    <table class="eleves">
+        <tr>
+            <th class="20p">Account Number</th>
+            <th class="40p">Description</th>
+            <th class="15p">Debit</th>
+            <th class="15p">Credit</th>
+            <th class="10p">Balance</th>
+        </tr>
+
+        {% set totalIncome = 0 %}
+        {% set totalExpenditure = 0 %}
+        {% for classe in classes %}
+            {% for account in classe.listeAccounts %} 
+                <tr>
+                    <td>{{account.accountNumber }}</td>
+                    <td>{{account.name}}</td>
+                    <td>{% if account.type =="DEBIT"  %}
+                            {{account.amount}}
+                            {% set totalExpenditure = totalExpenditure + account.amount %}
+                        {% else %}
+                            0
+                            {% set totalExpenditure = totalExpenditure + 0 %}
+                        {% endif %}
+                    </td>
+                    <td>{% if account.type =="CREDIT"  %}
+                            {{account.amount}}
+                            {% set totalIncome = totalIncome + account.amount %}
+                        {% else %}
+                                0
+                                {% set totalIncome = totalIncome + 0 %}
+                        {% endif %}
+                    </td>
+                    <td></td>
+                </tr>
+            {% endfor %}
+        {% endfor %}
+                <tr>
+                    <td style="border-right:none;" colspan="1"></td>
+                    <td>
+                        <b>PARTIAL TOTAL</b>
+                    </td>
+                    <td style="text-align:center"><b>{{totalExpenditure }}</b></td>
+                    <td style="text-align:center"> <b>{{totalIncome }}</b> </td>
+                    <td>  </td>
+                </tr>
+                <tr>
+                    <td style="border-right:none;">                        
+                    </td>
+                    <td colspan="3">
+                        <b>NET BENEFIT FOR THE MONTH</b>
+                    </td>
+                    <td>
+                        <b>{% set balance = totalIncome - totalExpenditure %} {{balance}}</b>
+                    </td>
+                </tr>
+    </table>
+</page>
+
+{% include '/report/extra_file_report.css.html.twig' %}

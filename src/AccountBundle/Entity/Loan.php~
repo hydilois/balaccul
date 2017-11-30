@@ -1,0 +1,336 @@
+<?php
+
+namespace AccountBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * Loan
+ *
+ * @ORM\Table(name="loan")
+ * @ORM\Entity(repositoryClass="AccountBundle\Repository\LoanRepository")
+ */
+class Loan{
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $id;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="deadline", type="date")
+     */
+    private $deadline;
+
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="dateLoan", type="date")
+     */
+    private $dateLoan;
+
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="rate", type="integer")
+     */
+    private $rate;
+
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="loanAmount", type="bigint")
+     */
+    private $loanAmount;
+
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="monthly_payment", type="bigint")
+     */
+    private $monthlyPayment;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="loanprocessingfees", type="bigint")
+     */
+    private $loanProcessingFees;
+
+
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="status", type="boolean")
+     */
+    private $status;
+
+
+
+    /**
+     * @ORM\ManyToOne(targetEntity="MemberBundle\Entity\Member")
+     * @ORM\JoinColumn(name="id_physical_member")
+     */
+    private $physicalMember;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="MemberBundle\Entity\MoralMember")
+     * @ORM\JoinColumn(name="id_moral_member")
+     */
+    private $moralMember;
+
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="loancode", type="string", length=255, unique=true)
+     */
+    private $loanCode;
+
+
+    public function __construct(){
+        //The default status of the account is true
+        $this->status = true;
+
+        //the default date of the loan is now
+        $this->dateLoan = new \DateTime('now');
+    }
+
+    
+
+    /**
+     * Get id
+     *
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set deadline
+     *
+     * @param \DateTime $deadline
+     *
+     * @return Loan
+     */
+    public function setDeadline($deadline)
+    {
+        $this->deadline = $deadline;
+
+        return $this;
+    }
+
+    /**
+     * Get deadline
+     *
+     * @return \DateTime
+     */
+    public function getDeadline()
+    {
+        return $this->deadline;
+    }
+
+    /**
+     * Set rate
+     *
+     * @param integer $rate
+     *
+     * @return Loan
+     */
+    public function setRate($rate)
+    {
+        $this->rate = $rate;
+
+        return $this;
+    }
+
+    /**
+     * Get rate
+     *
+     * @return integer
+     */
+    public function getRate()
+    {
+        return $this->rate;
+    }
+
+    /**
+     * Set status
+     *
+     * @param boolean $status
+     *
+     * @return Loan
+     */
+    public function setStatus($status)
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    /**
+     * Get status
+     *
+     * @return boolean
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    /**
+     * Set dateLoan
+     *
+     * @param \DateTime $dateLoan
+     *
+     * @return Loan
+     */
+    public function setDateLoan($dateLoan)
+    {
+        $this->dateLoan = $dateLoan;
+
+        return $this;
+    }
+
+    /**
+     * Get dateLoan
+     *
+     * @return \DateTime
+     */
+    public function getDateLoan()
+    {
+        return $this->dateLoan;
+    }
+
+    /**
+     * Set loanAmount
+     *
+     * @param integer $loanAmount
+     *
+     * @return Loan
+     */
+    public function setLoanAmount($loanAmount)
+    {
+        $this->loanAmount = $loanAmount;
+
+        return $this;
+    }
+
+    /**
+     * Get loanAmount
+     *
+     * @return integer
+     */
+    public function getLoanAmount()
+    {
+        return $this->loanAmount;
+    }
+
+    /**
+     * Set monthlyPayment
+     *
+     * @param integer $monthlyPayment
+     *
+     * @return Loan
+     */
+    public function setMonthlyPayment($monthlyPayment)
+    {
+        $this->monthlyPayment = $monthlyPayment;
+
+        return $this;
+    }
+
+    /**
+     * Get monthlyPayment
+     *
+     * @return integer
+     */
+    public function getMonthlyPayment()
+    {
+        return $this->monthlyPayment;
+    }
+
+    /**
+     * Set physicalMember
+     *
+     * @param \MemberBundle\Entity\Member $physicalMember
+     *
+     * @return Loan
+     */
+    public function setPhysicalMember(\MemberBundle\Entity\Member $physicalMember = null)
+    {
+        $this->physicalMember = $physicalMember;
+
+        return $this;
+    }
+
+    /**
+     * Get physicalMember
+     *
+     * @return \MemberBundle\Entity\Member
+     */
+    public function getPhysicalMember()
+    {
+        return $this->physicalMember;
+    }
+
+    /**
+     * Set moralMember
+     *
+     * @param \MemberBundle\Entity\MoralMember $moralMember
+     *
+     * @return Loan
+     */
+    public function setMoralMember(\MemberBundle\Entity\MoralMember $moralMember = null)
+    {
+        $this->moralMember = $moralMember;
+
+        return $this;
+    }
+
+    /**
+     * Get moralMember
+     *
+     * @return \MemberBundle\Entity\MoralMember
+     */
+    public function getMoralMember()
+    {
+        return $this->moralMember;
+    }
+
+    /**
+     * Set loanCode
+     *
+     * @param string $loanCode
+     *
+     * @return Loan
+     */
+    public function setLoanCode($loanCode)
+    {
+        $this->loanCode = $loanCode;
+
+        return $this;
+    }
+
+    /**
+     * Get loanCode
+     *
+     * @return string
+     */
+    public function getLoanCode()
+    {
+        return $this->loanCode;
+    }
+}

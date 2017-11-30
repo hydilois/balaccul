@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+{% block title %}{{parent()}} Agency informattions{% endblock %}
+{% block contenu %}
+    <h1 class="text-center">Agency Informations</h1>
+            
+                <a class="btn btn-default"
+                    {% if agencies|length == 0 %}
+                        href="{{ path('agency_new') }}"
+                    {% else %}    
+                        href="#" 
+                    {% endif %}
+                >Add</a>
+    <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>Action</th>
+                <th>Name</th>
+                <th>Abreviation</th>
+                <th>Code</th>
+                <th>Address</th>
+                <th>Branch</th>
+                <th>Phonenumber</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for agency in agencies %}
+            <tr>
+                <td><a href="{{path('agency_edit',{ id:agency.id})}}">Edit</a></td>
+                <td>{{ agency.name }}</td>
+                <td>{{ agency.abreviation }}</td>
+                <td>{{ agency.code }}</td>
+                <td>{{ agency.address }}</td>
+                <td>{{ agency.branch }}</td>
+                <td>{{ agency.phoneNumber }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

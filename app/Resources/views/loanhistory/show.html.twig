@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block contenu %}
+    <h1 class="text-center">Loan history Detail</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Monthly payement</th>
+                <td>{{ loanHistory.monthlyPayement }}</td>
+            </tr>
+            <tr>
+                <th>Interest</th>
+                <td>{{ loanHistory.interest }}</td>
+            </tr>
+            <tr>
+                <th>Remain Amount</th>
+                <td>{{ loanHistory.remainAmount }}</td>
+            </tr>
+            <tr>
+                <th>New Interest for the next month</th>
+                <td>{{ loanHistory.newInterest }}</td>
+            </tr>
+            <tr>
+                <th>Dateoperation</th>
+                <td>{% if loanHistory.dateOperation %}{{ loanHistory.dateOperation|date('Y-m-d') }}{% endif %}</td>
+            </tr>
+            <tr>
+                <th>Closeloan</th>
+                <td>{% if loanHistory.closeLoan %}Yes{% else %}No{% endif %}</td>
+            </tr>
+        </tbody>
+    </table>
+
+        <table>
+        <tr>
+            <td><a class="btn btn-info" href="{{ path('loanhistory_index') }}">Back to the list</a></td>
+            <td>&nbsp;&nbsp;</td>
+            <td><a target="_blank" class="btn btn-default" href="{{path('loan_interest_receipt', {id:loanHistory.id})}}"><i class="fa fa-file-pdf-o"></i> Print the receipt</a></td>
+        </tr>
+    </table>
+{% endblock %}

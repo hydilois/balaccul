@@ -1,0 +1,64 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{parent()}} Loan Operations{% endblock %}
+
+{% block contenu %}
+         <ol class="breadcrumb">
+        <li>
+          <a href="#">BALACCUL</a>
+        </li>
+        <li>
+          <a href="#">Loan List</a>
+        </li>
+        <li class="active">
+          Consult
+        </li>
+      </ol>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card-box table-responsive">
+                <h4 class="m-t-0 header-title text-center"><b>Loans History list</b></h4>
+                <table id="datatable-buttons" class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th style="width: 100px;">Actions</th>
+                            <th>Loan Code</th>
+                            <th>Monthly pay</th>
+                            <th>Interest</th>
+                            <th>Remain amount</th>
+                            <th>Next Month interest</th>
+                            <th>Unpaid</th>
+                            <th>Date operation</th>
+                            <th>Close</th>
+                        </tr>
+                    </thead>
+                    {% for loanHistory in loanHistories %}
+                        <tr>
+                            <td>
+                                <div class="input-group-btn">
+                                  <button type="button" class="btn btn-primary btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="true">Actions
+                                    <span class="fa fa-caret-down"></span></button>
+                                  <ul class="dropdown-menu fadeInDown animated">
+                                    {# <li><a href="#" name="accounttype-edit"><i class="fa fa-edit"></i> Edit</a></li> #}
+                                    <li><a href="{{ path('loan_interest_receipt', {id:loanHistory.id}) }}" target="_blank" ><i class="fa fa-file-pdf-o"></i> Receipt</a></li>
+                                  </ul>
+                                </div>
+                        </td>
+                        <td>{{ loanHistory.loan }}</td>
+                        <td>{{ loanHistory.monthlyPayement }}</td>
+                        <td>{{ loanHistory.interest }}</td>
+                        <td>{{ loanHistory.remainAmount }}</td>
+                        <td>{{ loanHistory.newInterest }}</td>
+                        <td>{{ loanHistory.unpaidInterest }}</td>
+                        <td>{% if loanHistory.dateOperation %}{{ loanHistory.dateOperation|date('d-m-Y') }}{% endif %}</td>
+                        <td>{% if loanHistory.closeLoan %} <span class="label label-success">Yes</span>{% else %}<span class="label label-danger">No</span>{% endif %}</td>
+                    </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    </div>
+    {% include './account/extras.css.html.twig' %}
+    {% include './account/extras.js.html.twig' %}
+{% endblock %}
+

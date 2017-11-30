@@ -1,0 +1,58 @@
+{% extends 'base.html.twig' %}
+
+{% block contenu %}
+    <div class="row">
+            <div class="col-md-offset-1 col-lg-10 col-md-10 col-sm-10 col-xs-10">
+                <section class="panel">
+                    <header class="panel-heading text-center">
+                        <h1>Edit an user</h1>
+                    </header>
+                    <div class="panel-body">
+                        {{ form_start(edit_form) }}
+                            {# {{ form_widget(edit_form) }} #}
+
+                        {{ form_start(edit_form) }}
+                        <div class="form-group">
+                            {{ form_label(edit_form.nom) }}
+                            {{ form_widget(edit_form.nom,{'attr':{'class':'form-control'}}) }}
+                        </div>
+                        <div class="form-group">
+                            {{ form_label(edit_form.username) }}
+                            {{ form_widget(edit_form.username,{'attr':{'class':'form-control'}}) }}
+                        </div>
+                        <div class="form-group">
+                            {{ form_label(edit_form.email) }}
+                            {{ form_widget(edit_form.email,{'attr':{'class':'form-control'}}) }}
+                        </div>
+                        <div class="form-group">
+                            {{ form_label(edit_form.numeroTelephone) }}
+                            {{ form_widget(edit_form.numeroTelephone,{'attr':{'class':'form-control'}}) }}
+                        </div>
+                        <div class="form-group">
+                            {{ form_label(edit_form.plainPassword.first) }}
+                            {{ form_widget(edit_form.plainPassword.first,{'attr':{'class':'form-control'}}) }}
+                        </div>
+                        <div class="form-group">
+                            {{ form_label(edit_form.plainPassword.second) }}
+                            {{ form_widget(edit_form.plainPassword.second,{'attr':{'class':'form-control'}}) }}
+                        </div>
+                        <table class="pull-right">
+                            <tr>
+                                <td>
+                            <input class="btn btn-default" type="submit" value="Edit" />
+                                </td>
+                                <td>&nbsp;</td>
+                                <td>&nbsp;</td>
+                                <td><a class="btn btn-primary" href="{{ path('utilisateur_index') }}">Back To list</a>
+                                </td>
+                                <td>&nbsp;</td>
+                                <td>&nbsp;</td>
+                            </tr>
+                        </table>
+                        {{ form_end(edit_form) }}
+
+                    </div>
+                </section>
+            </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,163 @@
+{% extends 'base.html.twig' %}
+{% block title %} {{parent()}} new moral member{% endblock %}
+{% block contenu %}
+
+{{form_start(form)}}
+<div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12 col-lg-12"> 
+        <ul class="nav nav-tabs tabs">
+            <li class="active tab">
+                <a href="#civility" data-toggle="tab" aria-expanded="false"> 
+                    <span class="visible-xs"><i class="fa fa-home"></i></span> 
+                    <span class="hidden-xs">Civility</span> 
+                </a> 
+            </li> 
+            <li class="tab"> 
+                <a href="#other" data-toggle="tab" aria-expanded="false"> 
+                    <span class="visible-xs"><i class="fa fa-user"></i></span> 
+                    <span class="hidden-xs">Other</span> 
+                </a> 
+            </li> 
+            <li class="tab"> 
+                <a href="#beneficiary" data-toggle="tab" aria-expanded="true"> 
+                    <span class="visible-xs"><i class="fa fa-envelope-o"></i></span> 
+                    <span class="hidden-xs">Representants</span> 
+                </a> 
+            </li> 
+            <li class="tab"> 
+                <a href="#conclusion" data-toggle="tab" aria-expanded="false"> 
+                    <span class="visible-xs"><i class="fa fa-cog"></i></span> 
+                    <span class="hidden-xs">Conclusion</span> 
+                </a> 
+            </li> 
+        </ul> 
+        <div class="tab-content"> 
+            <div class="tab-pane active" id="civility"> 
+                <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        {{form_label(form.socialReason)}}
+                        {{form_errors(form.socialReason)}}
+                        {{form_widget(form.socialReason, {'attr':{'class':'form-control'}})}}
+                    </div>
+                    <div class="form-group">
+                        {{form_label(form.dateOfCreation)}}
+                        {{form_errors(form.dateOfCreation)}}
+                        {{form_widget(form.dateOfCreation, {'attr':{'class':'form-control'}})}}
+                    </div>
+                    <div class="form-group">
+                        {{form_label(form.address)}}
+                        {{form_errors(form.address)}}
+                        {{form_widget(form.address, {'attr':{'class':'form-control'}})}}
+                    </div>
+                </div>
+                </div>
+            </div>
+
+            <div class="tab-pane" id="other">
+               <div class="row">
+                   <div class="col-md-4">
+                        <div class="form-group">
+                            {{form_label(form.phoneNumber)}}
+                            {{form_errors(form.phoneNumber)}}
+                            {{form_widget(form.phoneNumber, {'attr':{'class':'form-control'}})}}
+                        </div>
+                        <div class="form-group">
+                            {{form_label(form.proposedBy)}}
+                            {{form_errors(form.proposedBy)}}
+                            {{form_widget(form.proposedBy, {'attr':{'class':'form-control'}})}}
+                        </div>
+                   </div>
+                   <div class="col-md-4">
+                       <div class="form-group">
+                            {{form_label(form.witnessName)}}
+                            {{form_errors(form.witnessName)}}
+                            {{form_widget(form.witnessName, {'attr':{'class':'form-control'}})}}
+                        </div>
+                        <div class="form-group">
+                            {{form_label(form.aprovedBy)}}
+                            {{form_errors(form.aprovedBy)}}
+                            {{form_widget(form.aprovedBy, {'attr':{'class':'form-control'}})}}
+                        </div>
+                   </div>
+                   <div class="col-md-4">
+                        <div class="form-group">
+                            {{form_label(form.membershipDateCreation)}}
+                            {{form_errors(form.membershipDateCreation)}}
+                            {{form_widget(form.membershipDateCreation, {'attr':{'class':'form-control'}})}}
+                        </div>
+                        <div class="form-group">
+                            {{form_label(form.doneAt)}}
+                            {{form_errors(form.doneAt)}}
+                            {{form_widget(form.doneAt, {'attr':{'class':'form-control'}})}}
+                        </div>
+                   </div>
+               </div>     
+            </div> 
+            <div class="tab-pane" id="beneficiary">
+                <div class="row">
+                    <div class="col-lg-10 col-md-10 col-sm-12 col-xs-12 beneficiary_form_container">
+                        <div class="template beneficiary_form" style="display:none;">
+                            <fieldset>
+                                <legend>Representant # <b class="beneficiary_number"></b></legend>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        {{form_label(reForm.name)}}
+                                        {{form_errors(reForm.name)}}
+                                        {{form_widget(reForm.name, {'attr':{'class':'form-control'}})}}
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        {{form_label(reForm.nicNumber)}}
+                                        {{form_errors(reForm.nicNumber)}}
+                                        {{form_widget(reForm.nicNumber, {'attr':{'class':'form-control'}})}}
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                    </div><!-- end of left side -->
+                    <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12" >
+                        <div class="form-group">
+                            <a class="btn btn-primary" id="addBeneficiary"><i class="fa fa-plus-circle"></i> Add an entry</a>
+                        </div>
+                        <div class="form-group">
+                            <a class="btn btn-danger" id="removeBeneficiary"><i class="fa fa-trash-o"></i> Delete an entry</a>
+                        </div>
+                    </div>
+                </div>
+            </div> 
+            <div class="tab-pane" id="conclusion">
+                <div class="row">
+                    <div class="col-lg-10 col-md-10 col-sm-12 col-xs-12 producteur_form_container" >
+                       <div class="form-group">
+                            {{form_label(form.memberNumber)}}
+                            {{form_errors(form.memberNumber)}}
+                            {{form_widget(form.memberNumber, {'attr':{'class':'form-control'}})}}
+                        </div>
+                        <div class="form-group">
+                            {{form_label(form.registrationFees)}}
+                            {{form_errors(form.registrationFees)}}
+                            {{form_widget(form.registrationFees, {'attr':{'class':'form-control'}})}}
+                        </div>
+                        <div class="form-group">
+                            {{form_label(form.isAproved)}}
+                            {{form_errors(form.isAproved)}}
+                            {{form_widget(form.isAproved)}}
+                        </div> 
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12" >
+                        <div class="form-group">
+                            <button  class="btn btn-primary" id="submit"><i class="fa fa-plus-circle"></i> Register the member</a>
+                        </div>
+                    </div>
+                </div>
+            </div> 
+        </div> 
+    </div> 
+</div>
+{{form_end(form)}}
+    {% include './moralmember/extras.css.html.twig' %}
+    {% include './moralmember/extras.js.html.twig' %}
+
+{% endblock %}

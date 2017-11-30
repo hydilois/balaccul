@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+    {% block title %}
+        {{parent()}}
+    {% endblock %}
+{% block contenu %}
+    <h1 class="text-center">Operation Details</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Type Operation</th>
+                <td>{{ operation.typeOperation }}</td>
+            </tr>
+            <tr>
+                <th>Account Number</th>
+                <td>      {% if operation.savingAccount %}
+                {{operation.savingAccount}}
+
+            {% elseif operation.shareAccount %}
+                {{operation.shareAccount}}
+            {% else %}
+                {{operation.depositAccount}}
+            {% endif %}</td>
+            </tr>
+            <tr>
+                <th>Amount</th>
+                <td>{{ operation.amount }}</td>
+            </tr>
+            <tr>
+                <th>Date operation</th>
+                <td>{% if operation.dateOperation %}{{ operation.dateOperation|date('d-m-Y') }}{% endif %}</td>
+            </tr>
+        </tbody>
+    </table>
+    <table>
+        <tr>
+            <td><a class="btn btn-info" href="{{ path('operation_index') }}">Back to the list</a></td>
+            <td>&nbsp;&nbsp;</td>
+            <td><a target="_blank" class="btn btn-default" href="{{path('operation_receipt', {id:operation.id})}}"><i class="fa fa-file-pdf-o"></i> Print the receipt</a></td>
+        </tr>
+    </table>
+{% endblock %}

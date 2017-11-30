@@ -1,0 +1,217 @@
+{% extends 'base.html.twig' %}
+{% block title %} {{parent()}} new member{% endblock %}
+{% block contenu %}
+
+    <ol class="breadcrumb">
+        <li>
+            <a href="#">BALACCUL</a>
+        </li>
+        <li>
+            <a href="#">Members</a>
+        </li>
+        <li class="active">
+            new
+        </li>
+    </ol>
+
+<h1 class="text-center">Add a new member</h1>
+{{form_start(form)}}
+<div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12 col-lg-12"> 
+        <ul class="nav nav-tabs tabs">
+            <li class="active tab">
+                <a href="#civility" data-toggle="tab" aria-expanded="false"> 
+                    <span class="visible-xs"><i class="fa fa-home"></i></span> 
+                    <span class="hidden-xs">Civility</span> 
+                </a> 
+            </li> 
+            <li class="tab"> 
+                <a href="#other" data-toggle="tab" aria-expanded="false"> 
+                    <span class="visible-xs"><i class="fa fa-user"></i></span> 
+                    <span class="hidden-xs">Other</span> 
+                </a> 
+            </li> 
+            <li class="tab"> 
+                <a href="#beneficiary" data-toggle="tab" aria-expanded="true"> 
+                    <span class="visible-xs"><i class="fa fa-envelope-o"></i></span> 
+                    <span class="hidden-xs">Beneficiary</span> 
+                </a> 
+            </li> 
+            <li class="tab"> 
+                <a href="#conclusion" data-toggle="tab" aria-expanded="false"> 
+                    <span class="visible-xs"><i class="fa fa-cog"></i></span> 
+                    <span class="hidden-xs">Conclusion</span> 
+                </a> 
+            </li> 
+        </ul> 
+        <div class="tab-content"> 
+            <div class="tab-pane active" id="civility"> 
+                <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        {{form_label(form.name)}}
+                        {{form_errors(form.name)}}
+                        {{form_widget(form.name, {'attr':{'class':'form-control'}})}}
+                    </div>
+                    <div class="form-group">
+                        {{form_label(form.sex)}}
+                        {{form_errors(form.sex)}}
+                        {{form_widget(form.sex, {'attr':{'class':'form-control'}})}}
+                    </div>
+                    <div class="form-group">
+                        {{form_label(form.dateOfBirth)}}
+                        {{form_errors(form.dateOfBirth)}}
+                        {{form_widget(form.dateOfBirth, {'attr':{'class':'form-control'}})}}
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        {{form_label(form.placeOfBirth)}}
+                        {{form_errors(form.placeOfBirth)}}
+                        {{form_widget(form.placeOfBirth, {'attr':{'class':'form-control'}})}}
+                    </div>
+                    <div class="form-group">
+                        {{form_label(form.occupation)}}
+                        {{form_errors(form.occupation)}}
+                        {{form_widget(form.occupation, {'attr':{'class':'form-control'}})}}
+                    </div>
+                    <div class="form-group">
+                        {{form_label(form.address)}}
+                        {{form_errors(form.address)}}
+                        {{form_widget(form.address, {'attr':{'class':'form-control'}})}}
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        {{form_label(form.nicNumber, "NIC Number")}}
+                        {{form_errors(form.nicNumber)}}
+                        {{form_widget(form.nicNumber, {'attr':{'class':'form-control'}})}}
+                    </div>
+                    <div class="form-group">
+                        {{form_label(form.issuedOn)}}
+                        {{form_errors(form.issuedOn)}}
+                        {{form_widget(form.issuedOn, {'attr':{'class':'form-control'}})}}
+                    </div>
+                    <div class="form-group">
+                        {{form_label(form.issuedAt)}}
+                        {{form_errors(form.issuedAt)}}
+                        {{form_widget(form.issuedAt, {'attr':{'class':'form-control'}})}}
+                    </div>
+                </div>
+                </div>
+            </div>
+
+            <div class="tab-pane" id="other">
+               <div class="row">
+                   <div class="col-md-4">
+                        <div class="form-group">
+                            {{form_label(form.phoneNumber)}}
+                            {{form_errors(form.phoneNumber)}}
+                            {{form_widget(form.phoneNumber, {'attr':{'class':'form-control'}})}}
+                        </div>
+                        <div class="form-group">
+                            {{form_label(form.proposedBy)}}
+                            {{form_errors(form.proposedBy)}}
+                            {{form_widget(form.proposedBy, {'attr':{'class':'form-control'}})}}
+                        </div>
+                   </div>
+                   <div class="col-md-4">
+                       <div class="form-group">
+                            {{form_label(form.witnessName)}}
+                            {{form_errors(form.witnessName)}}
+                            {{form_widget(form.witnessName, {'attr':{'class':'form-control'}})}}
+                        </div>
+                        <div class="form-group">
+                            {{form_label(form.aprovedBy)}}
+                            {{form_errors(form.aprovedBy)}}
+                            {{form_widget(form.aprovedBy, {'attr':{'class':'form-control'}})}}
+                        </div>
+                   </div>
+                   <div class="col-md-4">
+                        <div class="form-group">
+                            {{form_label(form.membershipDateCreation)}}
+                            {{form_errors(form.membershipDateCreation)}}
+                            {{form_widget(form.membershipDateCreation, {'attr':{'class':'form-control'}})}}
+                        </div>
+                        <div class="form-group">
+                            {{form_label(form.doneAt)}}
+                            {{form_errors(form.doneAt)}}
+                            {{form_widget(form.doneAt, {'attr':{'class':'form-control'}})}}
+                        </div>
+                   </div>
+               </div>     
+            </div> 
+            <div class="tab-pane" id="beneficiary">
+                <div class="row">
+                    <div class="col-lg-10 col-md-10 col-sm-12 col-xs-12 beneficiary_form_container">
+                        <div class="template beneficiary_form" style="display:none;">
+                            <fieldset>
+                                <legend>Beneficiary # <b class="beneficiary_number"></b></legend>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        {{form_label(bForm.name)}}
+                                        {{form_errors(bForm.name)}}
+                                        {{form_widget(bForm.name, {'attr':{'class':'form-control'}})}}
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        {{form_label(bForm.relation)}}
+                                        {{form_errors(bForm.relation)}}
+                                        {{form_widget(bForm.relation, {'attr':{'class':'form-control'}})}}
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        {{form_label(bForm.ratio)}}
+                                        {{form_errors(bForm.ratio)}}
+                                        {{form_widget(bForm.ratio, {'attr':{'class':'form-control'}})}}
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                    </div><!-- end of left side -->
+                    <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12" >
+                        <div class="form-group">
+                            <a class="btn btn-primary" id="addBeneficiary"><i class="fa fa-plus-circle"></i> Add an entry</a>
+                        </div>
+                        <div class="form-group">
+                            <a class="btn btn-danger" id="removeBeneficiary"><i class="fa fa-trash-o"></i> Delete an entry</a>
+                        </div>
+                    </div>
+                </div>
+            </div> 
+            <div class="tab-pane" id="conclusion">
+                <div class="row">
+                    <div class="col-lg-offset-2 col-lg-7 col-md-7 col-sm-12 col-xs-12" >
+                       <div class="form-group">
+                            {{form_label(form.memberNumber)}}
+                            {{form_errors(form.memberNumber)}}
+                            {{form_widget(form.memberNumber, {'attr':{'class':'form-control'}})}}
+                        </div>
+                        <div class="form-group">
+                            {{form_label(form.registrationFees)}}
+                            {{form_errors(form.registrationFees)}}
+                            {{form_widget(form.registrationFees, {'attr':{'class':'form-control'}})}}
+                        </div>
+                        <div class="form-group">
+                            {{form_label(form.isAproved)}}
+                            {{form_errors(form.isAproved)}}
+                            {{form_widget(form.isAproved)}}
+                        </div> 
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12" >
+                        <div class="form-group">
+                            <button  class="btn btn-default" id="submit"><i class="fa fa-plus-circle"></i> Register the member</a>
+                        </div>
+                    </div>
+                </div>
+            </div> 
+        </div> 
+    </div> 
+</div>
+{{form_end(form)}}
+    {% include './member/extras.css.html.twig' %}
+    {% include './member/extras.js.html.twig' %}
+
+{% endblock %}

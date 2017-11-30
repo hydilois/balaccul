@@ -1,0 +1,52 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Loan</h1>
+
+    <table>
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ loan.id }}</td>
+            </tr>
+            <tr>
+                <th>Deadline</th>
+                <td>{% if loan.deadline %}{{ loan.deadline|date('Y-m-d') }}{% endif %}</td>
+            </tr>
+            <tr>
+                <th>Dateloan</th>
+                <td>{% if loan.dateLoan %}{{ loan.dateLoan|date('Y-m-d') }}{% endif %}</td>
+            </tr>
+            <tr>
+                <th>Rate</th>
+                <td>{{ loan.rate }}</td>
+            </tr>
+            <tr>
+                <th>Loanamount</th>
+                <td>{{ loan.loanAmount }}</td>
+            </tr>
+            <tr>
+                <th>Monthlypayment</th>
+                <td>{{ loan.monthlyPayment }}</td>
+            </tr>
+            <tr>
+                <th>Status</th>
+                <td>{% if loan.status %}Yes{% else %}No{% endif %}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <ul>
+        <li>
+            <a href="{{ path('loan_index') }}">Back to the list</a>
+        </li>
+        <li>
+            <a href="{{ path('loan_edit', { 'id': loan.id }) }}">Edit</a>
+        </li>
+        <li>
+            {{ form_start(delete_form) }}
+                <input type="submit" value="Delete">
+            {{ form_end(delete_form) }}
+        </li>
+    </ul>
+{% endblock %}

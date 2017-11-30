@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+{% block title %} {{parent()}} Income details {% endblock %}
+{% block contenu %}
+    <h1 class="text-center">Transaction income</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Amount</th>
+                <td>{{ transactionIncome.amount }}</td>
+            </tr>
+            <tr>
+                <th>Transaction date</th>
+                <td>{% if transactionIncome.transactionDate %}{{ transactionIncome.transactionDate|date('Y-m-d H:i:s') }}{% endif %}</td>
+            </tr>
+            <tr>
+                <th>Description</th>
+                <td>{{ transactionIncome.description }}</td>
+            </tr>
+        </tbody>
+    </table>
+{% endblock %}

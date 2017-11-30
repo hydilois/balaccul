@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Loanparameter</h1>
+
+    <table>
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ loanParameter.id }}</td>
+            </tr>
+            <tr>
+                <th>Parameter</th>
+                <td>{{ loanParameter.parameter }}</td>
+            </tr>
+            <tr>
+                <th>Description</th>
+                <td>{{ loanParameter.description }}</td>
+            </tr>
+            <tr>
+                <th>Createdat</th>
+                <td>{% if loanParameter.createdAt %}{{ loanParameter.createdAt|date('Y-m-d H:i:s') }}{% endif %}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <ul>
+        <li>
+            <a href="{{ path('loanparameter_index') }}">Back to the list</a>
+        </li>
+        <li>
+            <a href="{{ path('loanparameter_edit', { 'id': loanParameter.id }) }}">Edit</a>
+        </li>
+        <li>
+            {{ form_start(delete_form) }}
+                <input type="submit" value="Delete">
+            {{ form_end(delete_form) }}
+        </li>
+    </ul>
+{% endblock %}

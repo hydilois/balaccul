@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Agency</h1>
+
+    <table>
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ agency.id }}</td>
+            </tr>
+            <tr>
+                <th>Name</th>
+                <td>{{ agency.name }}</td>
+            </tr>
+            <tr>
+                <th>Code</th>
+                <td>{{ agency.code }}</td>
+            </tr>
+            <tr>
+                <th>Address</th>
+                <td>{{ agency.address }}</td>
+            </tr>
+            <tr>
+                <th>Branch</th>
+                <td>{{ agency.branch }}</td>
+            </tr>
+            <tr>
+                <th>Phonenumber</th>
+                <td>{{ agency.phoneNumber }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <ul>
+        <li>
+            <a href="{{ path('agency_index') }}">Back to the list</a>
+        </li>
+        <li>
+            <a href="{{ path('agency_edit', { 'id': agency.id }) }}">Edit</a>
+        </li>
+        <li>
+            {{ form_start(delete_form) }}
+                <input type="submit" value="Delete">
+            {{ form_end(delete_form) }}
+        </li>
+    </ul>
+{% endblock %}

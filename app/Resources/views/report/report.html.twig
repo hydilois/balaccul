@@ -1,0 +1,151 @@
+{% extends 'base.html.twig' %}
+{% block title %}{{parent()}} Report{% endblock %}
+{% block contenu %}
+ <ol class="breadcrumb">
+    <li>
+      <a href="#">BALACCUL</a>
+    </li>
+    <li>
+      <a href="#">Reports</a>
+    </li>
+    <li class="active">
+      Trial Balance - Member Share
+    </li>
+  </ol>
+    <div class="row">
+        <fieldset>
+            <legend>
+                ACITIVITIES REPORTS
+            </legend>
+        <div class=" col-lg-offset-2 col-lg-8 col-md-8 col-sm-8 col-xs-8 ">
+            <div class="portlet">
+                <div class="portlet-heading bg-custom">
+                    <div class="portlet-widgets pull-left">
+                        <span class="divider"></span>
+                        <a data-toggle="collapse" data-parent="#accordion1" href="#bg-info11" class="collapsed"><i class="ion-minus-round"></i></a>
+                        <span class="divider"></span>
+                    </div>
+                        <h3 class="portlet-title">
+                            Daily Report
+                        </h3>
+                    <div class="clearfix"></div>
+                </div>
+                <div id="bg-info11" class="panel-collapse collapse">
+                    <div class="portlet-body">
+                        <div class="p-20">
+                            <form method="POST" action="{{ path('dailyreport') }}" class="form-horizontal">
+                                <div class="form-group">
+                                    <label class="control-label col-sm-4">Day</label>
+                                    <div class="col-sm-4">
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" id="datepicker-autoclose" name="currentDate">
+                                            <span class="input-group-addon bg-custom b-0 text-white"><i class="icon-calender"></i></span>
+                                        </div><!-- input-group -->
+                                        <br>
+                                        <input  type="submit" class="btn btn-default" value="Submit"/>
+                                    </div>
+                                
+                                </div>
+                            </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+        <div class=" col-lg-offset-2 col-lg-8 col-md-8 col-sm-8 col-xs-8 ">
+            <div class="portlet">
+                <div class="portlet-heading bg-custom">
+                    <div class="portlet-widgets pull-left">
+                        <span class="divider"></span>
+                        <a data-toggle="collapse" data-parent="#accordion1" href="#bg-info1" class="collapsed"><i class="ion-minus-round"></i></a>
+                        <span class="divider"></span>
+                    </div>
+                        <h3 class="portlet-title">
+                            Trial Balance
+                        </h3>
+                    <div class="clearfix"></div>
+                </div>
+                <div id="bg-info1" class="panel-collapse collapse">
+                    <div class="portlet-body">
+                        <div class="p-20">
+                            <form method="POST" action="{{ path('trialbalancereport') }}" class="form-horizontal">
+                                <div class="form-group">
+                                    <label class="control-label col-sm-4"> From </label>
+                                    <div class="col-sm-6">
+                                        <div class="input-daterange input-group" id="date-range">
+                                            <input type="text" class="form-control" name="start" />
+                                            <span class="input-group-addon bg-custom b-0 text-white">To</span>
+                                            <input type="text" class="form-control" name="end" />
+                                        </div>
+                                        <br>
+                                        <input  type="submit" class="btn btn-default" value="Valider"/>
+                                    </div>
+                                </div>
+                                
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+            <div class="col-lg-offset-2 col-lg-8 col-md-8 col-sm-8 col-xs-8 ">
+                <div class="portlet">
+                    <div class="portlet-heading bg-custom">
+                        <div class="portlet-widgets pull-left">
+                            <span class="divider"></span>
+                            <a data-toggle="collapse" data-parent="#accordion1" href="#bg-info" class="collapsed"><i class="ion-minus-round"></i></a>
+                            <span class="divider"></span>
+                        </div>
+                            <h3 class="portlet-title">
+                                Account Operation History
+                            </h3>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div id="bg-info" class="panel-collapse collapse {# fadeInDown animated #}">
+                                {# <div class="col-md-offset-2 col-md-8"> #}
+                        <div class="portlet-body">
+                            <div class="p-20">
+                                <form method="POST" action="{{ path('accounthistoryreport') }}" class="form-horizontal">
+                                            <div class="form-group template">
+                                                <label class="control-label ">Acccount Category</label>
+                                                    <select id="accountCategory" name="accountType" class="form-control">
+                                                        <option value="">-- choose an account type --</option>
+                                                        <option value="1">SAVING</option>
+                                                        <option value="2">SHARE</option>
+                                                        <option value="3">DEPOSIT</option>
+                                                    </select>
+                                            </div>
+                                            <div id="zoneAccounts">
+                                                <div class="accounts_container">
+                                                    
+                                                </div>
+                                            </div>
+                                    <div class="form-group">
+                                        <label class="control-label"> From </label>
+                                            <div class="input-daterange input-group" id="date-range1">
+                                                <input type="text" class="form-control" name="start" />
+                                                <span class="input-group-addon bg-custom b-0 text-white">To</span>
+                                                <input type="text" class="form-control" name="end" />
+                                            </div>
+                                            <br>
+                                            <input  type="submit" class="btn btn-default" value="Valid"/>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        {# </div> #}
+                    </div>
+                </div>
+            </div>
+        </div> <!-- End row -->
+        </fieldset>
+
+         {# Hidden inputs #}
+    <select name="accountNumber" class="selecteur-zone form-control hide" id=""></select>
+
+
+    {% include '/report/extras_report.css.html.twig' %}
+    {% include '/report/extras_report.js.html.twig' %}
+{% endblock %}

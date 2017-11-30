@@ -1,0 +1,67 @@
+{% extends 'base.html.twig' %}
+{% block title %}{{parent()}} New Account{% endblock %}
+
+{% block contenu %}
+
+    <ol class="breadcrumb">
+        <li>
+            <a href="#">BALACCUL</a>
+        </li>
+        <li>
+            <a href="#">Account</a>
+        </li>
+        <li class="active">
+            new saving account
+        </li>
+    </ol>
+
+        <!-- Forms -->
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card-box">
+                <div class="row">
+                    <div class="col-md-offset-2 col-md-8">
+                        <h4 class="m-t-0 header-title text-center"><b>Add a new saving account</b></h4>
+                                      {{ form_start(form) }}
+                                  <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                          <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                              <div class="form-group">
+                                                  {{form_label(form.accountNumber)}}
+                                                  {{form_errors(form.accountNumber)}}
+                                                  {{form_widget(form.accountNumber, {'attr' : {'class':'form-control'}})}}
+                                              </div>
+                                          </div>
+                                          <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                              <div class="form-group">
+                                                  {{form_label(form.solde)}}
+                                                  {{form_errors(form.solde)}}
+                                                  {{form_widget(form.solde, {'attr' : {'class':'form-control'}})}}
+                                              </div>
+                                          </div>
+                                          <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                              <div class="form-group">
+                                                  {{form_label(form.physicalMember)}}
+                                                  {{form_errors(form.physicalMember)}}
+                                                  {{form_widget(form.physicalMember, {'attr' : {'class':'form-control'}})}}
+                                              </div>
+                                          </div>
+
+                                          <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                              <div class="form-group">
+                                                  {{form_label(form.status, "Active ?")}}
+                                                  {{form_errors(form.status)}}
+                                                  {{form_widget(form.status, {'attr' : {'class':'form-control'}})}}
+                                              </div>
+                                          </div>
+                                  </div>
+                                <div class="modal-footer">
+                                  <input class="btn btn-default" type="submit" value="Save" />
+                                  <a class="btn btn-primary" href="{{path('saving_index')}}">Back to the list</a>
+                                </div>
+                                {{ form_end(form) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

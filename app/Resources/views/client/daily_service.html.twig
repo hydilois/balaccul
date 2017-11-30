@@ -1,0 +1,101 @@
+{% extends 'base.html.twig' %}
+{% block title %} {{ parent() }} Cash in operation{% endblock %}
+{% block contenu %}
+    <ol class="breadcrumb">
+    <li>
+      <a href="#">BALACUL</a>
+    </li>
+    <li>
+      <a href="#">Operation</a>
+    </li>
+    <li class="active">
+      Daily service 
+    </li>
+  </ol>
+        <h1 class="text-center">DAILY SERVICE OPERATIONS</h1>
+        <section class="col-lg-3">
+            <fieldset>
+                <legend>Operation</legend>
+                <div class="form-group">
+                    <label class="control-label col-sm-4">Operation</label>
+                        <select id="operationType" class="form-control">
+                            <option value="">&lt;------ Select ------&gt;</option>
+                            <option value="1">DEPOSIT</option>
+                            <option value="2">WITHDRAWAL</option>
+                            <option value="3">CHARGES</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                    <label class="control-label col-sm-4">Clients</label>
+                        <select id="clientId" class="form-control">
+                            <option value="">&lt;------ Select ------&gt;</option>
+                            {% for client in clients %}
+                                <option value="{{client.id}}">{{client.name}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="">Amount</label>
+                        <input type="number" class="form-control" value="0" />
+                    </div>
+                    <div class="form-group">
+                        <a class="btn btn-default" name="btn-save-operation" href="#">Save</a>
+                        <a class="btn btn-primary" name="btn-formaccount-reset" href="#">Reset</a>
+                    </div>
+            </fieldset>
+            
+        </section>
+        <section  class="col-lg-9">
+            <fieldset id="detailClient" class="fadeInDown animated hide">
+                <legend>Details on the account</legend>
+
+                <div class="row">
+                    <div class="col-md-6 col-lg-6">
+                        <div class="widget-bg-color-icon card-box">
+                            <div class="text-left">
+                                <span><strong> Solde </strong></span>
+                                <h3 class="text-dark"><b id="solde" class="counter"></b></h3>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                </div>
+                <div class="col-md-6 col-lg-6">
+                        <div class="widget-bg-color-icon card-box">
+                            <div class="text-left">
+                                <span><strong> Client Name </strong></span>
+                                <h3 class="text-dark"><b id="clientNamed">0</b></h3>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+{#             <fieldset id="OwnerDetails" class=" fadeInDown animated">
+                <legend>History</legend>
+                <div class="row">
+                    <div class="col-sm-12 col-lg-12">
+                        <div class="card-box">
+                            <div class="contact-card">
+                                <div class="member-info">
+                                    <h4 class="m-t-0 m-b-5 header-title"><b id="pname"></b></h4>
+                                    <p class="text-dark">Member Number: <b  id="pmemberNumber"></b></p>
+                                    <p class="text-dark">Occupation: <b  id="poccupation"></b></p>
+                                    <p class="text-dark">Adress: <b id="paddress"></b></p>
+                                    <p class="text-dark">NIC Number: <b id="pnicNumber"></b></p>
+                                    <p class="text-dark">Phone Number: <b id="pphoneNumber"></b></p>
+                                    <p class="text-dark">Membership date creation : <b id="pdate"></b></p>
+                                    <p class="text-dark">Witness Name: <b id="pwitness"></b></p>
+                                    <p class="text-dark">Proposed by: <b id="pproposed"></b></p>
+                                    <p class="text-dark">Date of birth: <b id="pdateBirth"></b></p>
+                                    <p class="text-dark">Born At: <b id="pPlaceBirth"></b></p>
+                            </div>
+                        </div>
+                        
+                    </div> <!-- end col -->
+                    
+                </div>
+            </fieldset> #}
+        </section>
+        {% include './operation/extras.css.html.twig' %}
+        {% include './client/extras.js.html.twig' %}
+{% endblock %}

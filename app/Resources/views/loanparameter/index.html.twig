@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+{% block title %}{{parent()}} Loan Parameter informattions{% endblock %}
+{% block contenu %}
+    <h1 class="text-center">Loan Parameter Informations</h1>
+            
+                <a class="btn btn-default"
+                    {% if loanParameters|length == 0 %}
+                        href="{{ path('loanparameter_new') }}"
+                    {% else %}    
+                        href="#" 
+                    {% endif %}
+                >Add</a>
+    <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>Action</th>
+                <th>Parameter</th>
+                <th>Created or Modified At</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for loanParameter in loanParameters %}
+            <tr>
+                <td><a class="btn btn-success" href="{{path('loanparameter_edit',{ id:loanParameter.id})}}">Edit</a></td>
+                <td>{{ loanParameter.parameter }}</td>
+                <td>{% if loanParameter.createdAt %}{{ loanParameter.createdAt|date('Y-m-d H:i:s') }}{% endif %}</td>
+                <td>{{ loanParameter.description }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
+

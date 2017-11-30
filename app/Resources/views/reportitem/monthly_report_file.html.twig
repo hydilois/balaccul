@@ -1,0 +1,99 @@
+<page backtop="10mm" backleft="10mm" backright="10mm" backbottom="10mm" footer="page;">
+    <page_footer>
+        <hr />
+        <span>{{agency.abreviation}}</span><span style="margin-left:550px;">GreenSoft-Team</span>
+    </page_footer>
+
+     <table>
+         <tr>
+             <td class="60p">
+                  <b>{{agency.abreviation}}</b><br/>
+                  <b>{{agency.name}}</b><br>
+                  <b>{{agency.phoneNumber}}</b> <br>
+
+             </td>
+             <td  style="text-align: right;" class="40p">
+                 <img style="height:80px;" src="./assets/images/users/logo_cu1.jpg"  alt="logo">
+             </td>
+         </tr>
+     </table><br>
+
+     <table style="margin-top: 10px;">
+         <tr>
+             <td class="25p" style="text-align: left;"></td>
+             <td class="50p" style="text-align: center; font-size:18px">
+                <b>INCOME AND EXPENDITURE A/C</b>
+             </td>
+             <td class="25p" style="text-align: right;"></td>
+         </tr>
+     </table><br>
+
+    <table>
+        <tr>
+            <td class="50p" style="text-align: left; border: none; font-size:16px">Period: <b>
+                {{ displayDateStart}}</b> to <b>{{displayDateEnd}}</b>
+            </td>
+            <td style="font-size:16px" class="25p">XAF:<strong> F CFA</strong></td>
+        </tr>
+    </table><br>
+
+    <table class="eleves">
+        <tr>
+            <th style="text-align: center;" class="60p">ITEMS</th>
+            <th class="20p">AMOUNT</th>
+            <th class="20p">TOTAL AMOUNT</th>
+        </tr>
+
+        {% set totalIncome = 0 %}
+        {% set totalExpenditure = 0 %}
+
+            {% for item in items %}
+                {% if item.parentItem.id == 1 %}
+                    <tr>
+                        <td style="text-align: center;">{{item.name }}</td>
+                        <td>{{item.amount}}</td>
+                        <td></td>
+                    </tr>
+                    {% set totalIncome = totalIncome + item.amount %}
+                {% endif %}
+            {% endfor %}
+                <tr>
+                    <td style="border-right:none; text-align:center" colspan="1"><b>TOTAL INCOME</b></td>
+                    <td></td>
+                    <td style="text-align:center"> <b>{{totalIncome }}</b> </td>
+                </tr>
+            {% for item in items %}
+                {% if item.parentItem.id == 2 %}
+                    <tr>
+                        <td style="text-align: center;">{{item.name }}</td>
+                        <td>{{item.amount}}</td>
+                        <td></td>
+                    </tr>
+                    {% set totalExpenditure = totalExpenditure + item.amount %}
+                {% endif %}
+            {% endfor %}
+            <tr>
+                <td style="border-right:none; text-align:center"  colspan="1"><b>TOTAL EXPENDITURE</b></td>
+                <td></td>
+                <td style="text-align:center"> <b>{{totalExpenditure }}</b> </td>
+            </tr>
+                <tr>
+                    <td colspan="1" style="border-right:none; text-align:center">                        
+                        <b>NET BENEFIT FOR THE MONTH (UNDIVIDED EARNINGS)</b>
+                    </td>
+                    <td></td>
+                    <td>
+                        {% set balance = totalIncome - totalExpenditure %}
+                        <b>
+                            {% if balance >=0 %}
+                                {{balance}}
+                            {% else %}
+                                {{balance}} DEBIT
+                            {% endif %}
+                        </b>
+                    </td>
+                </tr>
+    </table>
+</page>
+
+{% include '/report/extra_file_report.css.html.twig' %}

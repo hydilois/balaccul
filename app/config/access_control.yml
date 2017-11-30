@@ -1,0 +1,67 @@
+security:
+    access_control:
+        -
+            path: ^/eleve/list
+            roles:
+                - ROLE_USER
+        -
+            path: ^/eleve/new
+            roles:
+                - ROLE_USER
+        -
+            path: ^/annee
+            roles:
+                - ROLE_SUPER_ADMIN
+        -
+            path: ^/annee/new
+            roles:
+                - ROLE_SUPER_ADMIN
+        -
+            path: ^/eleve/import/fileform
+            roles:
+                - ROLE_SUPER_ADMIN
+        -
+            path: ^/transfert/
+            roles:
+                - ROLE_SUPER_ADMIN
+        -
+            path: ^/examen
+            roles:
+                - ROLE_SUPER_ADMIN
+        -
+            path: ^/annee/[0-9]+/edit
+            roles:
+                - ROLE_SUPER_ADMIN
+        -
+            path: ^/annee/[0-9]+/show
+            roles:
+                - ROLE_SUPER_ADMIN
+        
+        -
+            path: ^/statistiques/periodique
+            roles:
+                - ROLE_USER
+        -
+            path: ^/statistiques/journalier
+            roles:
+                - ROLE_USER
+        -
+            path: ^/eleve/[0-9]+/show
+            roles:
+                - ROLE_USER
+        -
+            path: ^/eleve/[0-9]+/edit
+            roles:
+                - ROLE_USER
+        -
+            path: ^/login$
+            roles:
+                - IS_AUTHENTICATED_ANONYMOUSLY
+        -
+            path: ^/self/register$
+            roles:
+                - IS_AUTHENTICATED_ANONYMOUSLY
+        -
+            path: ^/resetting$
+            roles:
+                - IS_AUTHENTICATED_ANONYMOUSLY
