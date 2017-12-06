@@ -24,11 +24,19 @@ class MoralMemberController extends Controller
      * @Route("/", name="moralmember_index")
      * @Method("GET")
      */
-    public function indexAction()
-    {
+    public function indexAction(){
+
         $em = $this->getDoctrine()->getManager();
 
-        $moralMembers = $em->getRepository('MemberBundle:MoralMember')->findAll();
+        $query  = $em->createQueryBuilder()
+                ->select('m, sh, sa, de')
+                ->from('MemberBundle:MoralMember', 'm')
+                ->leftJoin('AccountBundle:Share', 'sh', 'WITH', 'm.id = sh.moralMember')
+                ->leftJoin('AccountBundle:Saving', 'sa', 'WITH', 'm.id = sa.moralMember')
+                ->leftJoin('AccountBundle:Deposit', 'de', 'WITH', 'm.id = de.moralMember')
+                ->getQuery();
+
+        $moralMembers = $query->getScalarResult();
 
         return $this->render('moralmember/index.html.twig', array(
             'moralMembers' => $moralMembers,
@@ -125,13 +133,19 @@ class MoralMemberController extends Controller
     public function editAction(Request $request, MoralMember $moralMember)
     {
         $deleteForm = $this->createDeleteForm($moralMember);
-        $editForm = $this->createForm('MemberBundle\Form\MoralMemberType', $moralMember);
+        $editForm = $this->createForm('MemberBundle\Form\MoralMemberEditType', $moralMember);
         $editForm->handleRequest($request);
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
+
+            $buildingFees = $this->getDoctrine()->getManager()->getRepository('ClassBundle:InternalAccount')->find(10);
+            $buildingFees->setAmount($buildingFees->getAmount() + $moralMember->getBuildingFees());
+
+            $this->getDoctrine()->getManager()->persist($buildingFees);
+
             $this->getDoctrine()->getManager()->flush();
 
-            return $this->redirectToRoute('moralmember_edit', array('id' => $moralMember->getId()));
+            return $this->redirectToRoute('moralmember_index');
         }
 
         return $this->render('moralmember/edit.html.twig', array(
@@ -218,6 +232,12 @@ class MoralMemberController extends Controller
 
             $income->setAmount($memberJSON["registrationFees"]);
             $income->setDescription("Member Registration fees. Member number: ".$moralMember->getMemberNumber()." // Member Social Reason: ".$moralMember->getSocialReason()." // Amount: ".$income->getAmount());
+
+            //update the cash in hand
+            $cashInHandAccount  = $entityManager->getRepository('ClassBundle:InternalAccount')->find(9);
+            $cashInHandAccount->setAmount($cashInHandAccount->getAmount() + $memberJSON["registrationFees"]);
+
+            $entityManager->persist($cashInHandAccount);
 
         /**
          * making recordds here

@@ -105,8 +105,7 @@ class LoanController extends Controller{
                 $accountsAmount += $saving->getSolde();
             }
 
-            $target = $loan->getLoanAmount()/$loanParameter;
-            if ($target > $accountsAmount) {
+            if (($accountsAmount * $loanParameter) <= $loan->getLoanAmount()) {
                 $this->addFlash('warning', 'The loan cannot be done!!!! check the amount of your share and savings accounts');
             }else{
 
@@ -114,6 +113,12 @@ class LoanController extends Controller{
 
                 $income->setAmount($loan->getLoanProcessingFees());
                 $income->setDescription("Loan processing fees. Loan Code: ".$loan->getLoanCode()." // Loan Owner: ".$loan->getPhysicalMember()." // Amount: ".$loan->getLoanProcessingFees());
+
+                //update the cash in hand
+                $cashInHandAccount  = $em->getRepository('ClassBundle:InternalAccount')->find(9);
+                $cashInHandAccount->setAmount($cashInHandAccount->getAmount() + $loan->getLoanProcessingFees());
+
+                $em->persist($cashInHandAccount);
 
                 $em->persist($loan);
                 $em->persist($income);
@@ -200,13 +205,33 @@ class LoanController extends Controller{
      * @Route("/{id}", name="loan_show")
      * @Method("GET")
      */
-    public function showAction(Loan $loan)
-    {
-        $deleteForm = $this->createDeleteForm($loan);
+    public function showAction(Loan $loan){
+        $entityManager = $this->getDoctrine()->getManager();
+        $lowest_remain_amount_LoanHistory = $entityManager->createQueryBuilder()
+            ->select('MIN(lh.remainAmount)')
+            ->from('AccountBundle:LoanHistory', 'lh')
+            ->innerJoin('AccountBundle:Loan', 'l', 'WITH','lh.loan = l.id')
+            ->where('l.id = :loan')->setParameter('loan', $loan)
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        $latestLoanHistory = $entityManager->getRepository('AccountBundle:LoanHistory')->findOneBy([
+                            'remainAmount' => $lowest_remain_amount_LoanHistory,
+                            'loan' => $loan],
+                            ['id' => 'DESC']);
+
+        $loanHistories = $entityManager->getRepository('AccountBundle:LoanHistory')->findBy(
+                            [
+                                'loan' => $loan
+                            ]
+                            );
+
+
 
         return $this->render('loan/show.html.twig', array(
             'loan' => $loan,
-            'delete_form' => $deleteForm->createView(),
+            'loanHistory' => $latestLoanHistory,
+            'loanHistories' => $loanHistories,
         ));
     }
 

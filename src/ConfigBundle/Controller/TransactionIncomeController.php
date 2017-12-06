@@ -46,9 +46,16 @@ class TransactionIncomeController extends Controller
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
             $em->persist($transactionIncome);
+
+            //update the cash in hand
+            $cashInHandAccount  = $entityManager->getRepository('ClassBundle:InternalAccount')->find(9);
+            $cashInHandAccount->setAmount($cashInHandAccount->getAmount() + $transactionIncome->getAmount());
+
+            $entityManager->persist($cashInHandAccount);
+
             $em->flush();
 
-            return $this->redirectToRoute('transactionincome_show', array('id' => $transactionIncome->getId()));
+            return $this->redirectToRoute('transactionincome_index');
         }
 
         return $this->render('transactionincome/new.html.twig', array(

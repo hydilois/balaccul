@@ -23,6 +23,35 @@ class AccountService extends Controller{
 	}
 
 
+	/**
+	 * get all saving account
+	 * @return array collection of savings objects
+	 */
+	public function getSavingAccountList(){
+		$entityManager = $this->getDoctrine()->getManager();
+		return $entityManager->getRepository('AccountBundle:Saving')->findAll();
+	}
+
+
+	/**
+	 * get all shares accounts
+	 * @return array collection of shares objects
+	 */
+	public function getShareAccountList(){
+		$entityManager = $this->getDoctrine()->getManager();
+		return $entityManager->getRepository('AccountBundle:Share')->findAll();
+	}
+
+
+	/**
+	 * get all shares accounts
+	 * @return array collection of shares objects
+	 */
+	public function getDepositAccountList(){
+		$entityManager = $this->getDoctrine()->getManager();
+		return $entityManager->getRepository('AccountBundle:Deposit')->findAll();
+	}
+
 
 	/**
 	 * get a single account
@@ -132,5 +161,16 @@ class AccountService extends Controller{
 			[
 				'idMember' => $id
 			]);
+	}
+
+	/**
+	 * get a single account
+	 * @param  int $id id of the internal to show
+	 * @return InternalAccount     entity of InternalAccount
+	 */
+	public function getInternalAccount($id){
+
+		$entityManager = $this->getDoctrine()->getManager();
+		return $entityManager->getRepository('ClassBundle:InternalAccount')->find($id);
 	}
 }

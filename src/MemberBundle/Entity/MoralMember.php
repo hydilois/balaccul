@@ -65,7 +65,7 @@ class MoralMember{
     /**
      * @var string
      *
-     * @ORM\Column(name="memberNumber", type="string", length=255, nullable=true)
+     * @ORM\Column(name="memberNumber", type="string", length=255, nullable=true, unique=true)
      */
     private $memberNumber;
 
@@ -106,8 +106,16 @@ class MoralMember{
     private $registrationFees;
 
 
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="building_fees", type="bigint")
+     */
+    private $buildingFees;
+
+
     public function __toString(){
-        return $this->socialReason;
+        return $this->socialReason." -- ".$this->memberNumber;
     }
 
     /**
@@ -124,6 +132,8 @@ class MoralMember{
 
         // The default date of the membership creation is now
         $this->membershipDateCreation = new \DateTime('now');
+        $this->buildingFees = 0;
+        $this->isAproved = true;
     }
 
 
@@ -413,5 +423,29 @@ class MoralMember{
     public function getRegistrationFees()
     {
         return $this->registrationFees;
+    }
+
+    /**
+     * Set buildingFees
+     *
+     * @param integer $buildingFees
+     *
+     * @return MoralMember
+     */
+    public function setBuildingFees($buildingFees)
+    {
+        $this->buildingFees = $buildingFees;
+
+        return $this;
+    }
+
+    /**
+     * Get buildingFees
+     *
+     * @return integer
+     */
+    public function getBuildingFees()
+    {
+        return $this->buildingFees;
     }
 }

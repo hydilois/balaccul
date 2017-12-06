@@ -10,8 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="member")
  * @ORM\Entity(repositoryClass="MemberBundle\Repository\MemberRepository")
  */
-class Member
-{
+class Member{
     /**
      * @var int
      *
@@ -108,7 +107,7 @@ class Member
     /**
      * @var int
      *
-     * @ORM\Column(name="memberNumber", type="bigint", nullable=true)
+     * @ORM\Column(name="memberNumber", type="bigint", nullable=true, unique=true)
      */
     private $memberNumber;
 
@@ -142,6 +141,14 @@ class Member
     private $registrationFees;
 
 
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="building_fees", type="bigint")
+     */
+    private $buildingFees;
+
+
 
     /**
      * @var string
@@ -151,7 +158,7 @@ class Member
     private $phoneNumber;
 
     public function __toString(){
-        return $this->name;
+        return $this->name." -- ".$this->memberNumber;
     }
 
 
@@ -159,6 +166,8 @@ class Member
 
         // The default date of the membership creation is now
         $this->membershipDateCreation = new \DateTime('now');
+        $this->buildingFees = 0;
+        $this->isAproved = true;
     }
 
     /**
@@ -601,5 +610,29 @@ class Member
     public function getMemberNumber()
     {
         return $this->memberNumber;
+    }
+
+    /**
+     * Set buildingFees
+     *
+     * @param integer $buildingFees
+     *
+     * @return Member
+     */
+    public function setBuildingFees($buildingFees)
+    {
+        $this->buildingFees = $buildingFees;
+
+        return $this;
+    }
+
+    /**
+     * Get buildingFees
+     *
+     * @return integer
+     */
+    public function getBuildingFees()
+    {
+        return $this->buildingFees;
     }
 }

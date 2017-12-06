@@ -36,7 +36,7 @@ $(function(){
 			}
 
 			BaseEndpoint.prototype.setListerners = function(){
-				// this.setAlertListener();
+				this.setAlertListener();
 				this.showNotificationsDetails();
 				// this.setupDatePicker();
 			}
@@ -55,7 +55,7 @@ $(function(){
 
 			BaseEndpoint.prototype.setAlertListener = function(){
 				this.setAlert();
-				setInterval(this.setAlert, 60000);
+				// setInterval(this.setAlert, 20000);
 			}
 
 			/**
@@ -79,47 +79,49 @@ $(function(){
 						returnedDataParsed = JSON.parse(returnedData);
 						console.log(returnedDataParsed);
 						data = returnedDataParsed.data;
-						mvtdata = returnedDataParsed.mouvementdata;
-						totalNotifications  = data.length + mvtdata.length;
-						$('.notifications-menu .label').text(totalNotifications);
+						// mvtdata = returnedDataParsed.mouvementdata;
 
-						var notificationMenu = $('.notifications-menu .dropdown-menu ul.menu');
+						$('#numberNotif').text(data.length);
+
+						var notificationMenu = $('.dropdown-menu-lg .notification-list');
 
 						for(var i in data){
 
 							var singleObject = data[i];
 							// we only happend if not in the array otherwise it gets redundant
-							if( -1 == $.inArray(singleObject.nh_id, baseEndpoint.alertsArray)){
+							// if( -1 == $.inArray(singleObject.nh_id, baseEndpoint.alertsArray)){
 
-								var liElement = $('.notifications-menu .dropdown-menu li.template').clone();
-								liElement.find('.notification-message').text(singleObject.nh_type + " par " + singleObject.u_nom +  " avec le role: " + singleObject.g_nom.toLowerCase());
+								var liElement = $('.dropdown-menu-lg .notification-list a.template').clone();
+								liElement.find('.media-heading').text(singleObject.l_loanCode);
+								liElement.find('.detail').text("At least the first installement and interest are not paid");
 								liElement.removeClass('template');
-								liElement.find('a').attr("data-alert", singleObject.nh_id);
-								liElement.find('a').attr("alert-type", "notification");
+								liElement.removeClass('hide');
+								liElement.attr("href", URL_ROOT+"/loan/"+singleObject.l_id);
+								// liElement.find('a').attr("alert-type", "notification");
 								liElement.prependTo(notificationMenu);
-								liElement.fadeIn('slow');
+								// liElement.fadeIn('slow');
 								
-								baseEndpoint.alertsArray.push(singleObject.nh_id);
-							}
+								// baseEndpoint.alertsArray.push(singleObject.nh_id);
+							// }
 						}
 
-						for(var i in mvtdata){
+						// for(var i in mvtdata){
 
-							var singleObject = mvtdata[i];
-							// we only happend if not in the array otherwise it gets redundant
-							if( -1 == $.inArray(singleObject.mh_id, baseEndpoint.alertsArray)){
+						// 	var singleObject = mvtdata[i];
+						// 	// we only happend if not in the array otherwise it gets redundant
+						// 	if( -1 == $.inArray(singleObject.mh_id, baseEndpoint.alertsArray)){
 
-								var liElement = $('.notifications-menu .dropdown-menu li.template').clone();
-								liElement.find('.notification-message').text(singleObject.mh_type + " par " + singleObject.u_nom +  " avec le role: " + singleObject.g_nom.toLowerCase());
-								liElement.removeClass('template');
-								liElement.find('a').attr("data-alert", singleObject.mh_id);
-								liElement.find('a').attr("alert-type", "mouvement");
-								liElement.prependTo(notificationMenu);
-								liElement.fadeIn('slow');
+						// 		var liElement = $('.notifications-menu .dropdown-menu li.template').clone();
+						// 		liElement.find('.notification-message').text(singleObject.mh_type + " par " + singleObject.u_nom +  " avec le role: " + singleObject.g_nom.toLowerCase());
+						// 		liElement.removeClass('template');
+						// 		liElement.find('a').attr("data-alert", singleObject.mh_id);
+						// 		liElement.find('a').attr("alert-type", "mouvement");
+						// 		liElement.prependTo(notificationMenu);
+						// 		liElement.fadeIn('slow');
 								
-								baseEndpoint.alertsArray.push(singleObject.mh_id);
-							}
-						}
+						// 		baseEndpoint.alertsArray.push(singleObject.mh_id);
+						// 	}
+						// }
 
 					}, 
 					error : function(returnedData){

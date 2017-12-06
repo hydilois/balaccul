@@ -10,8 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="client")
  * @ORM\Entity(repositoryClass="MemberBundle\Repository\ClientRepository")
  */
-class Client
-{
+class Client{
     /**
      * @var int
      *
@@ -45,14 +44,53 @@ class Client
 
 
     /**
-     * @ORM\OneToOne(targetEntity="AccountBundle\Entity\DailySavingAccount")
-     * @ORM\JoinColumn(name="id_amount")
+     * @var int
+     *
+     * @ORM\Column(name="balance", type="bigint")
      */
-    private $amount;
+    private $balance;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="balanceBF", type="bigint")
+     */
+    private $balanceBF;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="withdrawal1", type="bigint")
+     */
+    private $withdrawal1;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="withdrawal2", type="bigint")
+     */
+    private $withdrawal2;
+
+
+     /**
+     * @var int
+     *
+     * @ORM\Column(name="charges", type="bigint")
+     */
+    private $charges;
 
 
     public function __toString(){
         return $this->name;
+    }
+
+    public function __construct(){        
+        // The default amount is 0
+        $this->balance = 0;
+        $this->balanceBF = 0;
+        $this->withdrawal1 = 0;
+        $this->withdrawal2 = 0;
+        $this->charges = 0;
     }
 
 
@@ -139,26 +177,122 @@ class Client
     }
 
     /**
-     * Set amount
+     * Set balance
      *
-     * @param \AccountBundle\Entity\DailySavingAccount $amount
+     * @param integer $balance
      *
      * @return Client
      */
-    public function setAmount(\AccountBundle\Entity\DailySavingAccount $amount = null)
+    public function setBalance($balance)
     {
-        $this->amount = $amount;
+        $this->balance = $balance;
 
         return $this;
     }
 
     /**
-     * Get amount
+     * Get balance
      *
-     * @return \AccountBundle\Entity\DailySavingAccount
+     * @return integer
      */
-    public function getAmount()
+    public function getBalance()
     {
-        return $this->amount;
+        return $this->balance;
+    }
+
+    /**
+     * Set balanceBF
+     *
+     * @param integer $balanceBF
+     *
+     * @return Client
+     */
+    public function setBalanceBF($balanceBF)
+    {
+        $this->balanceBF = $balanceBF;
+
+        return $this;
+    }
+
+    /**
+     * Get balanceBF
+     *
+     * @return integer
+     */
+    public function getBalanceBF()
+    {
+        return $this->balanceBF;
+    }
+
+    /**
+     * Set withdrawal1
+     *
+     * @param integer $withdrawal1
+     *
+     * @return Client
+     */
+    public function setWithdrawal1($withdrawal1)
+    {
+        $this->withdrawal1 = $withdrawal1;
+
+        return $this;
+    }
+
+    /**
+     * Get withdrawal1
+     *
+     * @return integer
+     */
+    public function getWithdrawal1()
+    {
+        return $this->withdrawal1;
+    }
+
+    /**
+     * Set withdrawal2
+     *
+     * @param integer $withdrawal2
+     *
+     * @return Client
+     */
+    public function setWithdrawal2($withdrawal2)
+    {
+        $this->withdrawal2 = $withdrawal2;
+
+        return $this;
+    }
+
+    /**
+     * Get withdrawal2
+     *
+     * @return integer
+     */
+    public function getWithdrawal2()
+    {
+        return $this->withdrawal2;
+    }
+
+    /**
+     * Set charges
+     *
+     * @param integer $charges
+     *
+     * @return Client
+     */
+    public function setCharges($charges)
+    {
+        $this->charges = $charges;
+
+        return $this;
+    }
+
+    /**
+     * Get charges
+     *
+     * @return integer
+     */
+    public function getCharges()
+    {
+        return $this->charges;
     }
 }

@@ -25,11 +25,12 @@
         <thead>
         <tr>
             <th>Actions</th>
-            <th>Nom</th>
+            <th>Name</th>
             <th>Login</th>
-            <th>Adresse Email</th>
-            <th>Numéro de téléphone</th>
-            <th>Activer / Desactiver</th>
+            <th>Email</th>
+            <th>Phon number</th>
+            <th>Groupe</th>
+            <th>Activate / Deactivate</th>
         </tr>
         </thead>
         <tbody>
@@ -39,11 +40,11 @@
                 <div class="input-group-btn">
                   <button type="button" class="btn btn-primary btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="true">Actions
                     <span class="fa fa-caret-down"></span></button>
-                  <ul class="dropdown-menu">
+                  <ul class="dropdown-menu fadeInUp animated">
                     <li>
-                        <a name="show-utilisateur" data-utilisateur="{{utilisateur.id}}"><i class="fa fa-eye"></i> Voir Utilisateur</a>
+                        <a name="show-utilisateur" data-utilisateur="{{utilisateur.id}}"><i class="fa fa-eye"></i> View</a>
                     </li>
-                    <li><a href="{{ path('utilisateur_edit', { 'id': utilisateur.id }) }}"><i class="fa fa-edit"></i> Editer Utilisateur</a></li>
+                    <li><a href="{{ path('utilisateur_edit', { 'id': utilisateur.id }) }}"><i class="fa fa-edit"></i> Edit</a></li>
                   </ul>
                 </div>
                 </td>
@@ -51,10 +52,11 @@
                 <td>{{ utilisateur.username }}</td>
                 <td>{{ utilisateur.email }}</td>
                 <td>{{ utilisateur.numeroTelephone }}</td>
+                <td>{{ utilisateur.groupe }}</td>
                 <td>
                     {% if app.user.username == utilisateur.username %}
                         <span class="label label-default">Utilisateur Connecté</span>                        
-                    {% elseif utilisateur.username == "elsha" %}
+                    {# {% elseif utilisateur.username == "elsha" %} #}
                         
                     {% else %}
                         {% if utilisateur.enabled %}

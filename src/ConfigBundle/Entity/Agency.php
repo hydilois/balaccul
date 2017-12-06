@@ -55,6 +55,21 @@ class Agency{
      */
     private $branch;
 
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="registrationNumber", type="string", length=255)
+     */
+    private $registrationNumber;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="poBox", type="string", length=255)
+     */
+    private $poBox;
+
     /**
      * @var string
      *
@@ -247,5 +262,53 @@ class Agency{
     public function getAbreviation()
     {
         return $this->abreviation;
+    }
+
+    /**
+     * Set registrationNumber
+     *
+     * @param string $registrationNumber
+     *
+     * @return Agency
+     */
+    public function setRegistrationNumber($registrationNumber)
+    {
+        $this->registrationNumber = $registrationNumber;
+
+        return $this;
+    }
+
+    /**
+     * Get registrationNumber
+     *
+     * @return string
+     */
+    public function getRegistrationNumber()
+    {
+        return $this->registrationNumber;
+    }
+
+    /**
+     * Set poBox
+     *
+     * @param string $poBox
+     *
+     * @return Agency
+     */
+    public function setPoBox($poBox)
+    {
+        $this->poBox = $poBox;
+
+        return $this;
+    }
+
+    /**
+     * Get poBox
+     *
+     * @return string
+     */
+    public function getPoBox()
+    {
+        return $this->poBox;
     }
 }

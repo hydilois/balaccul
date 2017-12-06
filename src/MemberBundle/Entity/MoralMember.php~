@@ -23,21 +23,21 @@ class MoralMember{
     /**
      * @var string
      *
-     * @ORM\Column(name="socialReason", type="string", length=255)
+     * @ORM\Column(name="socialReason", type="string", length=255, nullable=true)
      */
     private $socialReason;
 
     /**
      * @var \Date
      *
-     * @ORM\Column(name="dateOfCreation", type="date")
+     * @ORM\Column(name="dateOfCreation", type="date", nullable=true)
      */
     private $dateOfCreation;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="address", type="string", length=255)
+     * @ORM\Column(name="address", type="string", length=255, nullable=true)
      */
     private $address;
 
@@ -65,7 +65,7 @@ class MoralMember{
     /**
      * @var string
      *
-     * @ORM\Column(name="memberNumber", type="string", length=255, nullable=true)
+     * @ORM\Column(name="memberNumber", type="string", length=255, nullable=true, unique=true)
      */
     private $memberNumber;
 
@@ -106,8 +106,16 @@ class MoralMember{
     private $registrationFees;
 
 
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="building_fees", type="bigint")
+     */
+    private $buildingFees;
+
+
     public function __toString(){
-        return $this->socialReason;
+        return $this->socialReason." -- ".$this->memberNumber;
     }
 
     /**
@@ -389,5 +397,29 @@ class MoralMember{
     public function getPhoneNumber()
     {
         return $this->phoneNumber;
+    }
+
+    /**
+     * Set registrationFees
+     *
+     * @param integer $registrationFees
+     *
+     * @return MoralMember
+     */
+    public function setRegistrationFees($registrationFees)
+    {
+        $this->registrationFees = $registrationFees;
+
+        return $this;
+    }
+
+    /**
+     * Get registrationFees
+     *
+     * @return integer
+     */
+    public function getRegistrationFees()
+    {
+        return $this->registrationFees;
     }
 }

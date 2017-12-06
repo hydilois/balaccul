@@ -7,6 +7,7 @@ use FOS\UserBundle\Event\FormEvent;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use FOS\UserBundle\Controller\RegistrationController as BaseController;
@@ -37,6 +38,16 @@ class UtilisateurController extends BaseController
             'utilisateurs' => $utilisateurs,
         ));
     }
+
+
+    /**
+     * @Template("utilisateur/online_users.html.twig")
+    */
+    public function whoIsOnlineAction(){
+        $users = $this->getDoctrine()->getManager()->getRepository('UserBundle:Utilisateur')->getActive();
+        return array('users' => $users);
+    }
+
 
     /**
      * Creates a new utilisateur entity.
@@ -165,6 +176,8 @@ class UtilisateurController extends BaseController
         $editForm->handleRequest($request);
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
+
+            $utilisateur->setRoles(["ROLE_".$utilisateur->getGroupe()]);
             $this->getDoctrine()->getManager()->flush();
 
             return $this->redirectToRoute('utilisateur_index');

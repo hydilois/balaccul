@@ -1,11 +1,16 @@
 {% extends 'base.html.twig' %}
-
+    {% block title %}{{parent()}}Client Details{% endblock %}
 {% block contenu %}
     <div class="well">
-        
 
-     <h1 class="text-center">Details on {{client.name}} Daily Service Operations</h1>
-    
+     <h1 class="text-center">Daily Service Operations for {{client.name}}</h1>
+
+    {% if dailyServiceOperation %}
+    <h2 class="text-purple">Total Balance for the Client:
+      {% set var = dailyServiceOperation |last %} <b>{{var.currentBalance}} F</b>
+    </h2>
+    {% endif %}
+        <a class="btn btn-success" href="{{path('client_index')}}">Back to the list</a><br><br>
      <table class="table table-striped table-bordered" >
         <thead class="panel panel-success">
              <tr>

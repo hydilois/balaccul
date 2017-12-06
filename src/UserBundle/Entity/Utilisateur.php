@@ -42,15 +42,28 @@ class Utilisateur extends BaseUser
      * @ORM\JoinColumn(name="groupe_id", referencedColumnName="id",nullable=false)
      */
     private $groupe;
+
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="lastActivity", type="datetime")
+     */
+    private $lastActivity;
+
     
 
     public function __toString(){
         return $this->nom;
     }
 
+    public function __construct(){
+        $this->setLastActivity(new \DateTime());
+    }
 
-
-
+    public function isActiveNow(){
+        $this->setLastActivity(new \DateTime());
+    }
 
     /**
      * Get id
@@ -132,5 +145,29 @@ class Utilisateur extends BaseUser
     public function getGroupe()
     {
         return $this->groupe;
+    }
+
+    /**
+     * Set lastActivity
+     *
+     * @param \DateTime $lastActivity
+     *
+     * @return Utilisateur
+     */
+    public function setLastActivity($lastActivity)
+    {
+        $this->lastActivity = $lastActivity;
+
+        return $this;
+    }
+
+    /**
+     * Get lastActivity
+     *
+     * @return \DateTime
+     */
+    public function getLastActivity()
+    {
+        return $this->lastActivity;
     }
 }

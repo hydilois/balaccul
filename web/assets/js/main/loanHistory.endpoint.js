@@ -92,18 +92,18 @@ $(function() {
 
 
                         if (returnedData.loanhistory) {
-                            console.log("loan history exist");
+                            console.log("loan history");
 
                             $("#loanAmount").text(returnedData.loanhistory.remain_amount);
                             //get the amount of the interest paid
-                            var totalInterest  = returnedData.loanhistory.new_interest + returnedData.loanhistory.unpaid_interest;
-                            $("#loanInterest").text(totalInterest);
+                            var totalInterest  = returnedData.interestToPay + returnedData.loanhistory.unpaid_interest;
+                            $("#loanInterest").text(totalInterest.toFixed(2));
 
                         }else{
 
                             $("#loanAmount").text(returnedData.data.loan_amount);
-                            var loanInterest = (returnedData.data.loan_amount * returnedData.data.rate)/100;
-                            $("#loanInterest").text(loanInterest);
+                            // var loanInterest = (returnedData.data.loan_amount * returnedData.data.rate)/100;
+                            $("#loanInterest").text(returnedData.interestToPay.toFixed(2));
 
                         }
 
@@ -211,7 +211,7 @@ $(function() {
                     console.log(data);
                     loanHistoryEndpoint.feedbackHelper.showAutoCloseMessage("Operation done", "Validation information", "success", 2000);
                     // location.reload();
-                    window.location.href = URL_ROOT + "/operation/"+data.optionalData;
+                    window.location.href = URL_ROOT + "/loanhistory/"+data.optionalData+"/receipt";
                 }, 
                 error : function(returnedData){
                     loanHistoryEndpoint.feedbackHelper.showMessageWithPrompt("Sorry", "un problème est survenu pendant la soumission de votre requête si le problème persiste, contactez votre administrateur", "error");

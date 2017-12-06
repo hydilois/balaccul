@@ -23,8 +23,8 @@ class LoanHistoryController extends Controller
      * @Route("/", name="loanhistory_index")
      * @Method("GET")
      */
-    public function indexAction()
-    {
+    public function indexAction(){
+
         $em = $this->getDoctrine()->getManager();
 
         $loanHistories = $em->getRepository('AccountBundle:LoanHistory')->findAll();
@@ -75,11 +75,13 @@ class LoanHistoryController extends Controller
      * @Route("/new/payement", name="loanhistory_new_payement")
      * @Method("GET")
      */
-    public function loanPaymentAction()
-    {
+    public function loanPaymentAction(){
         $em = $this->getDoctrine()->getManager();
 
-        $loans = $em->getRepository('AccountBundle:Loan')->findAll();
+        $loans = $em->getRepository('AccountBundle:Loan')->findBy(
+            [
+                'status' => true,
+            ]);
 
         $loanHistory = new Loanhistory();
         $form = $this->createForm('AccountBundle\Form\LoanHistoryType', $loanHistory);
@@ -218,16 +220,12 @@ class LoanHistoryController extends Controller
             $loanHistoryJSON = json_decode(json_encode($request->request->get('data')), true);
 
             $loanhistory->setCurrentUser($currentUser);
-            $loanhistory->setDateOperation(new \DateTime('now'));
             $loanhistory->setCloseLoan(false);
             $loanhistory->setMonthlyPayement($loanHistoryJSON["monthlyPayment"]);
             $loanhistory->setInterest($loanHistoryJSON["interest"]);
 
             $loan    = $entityManager->getRepository('AccountBundle:Loan')->find($loanHistoryJSON["loanCode"]);
             
-        
-
-
             $lowest_remain_amount_LoanHistory = $entityManager->createQueryBuilder()
                 ->select('MIN(lh.remainAmount)')
                 ->from('AccountBundle:LoanHistory', 'lh')
@@ -246,16 +244,46 @@ class LoanHistoryController extends Controller
                 ]
             );
 
+
             if ($latestLoanHistory) {
                 //set the unpaid to recover after in the next payment
                 $loanhistory->setRemainAmount($latestLoanHistory->getRemainAmount() - $loanHistoryJSON["monthlyPayment"]);
-                $loanhistory->setUnpaidInterest((($latestLoanHistory->getRemainAmount() * $loan->getRate())/100 + $latestLoanHistory->getUnpaidInterest()) - $loanHistoryJSON["interest"]);
+
+                $interest = ($loanHistory->getRemainAmount() * $loan->getRate())/100;
+                $dailyInterestPayment = $interest/30;
+                
+                $date = strtotime($loanHistory->getDateOperation()->format('Y-m-d'));
+                $dateNow = time();
+
+                $interestToPay = $dailyInterestPayment * floor(($dateNow - $date)/(60*60*24));
+
+                if($interestToPay + $latestLoanHistory->getUnpaidInterest() - $loanHistoryJSON["interest"] < 0){
+                    $loanhistory->setUnpaidInterest(0);
+                }else{
+
+                    $loanhistory->setUnpaidInterest($interestToPay + $latestLoanHistory->getUnpaidInterest() - $loanHistoryJSON["interest"]);
+                }
+
             }else{
-                $loanhistory->setUnpaidInterest(($loan->getLoanAmount() * $loan->getRate())/100 - $loanHistoryJSON["interest"]);
+
+                $interest = ($loan->getLoanAmount() * $loan->getRate())/100;
+                $dailyInterestPayment = $interest/30;
+                
+                $date = strtotime($loan->getDateLoan()->format('Y-m-d'));
+                $dateNow = time();
+
+                $interestToPay = $dailyInterestPayment * floor(($dateNow - $date)/(60*60*24));
+                if ($interestToPay- $loanHistoryJSON["interest"] < 0 ) {
+                    $loanhistory->setUnpaidInterest(0);
+                }else{
+                    $loanhistory->setUnpaidInterest($interestToPay- $loanHistoryJSON["interest"]);
+                }
+
+
                 $loanhistory->setRemainAmount($loan->getLoanAmount() - $loanHistoryJSON["monthlyPayment"]);
             }
             
-            $loanhistory->setNewInterest(($loanhistory->getRemainAmount() * $loan->getRate())/100);
+            // $loanhistory->setNewInterest(($loanhistory->getRemainAmount() * $loan->getRate())/100);
             
             $loanhistory->setLoan($loan);
 
@@ -265,6 +293,11 @@ class LoanHistoryController extends Controller
             $income->setDescription("Loan Interest payment. Loan Code: ".$loan->getLoanCode()." // Amount: ".$loanHistoryJSON["interest"]);
 
 
+            //update the cash in hand
+            $cashInHandAccount  = $entityManager->getRepository('ClassBundle:InternalAccount')->find(9);
+            $cashInHandAccount->setAmount($cashInHandAccount->getAmount() + $loanHistoryJSON["interest"] + $loanHistoryJSON["monthlyPayment"]);
+
+            $entityManager->persist($cashInHandAccount);
             
             /**
             *** Making record here

@@ -24,7 +24,11 @@ class SavingController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $savings = $em->getRepository('AccountBundle:Saving')->findAll();
+        $savings = $em->getRepository('AccountBundle:Saving')->findBy(
+            [],
+            [
+                'accountNumber' => 'ASC',
+            ]);
 
         return $this->render('saving/index.html.twig', array(
             'savings' => $savings,

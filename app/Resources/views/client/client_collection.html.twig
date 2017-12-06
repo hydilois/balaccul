@@ -1,0 +1,53 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} {{parent()}} Monthly report{% endblock %}
+
+{% block contenu %}
+
+<div class="row">
+	<div class="col-sm-12">
+		<div class="card-box">
+			<div class="row">
+				<div class="col-lg-offset-1 col-lg-10">
+					<h4 class="m-t-0 header-title text-center">CLIENTS DAILY COLLECTION</h4>
+					<span class="label label-info">*For those who did not save today,  you put the value 0</span>
+					<form action="{{ path('client_deposit_save')}}" method="POST">
+					<div class="p-20">
+						<div class="form-group">
+							<input  class="btn btn-default" type="submit" value="Save" /> <a class="btn btn-info" href="{{path('client_index')}}">Back to the list</a>
+						</div>
+						<table id="items" class="table table-bordered m-0">
+							<thead>
+								<tr>
+									<th>#</th>
+									<th>NAME</th>
+									<th>Current Balance</th>
+									<th>AMOUNT</th>
+								</tr>
+							</thead>
+							<tbody>
+								{% for key,item in items %}
+									<tr>
+										<td>{{key + 1}}</td>
+										<td>{{item.name}}</td>
+										<td>{{item.balance}}</td>
+										<td><input class="form-control" name="{{item.id}}" id-item="{{item.id}}" type="number" value="0"/></td>
+									</tr>
+								{% endfor %}
+							</tbody>
+						</table><br>
+						<div class="form-group">
+							<input  class="btn btn-default" type="submit" value="Save" /> <a class="btn btn-info" href="{{path('client_index')}}">Back to the list</a>
+						</div>
+					</div>
+				</form>
+				</div>
+				</div>
+					</div>	
+					</div>
+				</div>
+
+{% include '/report/extras_report.css.html.twig' %}
+{% include '/reportitem/extras_report.js.html.twig' %}
+
+{% endblock %}

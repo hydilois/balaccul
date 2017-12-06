@@ -313,6 +313,9 @@ class OperationController extends Controller{
             $operation->setAmount($accountJSON["amount"]);
 
 
+
+
+
             switch ($accountJSON["accountCategory"]) {
                 case 1:
                     $account = $entityManager->getRepository('AccountBundle:Saving')->find($accountJSON["idAccount"]);
@@ -368,12 +371,20 @@ class OperationController extends Controller{
             **/
             
             $entityManager->persist($operation);
-            $entityManager->flush();
+            // $entityManager->flush();
 
 
 
             // Update the current Account accord to the amount that had been added
             $account->setSolde($account->getSolde() + $accountJSON["amount"]);
+            
+
+            //update the cash in hand
+            $cashInHandAccount  = $entityManager->getRepository('ClassBundle:InternalAccount')->find(9);
+            $cashInHandAccount->setAmount($cashInHandAccount->getAmount() + $accountJSON["amount"]);
+
+            $entityManager->persist($cashInHandAccount);
+
             $entityManager->persist($account);
             $entityManager->flush();
 
@@ -487,7 +498,12 @@ class OperationController extends Controller{
             /**
             *** Making record here
             **/
-            
+            //update the cash in hand
+            $cashInHandAccount  = $entityManager->getRepository('ClassBundle:InternalAccount')->find(9);
+            $cashInHandAccount->setAmount($cashInHandAccount->getAmount() - $accountJSON["amount"] + $accountJSON["fees"]);
+
+            $entityManager->persist($cashInHandAccount);
+
             $entityManager->persist($account);
             $entityManager->persist($operation);
             $entityManager->persist($income);

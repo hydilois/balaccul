@@ -26,9 +26,18 @@ class MemberController extends Controller
      */
     public function indexAction()
     {
-        $em = $this->getDoctrine()->getManager();
+        $entityManager = $this->getDoctrine()->getManager();
 
-        $members = $em->getRepository('MemberBundle:Member')->findAll();
+        $query  = $entityManager->createQueryBuilder()
+                ->select('m, sh, sa, de')
+                ->from('MemberBundle:Member', 'm')
+                ->leftJoin('AccountBundle:Share', 'sh', 'WITH', 'm.id = sh.physicalMember')
+                ->leftJoin('AccountBundle:Saving', 'sa', 'WITH', 'm.id = sa.physicalMember')
+                ->leftJoin('AccountBundle:Deposit', 'de', 'WITH', 'm.id = de.physicalMember')
+                ->orderBy('m.memberNumber')
+                ->getQuery();
+
+        $members = $query->getScalarResult();
 
         return $this->render('member/index.html.twig', array(
             'members' => $members,
@@ -53,7 +62,7 @@ class MemberController extends Controller
             $em->persist($member);
             $em->flush();
 
-            return $this->redirectToRoute('member_show', array('id' => $member->getId()));
+            return $this->redirectToRoute('member_index');
         }
 
         return $this->render('member/new.html.twig', array(
@@ -124,12 +133,17 @@ class MemberController extends Controller
     public function editAction(Request $request, Member $member)
     {
         $deleteForm = $this->createDeleteForm($member);
-        $editForm = $this->createForm('MemberBundle\Form\MemberType', $member);
+        $editForm = $this->createForm('MemberBundle\Form\MemberEditType', $member);
         $editForm->handleRequest($request);
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
+            
+            $buildingFees = $this->getDoctrine()->getManager()->getRepository('ClassBundle:InternalAccount')->find(10);
+            $buildingFees->setAmount($buildingFees->getAmount() + $member->getBuildingFees());
 
+            $this->getDoctrine()->getManager()->persist($buildingFees);
+
+            $this->getDoctrine()->getManager()->flush();
             return $this->redirectToRoute('member_index');
         }
 
@@ -223,6 +237,12 @@ class MemberController extends Controller
 
             $income->setAmount($memberJSON["registrationFees"]);
             $income->setDescription("Member Registration fees. Member number: ".$member->getMemberNumber()." // Member Name: ".$member->getName()." // Amount: ".$income->getAmount());
+
+            //update the cash in hand
+            $cashInHandAccount  = $entityManager->getRepository('ClassBundle:InternalAccount')->find(9);
+            $cashInHandAccount->setAmount($cashInHandAccount->getAmount() + $memberJSON["registrationFees"]);
+
+            $entityManager->persist($cashInHandAccount);
 
 
             /**

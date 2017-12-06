@@ -90,96 +90,20 @@
                                     <ul class="nav navbar-nav navbar-right pull-right">
                                         <li class="dropdown top-menu-item-xs">
                                             <a href="#" data-target="#" class="dropdown-toggle waves-effect waves-light" data-toggle="dropdown" aria-expanded="true">
-                                                <i class="icon-bell"></i> <span class="badge badge-xs badge-danger">3</span>
+                                                <i class="icon-bell"></i> <span id="numberNotif" class="badge badge-xs badge-warning">0</span>
                                             </a>
                                             <ul class="dropdown-menu dropdown-menu-lg">
-                                                <li class="notifi-title"><span class="label label-default pull-right">New 3</span>Notification</li>
                                                 <li class="list-group slimscroll-noti notification-list">
                                                    <!-- list item-->
-                                                   <a href="javascript:void(0);" class="list-group-item">
+                                                   <a href="javascript:void(0);" class="list-group-item template hide">
                                                       <div class="media">
                                                          <div class="pull-left p-r-10">
-                                                            <em class="fa fa-diamond noti-primary"></em>
+                                                            <em class="fa fa-bell-o noti-warning"></em>
                                                          </div>
                                                          <div class="media-body">
-                                                            <h5 class="media-heading">A new order has been placed A new order has been placed</h5>
+                                                            <h5 id="info" class="media-heading"></h5>
                                                             <p class="m-0">
-                                                                <small>There are new settings available</small>
-                                                            </p>
-                                                         </div>
-                                                      </div>
-                                                   </a>
-
-                                                   <!-- list item-->
-                                                   <a href="javascript:void(0);" class="list-group-item">
-                                                      <div class="media">
-                                                         <div class="pull-left p-r-10">
-                                                            <em class="fa fa-cog noti-warning"></em>
-                                                         </div>
-                                                         <div class="media-body">
-                                                            <h5 class="media-heading">New settings</h5>
-                                                            <p class="m-0">
-                                                                <small>There are new settings available</small>
-                                                            </p>
-                                                         </div>
-                                                      </div>
-                                                   </a>
-
-                                                   <!-- list item-->
-                                                   <a href="javascript:void(0);" class="list-group-item">
-                                                      <div class="media">
-                                                         <div class="pull-left p-r-10">
-                                                            <em class="fa fa-bell-o noti-custom"></em>
-                                                         </div>
-                                                         <div class="media-body">
-                                                            <h5 class="media-heading">Updates</h5>
-                                                            <p class="m-0">
-                                                                <small>There are <span class="text-primary font-600">2</span> new updates available</small>
-                                                            </p>
-                                                         </div>
-                                                      </div>
-                                                   </a>
-
-                                                   <!-- list item-->
-                                                   <a href="javascript:void(0);" class="list-group-item">
-                                                      <div class="media">
-                                                         <div class="pull-left p-r-10">
-                                                            <em class="fa fa-user-plus noti-pink"></em>
-                                                         </div>
-                                                         <div class="media-body">
-                                                            <h5 class="media-heading">New user registered</h5>
-                                                            <p class="m-0">
-                                                                <small>You have 10 unread messages</small>
-                                                            </p>
-                                                         </div>
-                                                      </div>
-                                                   </a>
-
-                                                    <!-- list item-->
-                                                   <a href="javascript:void(0);" class="list-group-item">
-                                                      <div class="media">
-                                                         <div class="pull-left p-r-10">
-                                                            <em class="fa fa-diamond noti-primary"></em>
-                                                         </div>
-                                                         <div class="media-body">
-                                                            <h5 class="media-heading">A new order has been placed A new order has been placed</h5>
-                                                            <p class="m-0">
-                                                                <small>There are new settings available</small>
-                                                            </p>
-                                                         </div>
-                                                      </div>
-                                                   </a>
-
-                                                   <!-- list item-->
-                                                   <a href="javascript:void(0);" class="list-group-item">
-                                                      <div class="media">
-                                                         <div class="pull-left p-r-10">
-                                                            <em class="fa fa-cog noti-warning"></em>
-                                                         </div>
-                                                         <div class="media-body">
-                                                            <h5 class="media-heading">New settings</h5>
-                                                            <p class="m-0">
-                                                                <small>There are new settings available</small>
+                                                                <small class="detail"></small>
                                                             </p>
                                                          </div>
                                                       </div>
@@ -199,10 +123,10 @@
                                         <li class="dropdown top-menu-item-xs">
                                             <a href="" class="dropdown-toggle profile waves-effect waves-light" data-toggle="dropdown" aria-expanded="true">{{ app.user.nom }} &nbsp; <img src="{{asset('assets/images/users/avatar.png')}}" alt="user-img" class="img-circle"> </a>
                                             <ul class="dropdown-menu">
-                                                <li><a href="{{path('user_profile')}}"><i class="ti-user m-r-10 text-custom"></i> Profil</a></li>
-                                                <li><a href="{{path('fos_user_change_password')}}"><i class="ti-settings m-r-10 text-custom"></i> Paramètres</a></li>
+                                                <li><a href="{{path('user_profile')}}"><i class="ti-user m-r-10 text-custom"></i> Profile</a></li>
+                                                <li><a href="{{path('fos_user_change_password')}}"><i class="ti-settings m-r-10 text-custom"></i> Settings</a></li>
                                                 <li class="divider"></li>
-                                                <li><a href="{{path('fos_user_security_logout')}}"><i class="ti-power-off m-r-10 text-danger"></i> Se deconnecter</a></li>
+                                                <li><a href="{{path('fos_user_security_logout')}}"><i class="ti-power-off m-r-10 text-danger"></i> Logout</a></li>
                                             </ul>
                                         </li>
                                         {% endif %}
@@ -226,6 +150,18 @@
                                         <a href="{{path('homepage')}}" class="waves-effect"><i class="ti-home"></i> <span> Home </span></a>
                                     </li>
 
+                                    {% if is_granted("ROLE_COLLECTOR") or is_granted("ROLE_MANAGER") or is_granted("ROLE_ADMINISTRATOR") %}
+                                         <li class="has_sub">
+                                            <a href="javascript:void(0)" class="waves-effect"><i class="md-today"></i> <span> Daily Service</span> <span class="menu-arrow"></span></a>
+                                            <ul class="list-unstyled">
+                                                <li><a href="{{path('client_index')}}">Clients</a></li>
+                                                <li><a href="{{path('report_client_money')}}">New Collection</a></li>
+                                                <li><a href="{{path('client_charges')}}">Charges</a></li>
+                                                {# <li><a href="{{path('client_daily_service_operations')}}"><span>Operations</span></a></li> #}
+                                            </ul>
+                                         </li>
+                                    {% endif %}
+                                    {% if is_granted("ROLE_MANAGER") or is_granted("ROLE_ADMINISTRATOR") %}
                                     <li class="has_sub">
                                         <a href="javascript:void(0)" class="waves-effect"><i class="md-input"></i> <span> Cash IN</span> <span class="menu-arrow"></span></a>
                                         <ul class="list-unstyled">
@@ -248,14 +184,6 @@
                                             <li><a href="{{path('loan_index')}}"><span>Loans</span></a></li>
                                         </ul>
                                      </li>
-
-                                     <li class="has_sub">
-                                        <a href="javascript:void(0)" class="waves-effect"><i class="md-today"></i> <span> Daily Service</span> <span class="menu-arrow"></span></a>
-                                        <ul class="list-unstyled">
-                                            <li><a href="{{path('client_index')}}">Clients</a></li>
-                                            <li><a href="{{path('client_daily_service_operations')}}"><span>Operations</span></a></li>
-                                        </ul>
-                                     </li>
                                      <li class="has_sub">
                                         <a href="javascript:void(0)" class="waves-effect"><i class="ti-server"></i> <span> Accounts</span> <span class="menu-arrow"></span></a>
                                         <ul class="list-unstyled">
@@ -267,13 +195,12 @@
                                      <li class="has_sub">
                                          <a href="javascript:void(0)" class="waves-effect"><i class="md-desktop-mac"></i> <span> Internals Accounts</span> <span class="menu-arrow"></span> </a>
                                          <ul class="list-unstyled">
-                                             <li><a href="{{path('report')}}">Cash IN</a></li>
-                                             <li><a href="{{path('report_month')}}">Cash Out</a></li>
-                                             {# <li><a href="{{path('operation_index')}}">Account Operations</a></li> #}
+                                             <li><a href="{{path('new_cashin_operation')}}">Cash IN</a></li>
+                                             <li><a href="{{path('new_cashout_operation')}}">Cash OUT</a></li>s
                                          </ul>
                                      </li>
                                      <li class="has_sub">
-                                         <a href="javascript:void(0)" class="waves-effect"><i class="fa  fa-group"></i> <span> Members </span> <span class="menu-arrow"></span></a>
+                                         <a href="javascript:void(0)" class="waves-effect"><i class="md-group"></i> <span> Members </span> <span class="menu-arrow"></span></a>
                                          <ul class="list-unstyled">
                                              <li><a href="{{path('member_index')}}">Physical Members</a></li>
                                              <li><a href="{{path('moralmember_index')}}">Moral Members</a></li>
@@ -304,12 +231,12 @@
                                         <a href="javascript:void(0)" class="waves-effect"><i class=" ti-settings"></i> <span> Settings </span> <span class="menu-arrow"></span> </a>
                                         <ul class="list-unstyled">
                                             <li><a href="{{path('classe_index')}}">Classes</a></li>
-                                            <li><a href="{{path('internalaccount_index')}}">Internal</a></li>
-                                            <li><a href="{{path('accounttype_index')}}">Accounts Categories</a></li>
+                                            <li><a href="{{path('internalaccount_index')}}">Internal Accounts</a></li>
                                             <li><a href="{{path('agency_index')}}">Agency</a></li>
                                             <li><a href="{{path('loanparameter_index')}}">Loan Parameter</a></li>
                                         </ul>
                                     </li>
+                                  {% endif %}
 {#                                     {% for role in app.user.roles %}
                                         {% if role == "ROLE_SUPER_ADMIN" %}
                                         <li class="has_sub">

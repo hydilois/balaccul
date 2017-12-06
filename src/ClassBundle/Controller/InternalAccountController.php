@@ -3,6 +3,7 @@
 namespace ClassBundle\Controller;
 
 use ClassBundle\Entity\InternalAccount;
+use AccountBundle\Entity\InternalOperation;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -35,6 +36,41 @@ class InternalAccountController extends Controller
             'formIA' => $formIA->createView(),
         ));
     }
+
+
+    /**
+     * new credit operation.
+     *
+     * @Route("/cashIn", name="new_cashin_operation")
+     * @Method("GET")
+     */
+    public function cashInOperationAction(){
+
+        $em = $this->getDoctrine()->getManager();
+        $internalAccounts = $em->getRepository('ClassBundle:InternalAccount')->findAll();
+
+        return $this->render('internalaccount/cash_in_operation.html.twig', array(
+            'internalAccounts' => $internalAccounts,
+        ));
+    }
+
+    /**
+     * new credit operation.
+     *
+     * @Route("/cashOut", name="new_cashout_operation")
+     * @Method("GET")
+     */
+    public function cashOutOperationAction(){
+
+        $em = $this->getDoctrine()->getManager();
+        $internalAccounts = $em->getRepository('ClassBundle:InternalAccount')->findAll();
+
+        return $this->render('internalaccount/cash_out_operation.html.twig', array(
+            'internalAccounts' => $internalAccounts,
+        ));
+    }
+
+
 
     /**
      * Creates a new internalAccount entity.
@@ -239,5 +275,122 @@ class InternalAccountController extends Controller
         $response["success"] = true;
 
         return new Response(json_encode($response));
+    }
+
+
+
+    /**
+     * @param Request $request [contains the http request that is passed on]
+     * 
+     * @Route("/operation/save", name="internaaccounnt_operation_save")
+     * @Method({"GET", "POST"})
+     */
+    function InternalAccountOperationFromJSON(Request $request){
+
+        $entityManager = $this->getDoctrine()->getManager();
+
+        $logger = $this->get('logger');
+
+
+        // Get the current user connected
+        $currentUserId  = $this->get('security.token_storage')->getToken()->getUser()->getId();
+        $currentUser    = $entityManager->getRepository('UserBundle:Utilisateur')->find($currentUserId);
+
+
+        try{
+            //first thing we get the classe with the JSON format
+            $accountJSON = json_decode(json_encode($request->request->get('data')), true);
+
+            $operation = new InternalOperation();
+            $operation->setCurrentUser($currentUser);
+            $operation->setDateOperation(new \DateTime('now'));
+            $operation->setAmount($accountJSON["amount"]);
+            $internalAccount = $entityManager->getRepository('ClassBundle:InternalAccount')->find($accountJSON["idAccount"]);
+            $operation->setInternalAccount($internalAccount);
+
+            $operation->setCurrentBalance($internalAccount->getAmount()  + $accountJSON["amount"]);
+            $operation->setTypeOperation(InternalOperation::TYPE_CREDIT);
+            $internalAccount->setAmount($internalAccount->getAmount()  + $accountJSON["amount"]);
+
+            /**
+            *** Making record here
+            **/
+            // Update the current Account accord to the amount that had been added
+            
+            $entityManager->persist($operation);
+            $entityManager->persist($internalAccount);
+            $entityManager->flush();
+
+
+            $response["data"]               = $accountJSON;
+            $response["optionalData"]       = json_encode($operation->getId());
+            $response["success"] = true;
+
+            return new Response(json_encode($response));
+       
+        }catch(Exception $ex){
+
+            $logger("AN ERROR OCCURED");
+            $response["success"] = false;
+            return new Response(json_encode($response));
+        }
+    }
+
+
+    /**
+     * @param Request $request [contains the http request that is passed on]
+     * 
+     * @Route("/debit/save", name="internalaccounnt_debit_save")
+     * @Method({"GET", "POST"})
+     */
+    function InternalAccountCashOutOperationFromJSON(Request $request){
+
+        $entityManager = $this->getDoctrine()->getManager();
+
+        $logger = $this->get('logger');
+
+
+        // Get the current user connected
+        $currentUserId  = $this->get('security.token_storage')->getToken()->getUser()->getId();
+        $currentUser    = $entityManager->getRepository('UserBundle:Utilisateur')->find($currentUserId);
+
+
+        try{
+            //first thing we get the classe with the JSON format
+            $accountJSON = json_decode(json_encode($request->request->get('data')), true);
+
+            $operation = new InternalOperation();
+            $operation->setCurrentUser($currentUser);
+            $operation->setDateOperation(new \DateTime('now'));
+            $operation->setAmount($accountJSON["amount"]);
+            $internalAccount = $entityManager->getRepository('ClassBundle:InternalAccount')->find($accountJSON["idAccount"]);
+            $operation->setInternalAccount($internalAccount);
+
+            $operation->setCurrentBalance($internalAccount->getAmount()  - $accountJSON["amount"]);
+            $operation->setTypeOperation(InternalOperation::TYPE_WITHDRAWAL);
+            $internalAccount->setAmount($internalAccount->getAmount()  - $accountJSON["amount"]);
+
+            /**
+            *** Making record here
+            **/
+            // Update the current Account accord to the amount that had been added
+            
+            $entityManager->persist($operation);
+            $entityManager->persist($internalAccount);
+            $entityManager->flush();
+
+
+            $response["data"]               = $accountJSON;
+            $response["optionalData"]       = json_encode($operation->getId());
+            $response["success"] = true;
+
+            return new Response(json_encode($response));
+       
+        }catch(Exception $ex){
+
+            $logger("AN ERROR OCCURED");
+            $response["success"] = false;
+            return new Response(json_encode($response));
+        }
     }
 }

@@ -31,7 +31,7 @@ class InternalAccount
     /**
      * @var string
      *
-     * @ORM\Column(name="accountNumber", type="bigint")
+     * @ORM\Column(name="accountNumber", type="bigint", unique=true)
      */
     private $accountNumber;
 
@@ -44,7 +44,7 @@ class InternalAccount
     /**
      * @var text
      *
-     * @ORM\Column(name="description", type="text")
+     * @ORM\Column(name="description", type="text", nullable=true)
      */
     private $description;
 

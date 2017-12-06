@@ -75,6 +75,22 @@
                                                   {{form_widget(edit_form.phoneNumber, {'attr' : {'class':'form-control'}})}}
                                               </div>
                                           </div>
+
+                                          <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                              <div class="form-group">
+                                                  {{form_label(edit_form.registrationNumber, "Registration Number")}}
+                                                  {{form_errors(edit_form.registrationNumber)}}
+                                                  {{form_widget(edit_form.registrationNumber, {'attr' : {'class':'form-control'}})}}
+                                              </div>
+                                          </div>
+
+                                          <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                              <div class="form-group">
+                                                  {{form_label(edit_form.poBox, "PO BOX")}}
+                                                  {{form_errors(edit_form.poBox)}}
+                                                  {{form_widget(edit_form.poBox, {'attr' : {'class':'form-control'}})}}
+                                              </div>
+                                          </div>
                                   </div>
                                 <div class="modal-footer">
                                   <input class="btn btn-default" type="submit" value="Save" />

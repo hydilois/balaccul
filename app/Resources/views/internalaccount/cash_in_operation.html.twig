@@ -1,0 +1,66 @@
+{% extends 'base.html.twig' %}
+{% block title %} {{ parent() }} Cash in operation{% endblock %}
+{% block contenu %}
+    <ol class="breadcrumb">
+    <li>
+      <a href="#">BALACCUL</a>
+    </li>
+    <li>
+      <a href="#">Internal Account</a>
+    </li>
+    <li class="active">
+      Cash In
+    </li>
+  </ol>
+        <h1 class="text-center">INTERNAL ACCOUNT CREDIT OPERATION</h1>
+        <section class="col-lg-5">
+            <fieldset>
+                <legend>Operation</legend>
+                    <div class="form-group">
+                    <label class="control-label">Account Names</label>
+                        <select id="AccountId" class="form-control">
+                            <option value="">&lt;------ Select ------&gt;</option>
+                            {% for item in internalAccounts %}
+                                <option value="{{item.id}}">{{item.name}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="">Amount</label>
+                        <input type="number" class="form-control" value="0" />
+                    </div>
+                    <div class="form-group">
+                        <a class="btn btn-default" name="btn-save-operation" href="#">Save</a>
+                    </div>
+            </fieldset>
+            
+        </section>
+        <section  class="col-lg-7">
+            <fieldset id="detailAccount" class="fadeInDown animated hide">
+                <legend>Details on the account</legend>
+
+                <div class="row">
+                    <div class="col-md-6 col-lg-6">
+                        <div class="widget-bg-color-icon card-box">
+                            <div class="text-left">
+                                <span><strong> Amount in the account </strong></span>
+                                <h3 class="text-dark"><b id="solde" class="counter"></b></h3>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                </div>
+                <div class="col-md-6 col-lg-6">
+                        <div class="widget-bg-color-icon card-box">
+                            <div class="text-left">
+                                <span><strong> Account number </strong></span>
+                                <h3 class="text-dark"><b id="AccountName">0</b></h3>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+        </section>
+        {% include './operation/extras.css.html.twig' %}
+        {% include './internalaccount/extras_cash_in.js.html.twig' %}
+{% endblock %}

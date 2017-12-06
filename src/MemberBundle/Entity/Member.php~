@@ -142,6 +142,14 @@ class Member
     private $registrationFees;
 
 
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="building_fees", type="bigint")
+     */
+    private $buildingFees;
+
+
 
     /**
      * @var string
@@ -151,7 +159,14 @@ class Member
     private $phoneNumber;
 
     public function __toString(){
-        return $this->name;
+        return $this->name." -- ".$this->memberNumber;
+    }
+
+
+    public function __construct(){
+
+        // The default date of the membership creation is now
+        $this->membershipDateCreation = new \DateTime('now');
     }
 
     /**
@@ -570,5 +585,29 @@ class Member
     public function getRegistrationFees()
     {
         return $this->registrationFees;
+    }
+
+    /**
+     * Set memberNumber
+     *
+     * @param integer $memberNumber
+     *
+     * @return Member
+     */
+    public function setMemberNumber($memberNumber)
+    {
+        $this->memberNumber = $memberNumber;
+
+        return $this;
+    }
+
+    /**
+     * Get memberNumber
+     *
+     * @return integer
+     */
+    public function getMemberNumber()
+    {
+        return $this->memberNumber;
     }
 }

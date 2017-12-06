@@ -366,10 +366,12 @@ class ReportController extends Controller{
                 ->from('MemberBundle:DailyServiceOperation', 'ds')
                 ->where('ds.dateOperation >= :start')
                 ->andWhere('ds.dateOperation <= :end')
+                ->andWhere('ds.fees > :fees')
                 ->setParameters(
                     [
                         'start' => $today_startdatetime,
                         'end' => $today_enddatetime,
+                        'fees' => 0,
                     ]
                 )->getQuery()->getResult();
 

@@ -46,13 +46,6 @@ class DailyServiceOperation{
 
 
     /**
-     * @ORM\ManyToOne(targetEntity="AccountBundle\Entity\DailySavingAccount")
-     * @ORM\JoinColumn(name="id_account", referencedColumnName="id")
-     */
-    private $dailyAmount;
-
-
-    /**
      * @var int
      *
      * @ORM\Column(name="currentBalance", type="bigint")
@@ -73,6 +66,14 @@ class DailyServiceOperation{
      * @ORM\Column(name="type_operation", type="string", length=50)
      */
     private $typeOperation;
+
+
+
+    public function __construct(){
+
+        //the default date of the loan is now
+        $this->dateOperation = new \DateTime('now');
+    }
 
 
     /**
@@ -227,29 +228,5 @@ class DailyServiceOperation{
     public function getClient()
     {
         return $this->client;
-    }
-
-    /**
-     * Set dailyAmount
-     *
-     * @param \AccountBundle\Entity\DailySavingAccount $dailyAmount
-     *
-     * @return DailyServiceOperation
-     */
-    public function setDailyAmount(\AccountBundle\Entity\DailySavingAccount $dailyAmount = null)
-    {
-        $this->dailyAmount = $dailyAmount;
-
-        return $this;
-    }
-
-    /**
-     * Get dailyAmount
-     *
-     * @return \AccountBundle\Entity\DailySavingAccount
-     */
-    public function getDailyAmount()
-    {
-        return $this->dailyAmount;
     }
 }

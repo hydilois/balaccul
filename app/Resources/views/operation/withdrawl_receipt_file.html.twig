@@ -11,6 +11,7 @@
                  <b>{{agency.abreviation}}</b><br/>
                  <b>{{agency.name}}</b><br>
                  <b>{{agency.phoneNumber}}</b> <br>
+                 <b>PO BOX: {{agency.poBox}}</b> <br>
 
             </td>
             <td  style="text-align: right;" class="40p">
@@ -48,12 +49,12 @@
         <tr>
             <td class="50p" style="text-align: left;">Account: <b>
                     {% if operation.savingAccount %}
-                        {{operation.savingAccount}}
+                        {{operation.savingAccount}} // SAVINGS
 
                     {% elseif operation.shareAccount %}
-                        {{operation.shareAccount}}
+                        {{operation.shareAccount}} // SHARES
                     {% else %}
-                        {{operation.depositAccount}}
+                        {{operation.depositAccount}} // DEPOSIT
                     {% endif %}    
                 </b>
         </td>
@@ -161,7 +162,7 @@
     <table style="margin-bottom:0px">
         <tr>
             <td class="25p" style="border-bottom:1px dashed black;border-right:1px dashed black; text-align:center">CLIENT</td>
-            <td class="25p" style="border-bottom:1px dashed black; text-align:center;">CAISSIER</td>
+            <td class="25p" style="border-bottom:1px dashed black; text-align:center;">CASHER</td>
         </tr>
         <tr>
             <td class="15p" style="border-right:1px dashed black">
@@ -181,6 +182,7 @@
                      <b>{{agency.abreviation}}</b><br/>
                      <b>{{agency.name}}</b><br>
                      <b>{{agency.phoneNumber}}</b> <br>
+                     <b>PO BOX: {{agency.poBox}}</b> <br>
 
                 </td>
                 <td  style="text-align: right;" class="40p">
@@ -218,12 +220,12 @@
             <tr>
                 <td class="50p" style="text-align: left;">Account: <b>
                         {% if operation.savingAccount %}
-                            {{operation.savingAccount}}
+                            {{operation.savingAccount}} // SAVINGS
 
                         {% elseif operation.shareAccount %}
-                            {{operation.shareAccount}}
+                            {{operation.shareAccount}} // SHARES
                         {% else %}
-                            {{operation.depositAccount}}
+                            {{operation.depositAccount}} // DEPOSIT
                         {% endif %}    
                     </b>
             </td>
@@ -331,7 +333,7 @@
         <table style="margin-bottom:0px">
             <tr>
                 <td class="25p" style="border-bottom:1px dashed black;border-right:1px dashed black; text-align:center">CLIENT</td>
-                <td class="25p" style="border-bottom:1px dashed black; text-align:center;">CAISSIER</td>
+                <td class="25p" style="border-bottom:1px dashed black; text-align:center;">CASHER</td>
             </tr>
             <tr>
                 <td class="15p" style="border-right:1px dashed black">

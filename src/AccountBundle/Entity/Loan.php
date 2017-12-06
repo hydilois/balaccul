@@ -37,9 +37,9 @@ class Loan{
 
 
     /**
-     * @var int
+     * @var float
      *
-     * @ORM\Column(name="rate", type="integer")
+     * @ORM\Column(name="rate", type="float")
      */
     private $rate;
 
@@ -104,6 +104,17 @@ class Loan{
 
         //the default date of the loan is now
         $this->dateLoan = new \DateTime('now');
+
+        $this->loanProcessingFees = 0;
+        
+        $this->rate = 2;
+
+        $this->monthlyPayment = 0;
+
+        $this->deadline = new \DateTime('now') ;
+        $this->deadline->setTimestamp(strtotime('+6 month'));
+
+
     }
 
 
@@ -147,29 +158,6 @@ class Loan{
         return $this->deadline;
     }
 
-    /**
-     * Set rate
-     *
-     * @param integer $rate
-     *
-     * @return Loan
-     */
-    public function setRate($rate)
-    {
-        $this->rate = $rate;
-
-        return $this;
-    }
-
-    /**
-     * Get rate
-     *
-     * @return integer
-     */
-    public function getRate()
-    {
-        return $this->rate;
-    }
 
     /**
      * Set status
@@ -361,5 +349,29 @@ class Loan{
     public function getLoanProcessingFees()
     {
         return $this->loanProcessingFees;
+    }
+
+    /**
+     * Set rate
+     *
+     * @param float $rate
+     *
+     * @return Loan
+     */
+    public function setRate($rate)
+    {
+        $this->rate = $rate;
+
+        return $this;
+    }
+
+    /**
+     * Get rate
+     *
+     * @return float
+     */
+    public function getRate()
+    {
+        return $this->rate;
     }
 }

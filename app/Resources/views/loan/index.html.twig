@@ -40,7 +40,6 @@
                             <th>Rate</th>
                             <th>Interest</th>
                             <th>Amount</th>
-                            <th>Monthly payment</th>
                             <th>Status</th>
                         </tr>
                     </thead>
@@ -53,6 +52,7 @@
                                   <ul class="dropdown-menu fadeInDown animated">
                                     <li><a target="_blank" href="{{path('loan_fees_receipt', {id:loan.id})}}"><i class="fa fa-file-pdf-o"></i> Receipt</a></li>
                                     <li><a href="#" data-loan="{{loan.id}}" name="accounttype-edit"><i class="fa fa-edit"></i> Edit</a></li>
+                                    <li><a href="{{path('loan_show', {id:loan.id})}}" data-loan="{{loan.id}}"><i class="fa fa-eye"></i> Detail</a></li>
                                   </ul>
                                 </div>
                         </td>
@@ -67,7 +67,6 @@
                         <td>{{ loan.rate }}%</td>
                         <td>{% set interest = (loan.loanAmount * loan.rate)/100 %} {{ interest }}</td>
                         <td>{{ loan.loanAmount }}</td>
-                        <td>{{ loan.monthlyPayment }}</td>
                         <td>{% if loan.status %}
                           <span class="label label-danger">Active</span>{% else %}<span class="label label-success">Close</span>{% endif %}</td>
                     </tr>

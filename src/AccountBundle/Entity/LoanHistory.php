@@ -10,8 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="loan_history")
  * @ORM\Entity(repositoryClass="AccountBundle\Repository\LoanHistoryRepository")
  */
-class LoanHistory
-{
+class LoanHistory{
     /**
      * @var int
      *
@@ -89,6 +88,7 @@ class LoanHistory
         $this->monthlyPayement = 0;
         $this->interest = 0;
         $this->unpaidInterest = 0;
+        $this->newInterest = 0;
     }
 
     /**

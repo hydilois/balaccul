@@ -20,7 +20,13 @@
                         <select id="loanCode" class="form-control">
                             <option value="">-- choose the loan code --</option>
                             {% for loan in loans %}
-                            <option value="{{loan.id}}">{{loan.loanCode}}</option>
+                            <option value="{{loan.id}}">{{loan.loanCode}} -- 
+                                {% if loan.physicalMember %}
+                                    {{loan.physicalMember.name}}
+                                {% else %}
+                                    {{loan.moralMember.socialReason}}
+                                {% endif %}
+                            </option>
                             {% endfor %}
                         </select>
                     </div>

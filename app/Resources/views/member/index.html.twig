@@ -15,30 +15,25 @@
     <div class="row">
         <div class="col-sm-12">
             <div class="card-box table-responsive"><a href="{{path('member_new')}}" class="btn btn-default pull-left">Add a new member</a><br>
-            <h4 class="m-t-0 header-title text-center"><b>Members list</b></h4>
+            <h4 class="m-t-0 header-title text-center"><b>Members list {{members |length}}</b></h4>
             <table id="datatable-buttons" class="table table-striped table-bordered">
                 <thead>
                     <tr>
-                        <th style="width: 200px;">Actions</th>
+                        <th style="width: 100px;">Actions</th>
                         <th>Member Number</th>
                         <th>Name</th>
-                        <th>Sex</th>
-                        <th>Date of birth</th>
-                        <th>Place of birth</th>
-                        <th>Occupation</th>
-                        <th>Address</th>
-                        <th>NIC number</th>
-                        <th>Issued On</th>
-                        <th>Issued At</th>
-                        <th>Proposedby</th>
-                        <th>Is aproved ?</th>
-                        <th>Âproved by</th>
-                        <th>Done at</th>
-                        <th>Membership date Creation</th>
-                        <th>Witness Name</th>
-                        <th>Phonenumber</th>
+                        <th>SHARES</th>
+                        <th>REGISTRATION</th>
+                        <th>SAVINGS</th>
+                        <th>DEPOSIT</th>
+                        <th>BUILDING FEES</th>
                     </tr>
                 </thead>
+                {% set shares = 0 %}
+                {% set registration = 0 %}
+                {% set saving = 0 %}
+                {% set deposit = 0 %}
+                {% set buildingfees = 0 %}
                 {% for member in members %}
                     <tr>
                         <td>
@@ -47,33 +42,38 @@
                                 <span class="fa fa-caret-down"></span></button>
                               <ul class="dropdown-menu fadeInDown animated">
                                 <li>
-                                    <a name="show-member" data-member="{{member.id}}" href="{{path('member_show', {id:member.id})}}"><i class="fa fa-eye"></i> Show</a>
+                                    <a name="show-member" data-member="{{member.m_id}}" href="{{path('member_show', {id:member.m_id})}}"><i class="fa fa-eye"></i> Show</a>
                                 </li>
-                                <li><a href="{{ path('member_edit', { 'id': member.id }) }}"><i class="fa fa-edit"></i> Edit</a></li>
-                                <li><a target="_blank" href="{{ path('member_registration_receipt', { 'id': member.id }) }}"><i class="fa fa-file-pdf-o"></i> Receipt</a></li>
+                                <li><a href="{{ path('member_edit', { 'id': member.m_id }) }}"><i class="fa fa-edit"></i> Edit</a></li>
+                                <li><a target="_blank" href="{{ path('member_registration_receipt', { 'id': member.m_id }) }}"><i class="fa fa-file-pdf-o"></i> Receipt</a></li>
                               </ul>
                             </div>
                     </td>
-                    <td>{{ member.memberNumber }}</td>
-                    <td>{{ member.name }}</td>
-                    <td>{{ member.sex }}</td>
-                    <td>{% if member.dateOfBirth %}{{ member.dateOfBirth|date('d-m-Y') }}{% endif %}</td>
-                    <td>{{ member.placeOfBirth }}</td>
-                    <td>{{ member.occupation }}</td>
-                    <td>{{ member.address }}</td>
-                    <td>{{ member.nicNumber }}</td>
-                    <td>{% if member.issuedOn %}{{ member.issuedOn|date('d-m-Y') }}{% endif %}</td>
-                    <td>{{ member.issuedAt }}</td>
-                    <td>{{ member.proposedBy }}</td>
-                    <td>{% if member.isAproved %} <span class="label label-success">YES</span>{% else %}<span class="label label-success">NO</span>{% endif %}</td>
-                    <td>{{ member.aprovedBy }}</td>
-                    <td>{{ member.doneAt }}</td>
-                    <td>{% if member.membershipDateCreation %}{{ member.membershipDateCreation|date('Y-m-d') }}{% endif %}</td>
-                    <td>{{ member.witnessName }}</td>
-                    <td>{{ member.phoneNumber }}</td>
+                    <td>{{ member.m_memberNumber }}</td>
+                    <td>{{ member.m_name }}</td>
+                    <td>{{ member.sh_solde }}</td>
+                    <td>{{ member.m_registrationFees }}</td>
+                    <td>{{ member.sa_solde }}</td>
+                    <td>{{ member.de_solde }}</td>
+                    <td>{{ member.m_buildingFees }}</td>
                 </tr>
+                {% set shares = shares + member.sh_solde %}
+                {% set registration = registration + member.m_registrationFees %}
+                {% set saving = saving + member.sa_solde %}
+                {% set deposit = deposit + member.de_solde %}
+                {% set buildingfees = buildingfees + member.m_buildingFees %}
         {% endfor %}
         </tbody>
+    </table>
+    <table class="table table-striped table-bordered">
+        <tr style="font-size:30px; text-align:center">
+            <td colspan="3">TOTALS</td>
+            <td>SHA: <b>{{shares}}</b></td>
+            <td>REG: <b>{{registration}}</b></td>
+            <td>SAV: <b>{{saving}}</b></td>
+            <td>DEP: <b>{{deposit}}</b></td>
+            <td>BFE: <b>{{buildingfees}}</b></td>
+        </tr>
     </table>
 </div>
 </div>

@@ -1,52 +1,147 @@
 {% extends 'base.html.twig' %}
+{% block title %}{{parent()}}loan Details{% endblock %}
+{% block contenu %}
+    <h1 class="text-center">Loan {{loan.loanCode}}</h1>
+{% set percent = 0 %}
+    {% if loanHistory %}
+        {% set percent = ((loan.loanAmount - loanHistory.remainAmount)*100) / loan.loanAmount %}
+    {% else %}
+        {% set percent = 0 %}
+    {% endif %}
+    
+    <div class="row">
+            <div class="col-lg-6 fadeInLeft animated ">
+                                <div class="card-box">
+                                    <h4 class="text-dark pull-left  header-title m-t-0 m-b-30">INTEREST RATE: {{loan.rate}}%</h4>
+                                    <h4 class="text-dark pull-right header-title m-t-0 m-b-30">
+                                        {% if loan.physicalMember %}
+                                            {{loan.physicalMember}}
+                                        {% else %}
+                                            {{loan.moralMember}}
+                                        {% endif %}
+                                     </h4>
+                                    
 
-{% block body %}
-    <h1>Loan</h1>
+                                    <div class="widget-chart text-center">
+                                        <div class="circliful-chart m-b-30" data-dimension="280" data-text="{{percent | number_format(2, '.', ',')}}%" data-info="Loan Paid" data-width="30" data-fontsize="30" data-percent="{{percent | number_format(2, '.', ',')}}" data-fgcolor="#5fbeaa" data-bgcolor="#ebeff2">
+                                        </div>
 
-    <table>
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ loan.id }}</td>
-            </tr>
-            <tr>
-                <th>Deadline</th>
-                <td>{% if loan.deadline %}{{ loan.deadline|date('Y-m-d') }}{% endif %}</td>
-            </tr>
-            <tr>
-                <th>Dateloan</th>
-                <td>{% if loan.dateLoan %}{{ loan.dateLoan|date('Y-m-d') }}{% endif %}</td>
-            </tr>
-            <tr>
-                <th>Rate</th>
-                <td>{{ loan.rate }}</td>
-            </tr>
-            <tr>
-                <th>Loanamount</th>
-                <td>{{ loan.loanAmount }}</td>
-            </tr>
-            <tr>
-                <th>Monthlypayment</th>
-                <td>{{ loan.monthlyPayment }}</td>
-            </tr>
-            <tr>
-                <th>Status</th>
-                <td>{% if loan.status %}Yes{% else %}No{% endif %}</td>
-            </tr>
-        </tbody>
-    </table>
+                                        <h5 class="text-muted m-t-20">Loan Contracted</h5>
+                                        <h2 class="font-600">{{loan.loanAmount}}</h2>
+                                        <ul class="list-inline m-t-15">
+                                            <li>
+                                                <h5 class="text-muted m-t-20">Loan Repaid</h5>
+                                                {% if loanHistory %}
+                                                    <h4 class="m-b-0">{{loan.loanAmount - loanHistory.remainAmount}}</h4>
+                                                {% else %}
+                                                    <h4 class="m-b-0">0</h4>
+                                                {% endif %}
+                                                
+                                            </li>
+                                           {#  <li>
+                                                <h5 class="text-muted m-t-20">Last week</h5>
+                                                <h4 class="m-b-0">$523</h4>
+                                            </li> #}
+                                            <li>
+                                                <h5 class="text-muted m-t-20">Unpaid Interest</h5>
+                                                <h4 class="m-b-0">
+                                                    {% if loanHistory %}
+                                                    {{loanHistory.unpaidInterest}}
+                                                    {% else %}
+                                                        0
+                                                    {% endif %}
+                                                </h4>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
 
-    <ul>
-        <li>
-            <a href="{{ path('loan_index') }}">Back to the list</a>
-        </li>
-        <li>
-            <a href="{{ path('loan_edit', { 'id': loan.id }) }}">Edit</a>
-        </li>
-        <li>
-            {{ form_start(delete_form) }}
-                <input type="submit" value="Delete">
-            {{ form_end(delete_form) }}
-        </li>
-    </ul>
+                            </div>
+                            <div class="col-lg-6">
+                                <fieldset>
+                                    <legend>Complementary Informations</legend>
+                                        <table class="table table-striped">
+                                            <tbody>
+                                                <tr>
+                                                    <th>loan date</th>
+                                                    <td>{% if loan.dateLoan %}{{ loan.dateLoan|date('d-m-Y') }}{% endif %}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Deadline</th>
+                                                    <td>{% if loan.deadline %}{{ loan.deadline|date('d-m-Y') }}{% endif %}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Rate</th>
+                                                    <td>{{ loan.rate }} %</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Loan Amount</th>
+                                                    <td>{{ loan.loanAmount }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Monthly Payment</th>
+                                                    <td>{{ loan.monthlyPayment }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Status</th>
+                                                    <td>{% if loan.status %}<span class="label label-warning">Active</span>{% else %}<span class="label label-success"></span>{% endif %}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                </fieldset>
+
+                                    <div>
+                                        <div class="portlet">
+                                            <div class="portlet-heading bg-custom">
+                                                <div class="portlet-widgets pull-left">
+                                                    <span class="divider"></span>
+                                                    <a data-toggle="collapse" data-parent="#accordion1" href="#bg-info11" class="collapsed"><i class="ion-minus-round"></i></a>
+                                                    <span class="divider"></span>
+                                                </div>
+                                                    <h3 class="portlet-title">
+                                                        LOAN HISTORY REPORT
+                                                    </h3>
+                                                <div class="clearfix"></div>
+                                            </div>
+                                            <div id="bg-info11" class="panel-collapse collapse">
+                                                <div class="portlet-body">
+                                                    <div class="p-20">
+                                                        <table class="table table-striped">
+                                                            <tr>
+                                                                <th>Date</th>
+                                                                <th>Loan Repaid</th>
+                                                                <th>Interest Paid</th>
+                                                                <th>Unpaid Interest</th>
+                                                                <th>Balance</th>
+                                                            </tr>
+                                                            {% if loanHistories %}
+                                                                {% for item in loanHistories %}
+                                                                    <tr>
+                                                                        <td>{{item.dateOperation |date('d-m-Y')}}</td>
+                                                                        <td>{{item.monthlyPayement}}</td>
+                                                                        <td>{{item.interest}}</td>
+                                                                        <td>{{item.unpaidInterest}}</td>
+                                                                        <td>{{item.remainAmount}}</td>
+                                                                    </tr>
+                                                                {% endfor %}
+                                                            {% endif %}
+                                                        </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+    <link href="{{asset('assets/plugins/jquery-circliful/css/jquery.circliful.css')}}" rel="stylesheet" type="text/css" />
+            <script src="{{asset('assets/plugins/jquery-circliful/js/jquery.circliful.min.js')}}" type="text/javascript"></script>
+            <script>
+                $(function() {
+                    $('.circliful-chart').circliful();
+                });
+            </script>
+
+
+    <script src="{{asset('assets/plugins/chart.js/chart.min.js')}}" type="text/javascript"></script>
+    {% include '/loan/extras.css.html.twig' %}
 {% endblock %}

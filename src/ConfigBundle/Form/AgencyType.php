@@ -20,6 +20,8 @@ class AgencyType extends AbstractType
         ->add('address')
         ->add('branch')
         ->add('town')
+        ->add('registrationNumber')
+        ->add('poBox')
         ->add('phoneNumber')
         ;
     }

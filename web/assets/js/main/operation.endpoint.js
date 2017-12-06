@@ -64,7 +64,7 @@ $(function() {
                 $.ajax({
                     method      : "POST", 
                     data        : {data : data},
-                    url         : URL_ROOT + "/operation/accounts/list", 
+                    url         : "../account_list", 
                     dataType    : "JSON",
                     beforeSend      : function(){
                         $('#accountCategory').LoadingOverlay('show');
@@ -78,7 +78,7 @@ $(function() {
                                 $zone = $("select.selecteur-zone").clone().removeClass('hide');
                                 $zone.attr('id','accountNumber');
                                 $zone.append('<option value="">No accounts Found</option>');
-                                $subClassForm.append('<label value="">Choose the account for the cash in operation</label>');
+                                $subClassForm.append('<label value="">Choose the name of the member</label>');
                                 $subClassForm.append($zone);
 
                                 $subClassForm.appendTo("div#zoneAccounts div.accounts_container").slideDown(250);
@@ -89,11 +89,15 @@ $(function() {
                                 $zone.attr('id','accountNumber');
                                 $zone.append('<option value="">----- Choose an account number ----</option>');
                                 returnedData.data.forEach( function(element, index) {
+                                    if (element.physical_member) {
+                                        $zone.append('<option value="'+ element.id+'">'+ element.physical_member.name +' -- '+element.account_number+'</option>');
+                                    }else{
+                                        $zone.append('<option value="'+ element.id+'">'+ element.moral_member.social_reason +' -- '+element.account_number+'</option>');
 
-                                $zone.append('<option value="'+ element.id+'">'+ element.accountNumber +'</option>');
+                                    }
                             });
 
-                            $subClassForm.append('<label value="">Choose the account for the cash in operation</label>');
+                            $subClassForm.append('<label value="">Choose the name of the member</label>');
                             $subClassForm.append($zone);
                             $subClassForm.appendTo("div#zoneAccounts div.accounts_container").slideDown(250);
 
@@ -222,8 +226,6 @@ $(function() {
 
 
     OperationEndpoint.prototype.setRegisterCashInListener = function(){
-
-            
             var data = JSON.parse(JSON.stringify({
                 "idAccount" : $("#accountNumber").val(),
                 "accountCategory" : $("#accountCategory").val(),
@@ -241,9 +243,7 @@ $(function() {
                 },
                 success     : function(data){
                     console.log(data);
-                    window.open(URL_ROOT + "/operation/"+data.optionalData+"/receipt","_blank" )
                     operationEndpoint.feedbackHelper.showAutoCloseMessage("Operation done", "Validation information", "success", 2000);
-                    // location.reload();
                     window.location.href = URL_ROOT + "/operation/"+data.optionalData;
                 }, 
                 error : function(returnedData){

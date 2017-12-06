@@ -11,6 +11,7 @@
                  <b>{{agency.abreviation}}</b><br/>
                  <b>{{agency.name}}</b><br>
                  <b>{{agency.phoneNumber}}</b><br>
+                 <b>{{agency.poBox}}</b><br>
 
             </td>
             <td  style="text-align: right;" class="40p">
@@ -38,7 +39,7 @@
             <td class="50p">Rate: <b>{{loanHistory.loan.rate ~"%"}}</b></td>
         </tr>
         <tr>
-            <td class="50p">Initial Amount: <b>{{loanHistory.loan.loanAmount}}</b></td>
+            <td class="50p">{# Initial Amount: <b>{{loanHistory.loan.loanAmount}}</b> #}</td>
             <td class="50p">Member: <b>
                 {% if loanHistory.loan.physicalMember %}
                     {{loanHistory.loan.physicalMember}}
@@ -48,7 +49,7 @@
             </b></td>
         </tr>
         <tr>
-            <td class="50p">Remain Amount to pay: <b>{{loanHistory.remainAmount}}</b></td>
+            <td class="50p">{# Remain Amount to pay: <b>{{loanHistory.remainAmount}}</b> #}</td>
             <td class="50p">Unpaid Interest for the month: <b>{{loanHistory.unpaidInterest}}</b></td>
         </tr>
         <tr>
@@ -69,7 +70,7 @@
         <td class="20p">XAF: <b>F CFA</b></td>
         <td class="30p" style="text-align:right">Member Number: <b> 
         {% if loanHistory.loan.physicalMember %}
-            {{loanHistory.physicalMember.memberNumber}}
+            {{loanHistory.loan.physicalMember.memberNumber}}
         {% else %}
             {{loanHistory.loan.moralMember.memberNumber}}
         {% endif %}
@@ -138,7 +139,7 @@
                 <td class="50p">Rate: <b>{{loanHistory.loan.rate ~"%"}}</b></td>
             </tr>
             <tr>
-                <td class="50p">Initial Amount: <b>{{loanHistory.loan.loanAmount}}</b></td>
+                <td class="50p">{# Initial Amount: <b>{{loanHistory.loan.loanAmount}}</b> #}</td>
                 <td class="50p">Member: <b>
                     {% if loanHistory.loan.physicalMember %}
                         {{loanHistory.loan.physicalMember}}
@@ -148,7 +149,7 @@
                 </b></td>
             </tr>
             <tr>
-                <td class="50p">Remain Amount to pay: <b>{{loanHistory.remainAmount}}</b></td>
+                <td class="50p">{# Remain Amount to pay: <b>{{loanHistory.remainAmount}}</b> #}</td>
                 <td class="50p">Unpaid Interest for the month: <b>{{loanHistory.unpaidInterest}}</b></td>
             </tr>
             <tr>
@@ -169,7 +170,7 @@
             <td class="20p">XAF: <b>F CFA</b></td>
             <td class="30p" style="text-align:right">Member Number: <b> 
             {% if loanHistory.loan.physicalMember %}
-                {{loanHistory.physicalMember.memberNumber}}
+                {{loanHistory.loan.physicalMember.memberNumber}}
             {% else %}
                 {{loanHistory.loan.moralMember.memberNumber}}
             {% endif %}

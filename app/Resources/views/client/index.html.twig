@@ -8,55 +8,189 @@
           <a href="#">BALACCUL</a>
         </li>
         <li>
-          <a href="#">Accounts</a>
-        </li>
-        <li>
-          <a href="#">Daily service</a>
+          <a href="#">Daily service Client</a>
         </li>
         <li class="active">
           Consult
         </li>
       </ol>
-      
+
         <div class="row">
             <div class="col-sm-12">
-                <div class="card-box table-responsive">
+                <div class="card-box">
                 <h4 class="m-t-0 header-title text-center"><b>Daily Service Client List</b></h4>
-                <a class="btn btn-default" href="{{path('client_new')}}">New CLient</a><br><br>
+                <a class="btn btn-default" name="create-client"><i class=" md-add-circle-outline"></i> New CLient</a> <a class="btn btn-info" href="{{path('report_client_money')}}"><i class="md-save"></i> New Collection</a> <a class="btn btn-primary" href="{{path('client_charges')}}"><i class=" md-content-cut"></i> Charges</a> <a name="refresh-data" class="btn btn-warning" href="#"><i class="md-refresh"></i> Refresh</a><br><br>
                 <table id="datatable-buttons" class="table table-striped table-bordered">
                     <thead>
                         <tr>
+                          <td>#</td>
                             <th style="width: 100px;">Actions</th>
                            <th>Name</th>
-                           <th>Idnumber</th>
+                           <th>balance B/F</th>
                            <th>Amount</th>
-                           <th>Collector</th>
+                           <th>WITH 1</th>
+                           <th>WITH 2</th>
+                           <th>Charges</th>
+                           <th>Balance Month</th>
+                           <th>Total</th>
                         </tr>
                     </thead>
                     <tbody>
-                    {% for client in clients %}
+                        {% set totalFees = 0 %}
+                        {% set totalwith1 = 0 %}
+                        {% set totalwith2 = 0 %}
+                        {% set totalCharges = 0 %}
+                        {% set totalBalance = 0 %}
+                        {% set totalBalanceBF = 0 %}
+                        {% set totalFull = 0 %}
+                    {% for key, client in clients %}
                         <tr>
+                            <td>{{key + 1}}</td>
                             <td>
                                 <div class="input-group-btn">
                                   <button type="button" class="btn btn-primary btn-flat dropdown-toggle" data-toggle="dropdown" aria-expanded="true">Actions
                                     <span class="fa fa-caret-down"></span></button>
                                   <ul class="dropdown-menu fadeInUp animated">
-                                    <li><a href="#"><i class="fa fa-edit"></i> Edit</a></li>
-                                    <li><a href="{{path('client_show', {id:client.id})}}"><i class="fa fa-eye"></i> Details</a></li>
+                                    <li><a href="#" name="client-edit" data-client="{{client.c_id}}"><i class="fa fa-edit"></i> Edit</a></li>
+                                    <li><a href="{{path('client_show', {id:client.c_id})}}"><i class="fa fa-eye"></i> Details</a></li>
+                                    {% if client.c_withdrawal1 == 0 %}
+                                      <li><a data-type="1" name="new-with" href="#" data-nomclient="{{client.c_name}}" data-balance ="{{client.c_balanceBF + client.c_balance}}" data-nomclient="{{client.c_name}}" data-client="{{client.c_id}}"><i class="md-remove-circle-outline"></i> WITH 1</a></li>
+                                    {% endif %}
+                                    {% if client.c_withdrawal2 == 0 %}
+                                      <li><a data-type="2" data-balance ="{{client.c_balanceBF + client.c_balance}}" name="new-with" href="#" data-nomclient="{{client.c_name}}" data-client="{{client.c_id}}"><i class="md-remove-circle"></i> WITH 2</a></li>
+                                    {% endif %}
                                   </ul>
                                 </div>
-                        </td>
-                        <td>{{ client.name }}</td>
-                        <td>{{ client.idNumber }}</td>
-                        <td>{{ client.amount }} F CFA</td>
-                        <td>{{ client.collector }}</td>
+                            </td>
+                            <td>{{ client.c_name }}</td>
+                            <td>{{ client.c_balanceBF }}</td>
+                            <td>{{ client.dso_fees }}</td>
+                            <td>{{ client.c_withdrawal1 }}</td>
+                            <td>{{ client.c_withdrawal2 }}</td>
+                            <td>{{ client.c_charges }}</td>
+                            <td>{% if client.c_balance < 0 %}
+                                  <span style="font-size:15px;"  class="label label-danger">{{ client.c_balance }}</span>
+                                {% else %}
+                                  {{ client.c_balance }}
+                                {% endif %}
+                          </td>
+                          <td>{% if (client.c_balanceBF + client.c_balance) < 0 %}
+                                  <span style="font-size:15px;" class="label label-danger">{{client.c_balanceBF + client.c_balance }}</span>
+                              {% else %}
+                                  <span>{{client.c_balanceBF + client.c_balance }}</span>
+                              {% endif %}
+                          
+
+                          </td>
                     </tr>
+                    
+                    {% set totalFull = totalFull + client.c_balance + client.c_balanceBF %}
+                    {% set totalBalance = totalBalance + client.c_balance %}
+                    {% set totalFees = totalFees + client.dso_fees %}
+                    {% set totalBalanceBF = totalBalanceBF + client.c_balanceBF %}
+                    {% set totalwith1 = totalwith1 + client.c_withdrawal1 %}
+                    {% set totalwith2 = totalwith2 + client.c_withdrawal2 %}
+                    {% set totalCharges = totalCharges + client.c_charges %}
+
             {% endfor %}
+                    <tr>
+                      <td style="font-size:30px" colspan="3"><b>TOTAL</b></td>
+                      <td style="font-size:30px"><b>{{totalBalanceBF}}</b></td>
+                      <td style="font-size:30px"><b>{{totalFees}}</b></td>
+                      <td style="font-size:30px"><b>{{totalwith1}}</b></td>
+                      <td style="font-size:30px"><b>{{totalwith2}}</b></td>
+                      <td style="font-size:30px"><b>{{totalCharges}}</b></td>
+                      <td style="font-size:30px"><b>{{totalBalance}}</b></td>
+                      <td style="font-size:30px"><b>{{totalFull}}</b></td>
+                    </tr>
             </tbody>
         </table>
     </div>
     </div>
+
+    <!-- modal window to create a new classe -->
+
+    <div class="modal fade modal-create-client" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+                <h3 class="text-center">Add a new client</h3>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+                {{ form_start(form) }}
+                <div class="col-md-offset-3 col-md-6 col-sm-12">
+                    <fieldset>
+                        <legend></legend>
+                            <div class="form-group">
+                                {{form_label(form.name)}}
+                                {{form_errors(form.name)}}
+                                {{form_widget(form.name, {'attr':{'class':'form-control'}})}}
+                            </div>
+                            <div class="form-group">
+                                {{form_label(form.collector)}}
+                                {{form_errors(form.collector)}}
+                                {{form_widget(form.collector, {'attr':{'class':'form-control'}})}}
+                            </div>
+                    </fieldset>
+                </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <a class="btn btn-default pull-left" name="save-client" >Save</a>
+          </div>
+          {{ form_end(form) }}
+        </div>
+      </div>
+    </div>
+
+
+    <!-- modal window to edit client -->
+    <div class="modal fade modal-edit-client" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog modal-lg" role="document">
+    <div class="col-md-offset-2 col-md-8">
+        <div class="modal-content">
+          <div class="modal-header">
+                <h3 class="text-center">Edit a client</h3>
+          </div>
+          <div class="modal-body" id="client-editform">
+
+          </div>
+        </div>
+      </div>
+        </div>
+    </div>
+
+    <!-- modal window to set a withdrawal -->
+    <div class="modal fade modal-set-with" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog modal-lg" role="document">
+    <div class="col-md-offset-2 col-md-8">
+        <div class="modal-content">
+          <div class="modal-header">
+                <h3 class="text-center" id="title"></h3>
+          </div>
+          <div class="modal-body" id="client-editform">
+            <h3 class="text-center" id="nom"></h3>
+            <span style="font-size:20px;">Balance: </span><b style="font-size:20px;" id="balance"></b><br><br>  
+              <div class="form-group">
+                <label for="">Put the amount</label><br>
+                <input class="form-control" type="number" id="with1" value="0">
+              </div>
+          </div>
+          <div class="modal-footer">
+            <a class="btn btn-default pull-left" name="save-with" >Save</a>
+          </div
+        </div>
+      </div>
+        </div>
+    </div>
   </div>
+
+
+  {# hidden field #}
+  <input type="hidden" id="dynamicId"/>
+  <input type="hidden" id="type"/>
+
     {% include './saving/extras.css.html.twig' %}
-    {% include './saving/extras.js.html.twig' %}
+    {% include './client/extras.js.html.twig' %}
 {% endblock %}

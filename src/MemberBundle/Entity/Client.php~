@@ -24,7 +24,7 @@ class Client
     /**
      * @var string
      *
-     * @ORM\Column(name="name", type="string", length=255)
+     * @ORM\Column(name="name", type="string", length=255, unique=true)
      */
     private $name;
 
@@ -45,10 +45,54 @@ class Client
 
 
     /**
-     * @ORM\OneToOne(targetEntity="AccountBundle\Entity\DailySavingAccount")
-     * @ORM\JoinColumn(name="id_amount")
+     * @var int
+     *
+     * @ORM\Column(name="balance", type="bigint")
      */
-    private $amount;
+    private $balance;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="balanceBF", type="bigint")
+     */
+    private $balanceBF;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="withdrawal1", type="bigint")
+     */
+    private $withdrawal1;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="withdrawal2", type="bigint")
+     */
+    private $withdrawal2;
+
+
+     /**
+     * @var int
+     *
+     * @ORM\Column(name="charges", type="bigint")
+     */
+    private $charges;
+
+
+    public function __toString(){
+        return $this->name;
+    }
+
+    public function __construct(){        
+        // The default amount is 0
+        $this->balance = 0;
+        $this->balanceBF = 0;
+        $this->withdrawal1 = 0;
+        $this->withdrawal2 = 0;
+        $this->charges = 0;
+    }
 
 
     /**
@@ -131,5 +175,29 @@ class Client
     public function getCollector()
     {
         return $this->collector;
+    }
+
+    /**
+     * Set balance
+     *
+     * @param integer $balance
+     *
+     * @return Client
+     */
+    public function setBalance($balance)
+    {
+        $this->balance = $balance;
+
+        return $this;
+    }
+
+    /**
+     * Get balance
+     *
+     * @return integer
+     */
+    public function getBalance()
+    {
+        return $this->balance;
     }
 }

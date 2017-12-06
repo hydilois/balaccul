@@ -33,6 +33,8 @@ class DefaultController extends Controller{
         $clients = $em->getRepository('MemberBundle:Client')->findAll();
 
         $reserves = $em->getRepository('ClassBundle:InternalAccount')->find(3);
+        $cashInhand = $em->getRepository('ClassBundle:InternalAccount')->find(9);
+        $buildingFees = $em->getRepository('ClassBundle:InternalAccount')->find(10);
 
 
         $totalShares = $em->createQueryBuilder()
@@ -54,18 +56,29 @@ class DefaultController extends Controller{
             ->getSingleScalarResult();
 
         $totalDailyCollections = $em->createQueryBuilder()
-            ->select('SUM(s.amount)')
-            ->from('AccountBundle:DailySavingAccount', 's')
+            ->select('SUM(s.balance)')
+            ->from('MemberBundle:Client', 's')
             ->getQuery()
             ->getSingleScalarResult();
 
 
-            $totalIncome = $em->createQueryBuilder()
+        $totalIncome = $em->createQueryBuilder()
             ->select('SUM(t.amount)')
             ->from('ConfigBundle:TransactionIncome', 't')
             ->getQuery()
             ->getSingleScalarResult();
 
+        $totalRegistrationFeesPM = $em->createQueryBuilder()
+            ->select('SUM(m.registrationFees)')
+            ->from('MemberBundle:Member', 'm')
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        $totalRegistrationFeesMM = $em->createQueryBuilder()
+            ->select('SUM(m.registrationFees)')
+            ->from('MemberBundle:MoralMember', 'm')
+            ->getQuery()
+            ->getSingleScalarResult();
 
 
         // replace this example code with whatever you need
@@ -84,6 +97,9 @@ class DefaultController extends Controller{
             'totalDailyCollections' => $totalDailyCollections,
             'totalIncome' => $totalIncome,
             'reserves' => $reserves,
+            'cashInHand' => $cashInhand,
+            'buildingFees' => $buildingFees,
+            'totalRegistration' => $totalRegistrationFeesMM + $totalRegistrationFeesPM,
         ]);
     }
 

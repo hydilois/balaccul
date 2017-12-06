@@ -89,6 +89,58 @@ class AccountControllerApi extends FOSRestController{
     }
 
 
+    /**
+     * get an account instance
+     * @Rest\Post("/account_list", name="api_account_list")
+     */
+    public function getAccountListAction(Request $request){
+
+        $requestParsed  = json_decode(json_encode($request->request->get("data")));
+
+        try{
+            $idCategory    = $requestParsed->idCategory;
+        
+            $accountService = $this->get('app.account_service');
+
+            switch ($idCategory) {
+                case 1:
+                    $savingAccounts  = $accountService->getSavingAccountList();
+                    return [
+                        "message" => "Entite Saving", 
+                        "status" => "success", 
+                        "data" => $savingAccounts,
+                    ];
+                    break;
+                case 2:
+                    $shareAccounts  = $accountService->getShareAccountList();
+                    return [
+                        "message" => "Entite Share", 
+                        "status" => "success", 
+                        "data" => $shareAccounts,
+                    ];
+                    break;
+                case 3:
+                    $depositAccounts  = $accountService->getDepositAccountList();
+                    return [
+                        "message" => "Entite Share", 
+                        "status" => "success", 
+                        "data" => $depositAccounts,
+                    ];
+                  break;
+                default:
+                    break;
+            }
+        }catch(Exception $ex){
+                return json_encode([
+                    "message" => "Error while pulling informations", 
+                    "params" => $request, 
+                    "status" => "failed", 
+                    "data" => json_decode(json_encode([])),
+                ]);
+            }
+    }
+
+
 
     /**
      * get an loanHistor instance
@@ -102,6 +154,26 @@ class AccountControllerApi extends FOSRestController{
 
         $loanHistory  = $accountService->getLoanHistory($id);
 
+        if ($loanHistory) {
+            $interest = ($loanHistory->getRemainAmount() * $loan->getRate())/100;
+            $dailyInterestPayment = $interest/30;
+            
+            $date = strtotime($loanHistory->getDateOperation()->format('Y-m-d'));
+            $dateNow = time();
+
+            // $days = $dateNow - $date;
+            $days = floor(($dateNow - $date)/(60*60*24));
+            $interestToPay = $dailyInterestPayment * $days;
+        }else{
+            $interest = ($loan->getLoanAmount() * $loan->getRate())/100;
+            $dailyInterestPayment = $interest/30;
+            
+            $date = strtotime($loan->getDateLoan()->format('Y-m-d'));
+            $dateNow = time();
+
+            $interestToPay = $dailyInterestPayment * floor(($dateNow - $date)/(60*60*24));
+        }
+
                 if ($loan->getMoralMember()) {
                     $representants = $accountService->getAccountRepresentant($loan->getMoralMember()->getId());
                     return [
@@ -109,7 +181,8 @@ class AccountControllerApi extends FOSRestController{
                         "status" => "success", 
                         "data" => $loan,
                         "representants" => $representants,
-                        "loanhistory" => $loanHistory
+                        "loanhistory" => $loanHistory,
+                        "interestToPay" => $interestToPay
                     ];    
                 }else{
                     $beneficiaries = $accountService->getAccountBeneficiary($loan->getPhysicalMember()->getId());
@@ -118,7 +191,8 @@ class AccountControllerApi extends FOSRestController{
                         "status" => "success", 
                         "data" => $loan,
                         "beneficiaries" => $beneficiaries,
-                        "loanhistory" => $loanHistory
+                        "loanhistory" => $loanHistory,
+                        "interestToPay" => $interestToPay
                     ];
                 }
     }
@@ -138,7 +212,24 @@ class AccountControllerApi extends FOSRestController{
                 "message" => "Entite Client", 
                 "status" => "success", 
                 "data" => $client,
-                // "loanhistory" => $loanHistory
+            ];   
+    }
+
+
+    /**
+     * get an account instance
+     * @Rest\Get("/internalaccount_api/{id}", name="api_internalaccount")
+     */
+    public function getInternalAccountAction($id){
+        $em = $this->getDoctrine()->getManager();
+
+        $accountService = $this->get('app.account_service');
+        
+        $account  = $accountService->getInternalAccount($id);
+            return [
+                "message" => "Entite Internal Account", 
+                "status" => "success",
+                "data" => $account,
             ];   
     }
 }

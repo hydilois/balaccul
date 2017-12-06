@@ -42,6 +42,15 @@ class Utilisateur extends BaseUser
      * @ORM\JoinColumn(name="groupe_id", referencedColumnName="id",nullable=false)
      */
     private $groupe;
+
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="lastActivity", type="datetime")
+     */
+    private $lastActivity;
+
     
 
     public function __toString(){

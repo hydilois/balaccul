@@ -55,11 +55,11 @@ class ReportItemController extends Controller
             $newDateStart = explode( "/" , substr($dateDebut,strrpos($dateDebut," ")));
             $newDateEnd = explode( "/" , substr($dateFin,strrpos($dateFin," ")));
 
-            $dateStart1  = new \DateTime($newDateStart[2]."-".$newDateStart[0]."-".$newDateStart[1]);
-            $dateEnd1  = new \DateTime($newDateEnd[2]."-".$newDateEnd[0]."-".$newDateEnd[1]);
+            $dateStart1  = new \DateTime($newDateStart[2]."-".$newDateStart[1]."-".$newDateStart[0]);
+            $dateEnd1  = new \DateTime($newDateEnd[2]."-".$newDateEnd[1]."-".$newDateEnd[0]);
 
-            $displayDateStart  = $newDateStart[1]."-".$newDateStart[0]."-".$newDateStart[2];
-            $displayDateEnd  = $newDateEnd[1]."-".$newDateEnd[0]."-".$newDateEnd[2];
+            $displayDateStart  = $newDateStart[0]."-".$newDateStart[1]."-".$newDateStart[2];
+            $displayDateEnd  = $newDateEnd[0]."-".$newDateEnd[1]."-".$newDateEnd[2];
 
             $dateEnd11 = $dateEnd1->add(new \DateInterval('P1D'));
 
@@ -91,12 +91,12 @@ class ReportItemController extends Controller
                 );
             $transactionIncomes = $qbuilder->getQuery()->getResult();
             
-            $qbuilder1 = $em->createQueryBuilder();
-            $qbuilder1->select('ri')
+            $reportItemsFinal = $em->createQueryBuilder()
+            ->select('ri')
                 ->from('AccountBundle:ReportItem', 'ri')
-                ->where('ri.parentItem IS NOT NULL');
-
-            $reportItemsFinal = $qbuilder1->getQuery()->getResult();
+                ->where('ri.parentItem IS NOT NULL')
+                ->andWhere('ri.amount > 0 ')
+                ->getQuery()->getResult();
 
             $totalIncome = 0;
             foreach ($transactionIncomes as $item) {
@@ -150,8 +150,7 @@ class ReportItemController extends Controller
      * @Route("/new", name="reportitem_new")
      * @Method({"GET", "POST"})
      */
-    public function newAction(Request $request)
-    {
+    public function newAction(Request $request){
         $reportItem = new Reportitem();
         $form = $this->createForm('AccountBundle\Form\ReportItemType', $reportItem);
         $form->handleRequest($request);

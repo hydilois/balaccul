@@ -23,10 +23,8 @@
                         <tr>
                             <th style="width: 100px;">Actions</th>
                             <th>Loan Code</th>
-                            <th>Monthly pay</th>
+                            <th>Balance</th>
                             <th>Interest</th>
-                            <th>Remain amount</th>
-                            <th>Next Month interest</th>
                             <th>Unpaid</th>
                             <th>Date operation</th>
                             <th>Close</th>
@@ -46,9 +44,8 @@
                         </td>
                         <td>{{ loanHistory.loan }}</td>
                         <td>{{ loanHistory.monthlyPayement }}</td>
-                        <td>{{ loanHistory.interest }}</td>
                         <td>{{ loanHistory.remainAmount }}</td>
-                        <td>{{ loanHistory.newInterest }}</td>
+                        <td>{{ loanHistory.interest }}</td>
                         <td>{{ loanHistory.unpaidInterest }}</td>
                         <td>{% if loanHistory.dateOperation %}{{ loanHistory.dateOperation|date('d-m-Y') }}{% endif %}</td>
                         <td>{% if loanHistory.closeLoan %} <span class="label label-success">Yes</span>{% else %}<span class="label label-danger">No</span>{% endif %}</td>
