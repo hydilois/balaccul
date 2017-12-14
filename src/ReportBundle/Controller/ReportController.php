@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use ConfigBundle\Entity\TransactionIncome;
 
 class ReportController extends Controller{
     /**
@@ -428,6 +429,336 @@ class ReportController extends Controller{
             $response->headers->set('Content-Type', 'application/pdf');
             $response->headers->set('Content-disposition', 'filename=Daily_report.pdf');
             return $response;
+        }
+    }
+
+    /**
+     * @Route("/daily/confirmation", name="operation_confirmation")
+     * @Method({"GET", "POST"})
+     */
+    public function dailyReportConfirmationAction(Request $request){
+        $em = $this->getDoctrine()->getManager();
+
+
+        if ($request->getMethod() == 'POST') {
+
+            $dateDebut = $request->get('dateOperation');
+
+            $newDateStart = explode( "/" , substr($dateDebut,strrpos($dateDebut," ")));
+
+            $today_startdatetime = \DateTime::createFromFormat("Y-m-d H:i:s", date($newDateStart[2]."-".$newDateStart[1]."-".$newDateStart[0]." 00:00:00"));
+            $today_enddatetime = \DateTime::createFromFormat("Y-m-d H:i:s", date($newDateStart[2]."-".$newDateStart[1]."-".$newDateStart[0]." 23:59:59"));
+
+            $operations = $em->createQueryBuilder()
+                ->select('op')
+                ->from('AccountBundle:Operation', 'op')
+                ->where('op.dateOperation >= :start')
+                ->andWhere('op.dateOperation <= :end')
+                ->andWhere('op.isConfirmed = FALSE')
+                ->setParameters(
+                    [
+                        'start' => $today_startdatetime,
+                        'end' => $today_enddatetime,
+                    ]
+                )->getQuery()->getResult();
+
+
+            $loanHistory = $em->createQueryBuilder()
+                ->select('lh')
+                ->from('AccountBundle:LoanHistory', 'lh')
+                ->where('lh.dateOperation >= :start')
+                ->andWhere('lh.dateOperation <= :end')
+                ->setParameters(
+                    [
+                        'start' => $today_startdatetime,
+                        'end' => $today_enddatetime,
+                    ]
+                )->getQuery()->getResult();
+
+            $transactionIncome = $em->createQueryBuilder()
+                ->select('ti')
+                ->from('ConfigBundle:TransactionIncome', 'ti')
+                ->where('ti.transactionDate >= :start')
+                ->andWhere('ti.transactionDate <= :end')
+                ->setParameters(
+                    [
+                        'start' => $today_startdatetime,
+                        'end' => $today_enddatetime,
+                    ]
+                )->getQuery()->getResult();
+
+            $loans = $em->createQueryBuilder()
+                ->select('l')
+                ->from('AccountBundle:Loan', 'l')
+                ->where('l.dateLoan >= :start')
+                ->andWhere('l.dateLoan <= :end')
+                ->setParameters(
+                    [
+                        'start' => $today_startdatetime,
+                        'end' => $today_enddatetime,
+                    ]
+                )->getQuery()->getResult();
+
+            $dailyServices = $em->createQueryBuilder()
+                ->select('ds')
+                ->from('MemberBundle:DailyServiceOperation', 'ds')
+                ->where('ds.dateOperation >= :start')
+                ->andWhere('ds.dateOperation <= :end')
+                ->andWhere('ds.fees > :fees')
+                ->setParameters(
+                    [
+                        'start' => $today_startdatetime,
+                        'end' => $today_enddatetime,
+                        'fees' => 0,
+                    ]
+                )->getQuery()->getResult();
+
+                $physMemberRegist = $em->createQueryBuilder()
+                    ->select('m')
+                    ->from('MemberBundle:Member', 'm')
+                    ->where('m.membershipDateCreation >= :start')
+                    ->andWhere('m.membershipDateCreation <= :end')
+                    ->setParameters(
+                        [
+                            'start' => $today_startdatetime,
+                            'end' => $today_enddatetime,
+                        ]
+                    )->getQuery()->getResult();
+
+                $morMemberRegist = $em->createQueryBuilder()
+                    ->select('m')
+                    ->from('MemberBundle:MoralMember', 'm')
+                    ->where('m.membershipDateCreation >= :start')
+                    ->andWhere('m.membershipDateCreation <= :end')
+                    ->setParameters(
+                        [
+                            'start' => $today_startdatetime,
+                            'end' => $today_enddatetime,
+                        ]
+                    )->getQuery()->getResult();
+
+
+
+
+            return $this->render('report/confirmation_operation.html.twig', array(
+                // 'agency' => $agency,
+                'operations' => $operations,
+                'loans' => $loans,
+                'loanHistory' => $loanHistory,
+                'dailyServices' => $dailyServices,
+                'phyMember' => $physMemberRegist,
+                'moMember' => $morMemberRegist,
+                'currentDate' => $dateDebut,
+                'transIncome' => $transactionIncome,
+                'dateofDay' => new \DateTime('now'),
+            ));
+        }
+    }
+
+    /**
+     * @param Request $request [contains the http request that is passed on]
+     * 
+     * @Route("/validate/operation", name="operation_validation")
+     * @Method({"GET", "POST"})
+     */
+    function saveOperationFromJSON(Request $request){
+
+        $entityManager = $this->getDoctrine()->getManager();
+
+        $logger = $this->get('logger');
+
+        // Get the current user connected
+        $currentUserId  = $this->get('security.token_storage')->getToken()->getUser()->getId();
+        $currentUser    = $entityManager->getRepository('UserBundle:Utilisateur')->find($currentUserId);
+
+
+        try{
+            //first thing we get the classe with the JSON format
+            $accountJSON = json_decode(json_encode($request->request->get('data')), true);
+            $operation = $entityManager->getRepository('AccountBundle:Operation')->find($accountJSON["idOperation"]);
+            
+            switch ($accountJSON["account"]) {
+                case 1://Saving Account
+                    $account = $operation->getSavingAccount();
+                    switch ($accountJSON["type"]) {
+                        case 1: //Credit operation
+                            $account->setSolde($operation->getCurrentBalance());
+
+                            //update the cash in hand
+                            $cashInHandAccount  = $entityManager->getRepository('ClassBundle:InternalAccount')->find(9);
+                            $cashInHandAccount->setAmount($cashInHandAccount->getAmount() + $operation->getAmount() + $operation->getDebitFees());
+                            $entityManager->persist($cashInHandAccount);
+
+                            $income = new TransactionIncome();
+
+                            $income->setAmount($operation->getDebitFees());
+                            $income->setDescription("Operation charges. Account Number: ".$account->getAccountNumber()." // Amount: ".$operation->getAmount());
+                            $entityManager->persist($income);
+                            break;
+                        case 2://Debit operation
+                            $account->setSolde($operation->getCurrentBalance());
+                            //update the cash in hand
+                            $cashInHandAccount  = $entityManager->getRepository('ClassBundle:InternalAccount')->find(9);
+                            $cashInHandAccount->setAmount($cashInHandAccount->getAmount() - $operation->getAmount() + $operation->getDebitFees());
+                            $entityManager->persist($cashInHandAccount);
+
+                            $income = new TransactionIncome();
+
+                            $income->setAmount($operation->getDebitFees());
+                            $income->setDescription("Operation charges. Account Number: ".$account->getAccountNumber()." // Amount: ".$operation->getAmount());
+                            $entityManager->persist($income);
+                            break;
+                        case 3://Transfert Operation
+                            $account->setSolde($operation->getCurrentBalance());
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case 2://Share Account
+                    $account = $operation->getShareAccount();
+
+                    switch ($accountJSON["type"]) {
+                        case 1://Credit Operation
+                            $account->setSolde($operation->getCurrentBalance());
+                            //update the internal account
+                            $internalAccount = $entityManager->getRepository('ClassBundle:InternalAccount')->find($account->getNternalAccount()->getId());
+                            $internalAccount->setAmount($internalAccount->getAmount()  + $operation->getAmount());
+
+                            // Make records
+
+                            $entityManager->persist($internalAccount);
+                            
+                            //Update the classe account
+                            $classe = $entityManager->getRepository('ClassBundle:Classe')->find($internalAccount->getClasse()->getId());
+                            $classe->setTotalAmount($classe->getTotalAmount() + $operation->getAmount());
+
+                            $entityManager->persist($classe);
+
+
+                            //Update the first level classe account
+                            $motherClass = $entityManager->getRepository('ClassBundle:Classe')->find($classe->getClassCategory()->getId());
+                            $motherClass->setTotalAmount($motherClass->getTotalAmount() + $operation->getAmount());
+
+                            $entityManager->persist($motherClass);
+
+                            //update the cash in hand
+                            $cashInHandAccount  = $entityManager->getRepository('ClassBundle:InternalAccount')->find(9);
+                            $cashInHandAccount->setAmount($cashInHandAccount->getAmount() + $operation->getAmount());
+
+                            $entityManager->flush();
+                            break;
+
+                        case 2://Debit Operation
+                            $account->setSolde($operation->getCurrentBalance());
+                            //update the internal account
+                            $internalAccount = $entityManager->getRepository('ClassBundle:InternalAccount')->find($account->getNternalAccount()->getId());
+                            $internalAccount->setAmount($internalAccount->getAmount()  - $operation->getAmount());
+
+                            // Make records
+
+                            $entityManager->persist($internalAccount);
+                            
+                            //Update the classe account
+                            $classe = $entityManager->getRepository('ClassBundle:Classe')->find($internalAccount->getClasse()->getId());
+                            $classe->setTotalAmount($classe->getTotalAmount() - $operation->getAmount());
+
+                            $entityManager->persist($classe);
+
+
+                            //Update the first level classe account
+                            $motherClass = $entityManager->getRepository('ClassBundle:Classe')->find($classe->getClassCategory()->getId());
+                            $motherClass->setTotalAmount($motherClass->getTotalAmount() - $operation->getAmount());
+
+                            $entityManager->persist($motherClass);
+
+                            //update the cash in hand
+                            $cashInHandAccount  = $entityManager->getRepository('ClassBundle:InternalAccount')->find(9);
+                            $cashInHandAccount->setAmount($cashInHandAccount->getAmount() - $operation->getAmount());
+
+                            $income = new TransactionIncome();
+
+                            $income->setAmount($operation->getDebitFees());
+                            $income->setDescription("Operation charges. Account Number: ".$account->getAccountNumber()." // Amount: ".$operation->getAmount());
+
+                            $entityManager->persist($cashInHandAccount);
+                            $entityManager->persist($income);
+                            $entityManager->flush();
+                            break;
+                        case 3://Transfer Operation
+                            $account->setSolde($operation->getCurrentBalance());
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case 3://Deposit Account
+                    $account = $operation->getDepositAccount();
+                    switch ($accountJSON["type"]) {
+                        case 1://Credit Operation
+                            $account->setSolde($operation->getCurrentBalance());
+                            //update the cash in hand
+                            $cashInHandAccount  = $entityManager->getRepository('ClassBundle:InternalAccount')->find(9);
+                            $cashInHandAccount->setAmount($cashInHandAccount->getAmount() + $operation->getAmount() + $operation->getDebitFees());
+
+                            $income = new TransactionIncome();
+
+                            $income->setAmount($operation->getDebitFees());
+                            $income->setDescription("Operation charges. Account Number: ".$account->getAccountNumber()." // Amount: ".$operation->getDebitFees());
+
+                            $entityManager->persist($income);
+                            $entityManager->persist($cashInHandAccount);
+                            break;
+                        case 2://Debit Operation
+                            $account->setSolde($operation->getCurrentBalance());
+                            //update the cash in hand
+                            $cashInHandAccount  = $entityManager->getRepository('ClassBundle:InternalAccount')->find(9);
+                            $cashInHandAccount->setAmount($cashInHandAccount->getAmount() - $operation->getAmount());
+
+                            $income = new TransactionIncome();
+
+                            $income->setAmount($operation->getDebitFees());
+                            $income->setDescription("Operation charges. Account Number: ".$account->getAccountNumber()." // Amount: ".$operation->getDebitFees());
+                            
+
+                            $entityManager->persist($cashInHandAccount);
+                            $entityManager->persist($income);
+                            break;
+                        case 3://Transfert Operation
+                            $account->setSolde($operation->getCurrentBalance());
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                default:
+                    break;
+            }
+
+            $operation->setIsConfirmed(true);
+            $operation->setUserConfirmed($currentUser);
+            
+
+            /**
+            *** Making record here
+            **/
+            
+            $entityManager->persist($operation);
+            $entityManager->persist($account);
+            $entityManager->flush();
+
+
+            $response["data"]               = $accountJSON;
+            $response["optionalData"]       = json_encode($operation->getId());
+            $response["success"] = true;
+
+            return new Response(json_encode($response));
+       
+        }catch(Exception $ex){
+
+            $logger("AN ERROR OCCURED");
+            $response["success"] = false;
+            return new Response(json_encode($response));
         }
     }
 }

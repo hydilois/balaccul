@@ -82,6 +82,20 @@ class LoanHistory{
      */
     private $loan;
 
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="is_confirmed", type="boolean")
+     */
+    private $isConfirmed;
+
+
+    /**
+     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\Utilisateur")
+     * @ORM\JoinColumn(name="id_user", referencedColumnName="id")
+     */
+    private $userConfirmed;
+
 
     public function __construct(){
         $this->dateOperation = new \DateTime('now');
@@ -89,6 +103,7 @@ class LoanHistory{
         $this->interest = 0;
         $this->unpaidInterest = 0;
         $this->newInterest = 0;
+        $this->isConfirmed = false;
     }
 
     /**
@@ -315,5 +330,53 @@ class LoanHistory{
     public function getUnpaidInterest()
     {
         return $this->unpaidInterest;
+    }
+
+    /**
+     * Set isConfirmed
+     *
+     * @param boolean $isConfirmed
+     *
+     * @return LoanHistory
+     */
+    public function setIsConfirmed($isConfirmed)
+    {
+        $this->isConfirmed = $isConfirmed;
+
+        return $this;
+    }
+
+    /**
+     * Get isConfirmed
+     *
+     * @return boolean
+     */
+    public function getIsConfirmed()
+    {
+        return $this->isConfirmed;
+    }
+
+    /**
+     * Set userConfirmed
+     *
+     * @param \UserBundle\Entity\Utilisateur $userConfirmed
+     *
+     * @return LoanHistory
+     */
+    public function setUserConfirmed(\UserBundle\Entity\Utilisateur $userConfirmed = null)
+    {
+        $this->userConfirmed = $userConfirmed;
+
+        return $this;
+    }
+
+    /**
+     * Get userConfirmed
+     *
+     * @return \UserBundle\Entity\Utilisateur
+     */
+    public function getUserConfirmed()
+    {
+        return $this->userConfirmed;
     }
 }

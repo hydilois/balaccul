@@ -29,7 +29,7 @@ class ClientController extends Controller{
         $currentUserRoles   =  $this->get('security.token_storage')->getToken()->getUser()->getRoles();
 
         if(in_array("ROLE_COLLECTOR", $currentUserRoles)){
-            // die("test");
+            
             $query  = $entityManager->createQueryBuilder()
                     ->select('c, dso')
                     ->from('MemberBundle:Client', 'c')
@@ -38,7 +38,8 @@ class ClientController extends Controller{
                                 (   SELECT MAX(dso2.dateOperation)
                                 FROM MemberBundle:DailyServiceOperation dso2
                                 WHERE dso2.client = c.id
-                                AND dso2.typeOperation = :type 
+                                AND dso2.typeOperation = :type
+                                ORDER BY dso2.dateOperation DESC
                                 )'
                         )
                     ->andWhere('c.collector = '.$currentUserId)
@@ -55,6 +56,7 @@ class ClientController extends Controller{
                                 FROM MemberBundle:DailyServiceOperation dso2
                                 WHERE dso2.client = c.id
                                 AND dso2.typeOperation = :type 
+                                ORDER BY dso2.dateOperation DESC
                                 )'
                         )
                     

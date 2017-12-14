@@ -35,6 +35,7 @@ class DefaultController extends Controller{
         $reserves = $em->getRepository('ClassBundle:InternalAccount')->find(3);
         $cashInhand = $em->getRepository('ClassBundle:InternalAccount')->find(9);
         $buildingFees = $em->getRepository('ClassBundle:InternalAccount')->find(10);
+        $loans = $em->getRepository('AccountBundle:Loan')->findByStatus(true);
 
 
         $totalShares = $em->createQueryBuilder()
@@ -79,6 +80,42 @@ class DefaultController extends Controller{
             ->from('MemberBundle:MoralMember', 'm')
             ->getQuery()
             ->getSingleScalarResult();
+        
+        $unpaidInterest = 0;
+        $loanUnpaid = 0;
+        $loanContracted = 0;
+        foreach ($loans as $loan) {
+            //get the last element in loan history
+            $lowest_remain_amount_LoanHistory = $em->createQueryBuilder()
+                ->select('MIN(lh.remainAmount)')
+                ->from('AccountBundle:LoanHistory', 'lh')
+                ->innerJoin('AccountBundle:Loan', 'l', 'WITH','lh.loan = l.id')
+                ->where('l.id = :loan')
+                ->orderBy('lh.id', 'DESC')
+                ->setParameter('loan', $loan)
+                ->getQuery()
+                ->getSingleScalarResult();
+
+            if ($lowest_remain_amount_LoanHistory) {
+                $latestLoanHistory = $em->getRepository('AccountBundle:LoanHistory')->findOneBy(
+                    [
+                        'remainAmount' => $lowest_remain_amount_LoanHistory,
+                        'loan' => $loan
+                    ],
+                    [
+                        'id' => 'DESC'
+                    ]
+                );
+                $unpaidInterest += $latestLoanHistory->getUnpaidInterest();    
+                $loanUnpaid += $latestLoanHistory->getRemainAmount();    
+
+            }else{
+                $loanUnpaid += $loan->getLoanAmount();
+            }
+
+            $loanContracted += $loan->getLoanAmount();
+
+        }
 
 
         // replace this example code with whatever you need
@@ -100,6 +137,10 @@ class DefaultController extends Controller{
             'cashInHand' => $cashInhand,
             'buildingFees' => $buildingFees,
             'totalRegistration' => $totalRegistrationFeesMM + $totalRegistrationFeesPM,
+            'unpaidInterest' => $unpaidInterest,
+            'loans' => $loans,
+            'loanUnpaid' => $loanUnpaid,
+            'loanContracted' => $loanContracted,
         ]);
     }
 

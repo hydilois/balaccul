@@ -122,6 +122,21 @@ class Operation{
     private $receiveAccountcurrentBalance; /*For transfer operations*/
 
 
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="is_confirmed", type="boolean")
+     */
+    private $isConfirmed;
+
+
+    /**
+     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\Utilisateur")
+     * @ORM\JoinColumn(name="id_user", referencedColumnName="id")
+     */
+    private $userConfirmed;
+
+
 
     public function __construct(){
 
@@ -129,6 +144,7 @@ class Operation{
         $this->transferFees = 0;
         $this->receiveAccountcurrentBalance = 0;
         $this->debitFees = 0;
+        $this->isConfirmed = false;
     }
 
 
@@ -476,5 +492,53 @@ class Operation{
     public function getDebitFees()
     {
         return $this->debitFees;
+    }
+
+    /**
+     * Set isConfirmed
+     *
+     * @param boolean $isConfirmed
+     *
+     * @return Operation
+     */
+    public function setIsConfirmed($isConfirmed)
+    {
+        $this->isConfirmed = $isConfirmed;
+
+        return $this;
+    }
+
+    /**
+     * Get isConfirmed
+     *
+     * @return boolean
+     */
+    public function getIsConfirmed()
+    {
+        return $this->isConfirmed;
+    }
+
+    /**
+     * Set userConfirmed
+     *
+     * @param \UserBundle\Entity\Utilisateur $userConfirmed
+     *
+     * @return Operation
+     */
+    public function setUserConfirmed(\UserBundle\Entity\Utilisateur $userConfirmed = null)
+    {
+        $this->userConfirmed = $userConfirmed;
+
+        return $this;
+    }
+
+    /**
+     * Get userConfirmed
+     *
+     * @return \UserBundle\Entity\Utilisateur
+     */
+    public function getUserConfirmed()
+    {
+        return $this->userConfirmed;
     }
 }

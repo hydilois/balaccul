@@ -122,12 +122,28 @@ class Operation{
     private $receiveAccountcurrentBalance; /*For transfer operations*/
 
 
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="is_confirmed", type="boolean")
+     */
+    private $isConfirmed;
+
+
+    /**
+     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\Utilisateur")
+     * @ORM\JoinColumn(name="id_user", referencedColumnName="id")
+     */
+    private $userConfirmed;
+
+
 
     public function __construct(){
 
         //the default date of the loan is now
         $this->transferFees = 0;
         $this->receiveAccountcurrentBalance = 0;
+        $this->debitFees = 0;
     }
 
 
@@ -451,5 +467,29 @@ class Operation{
     public function getReceiveAccountcurrentBalance()
     {
         return $this->receiveAccountcurrentBalance;
+    }
+
+    /**
+     * Set debitFees
+     *
+     * @param integer $debitFees
+     *
+     * @return Operation
+     */
+    public function setDebitFees($debitFees)
+    {
+        $this->debitFees = $debitFees;
+
+        return $this;
+    }
+
+    /**
+     * Get debitFees
+     *
+     * @return integer
+     */
+    public function getDebitFees()
+    {
+        return $this->debitFees;
     }
 }

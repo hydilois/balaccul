@@ -42,22 +42,9 @@ $(function(){
 			 * allow to set a whole bunch of listeners
 			 */
 			StatistiqueEndpoint.prototype.setListeners = function(){
-				this.setBoxHeaderListener();
 				this.setTypeAccountSelectorListener();
+				this.validateOperationListener();
 			}
-
-			StatistiqueEndpoint.prototype.setBoxHeaderListener = function(){
-
-				$(".box-header").on('click', function(){
-					$(this).parent().find('.box-body').slideToggle({
-														duration : 1000,
-														// easing : "easeOutBounce"
-
-													});
-				});
-			}
-
-
 
 			StatistiqueEndpoint.prototype.setTypeAccountSelectorListener = function(){
 			    $('body').on('change', '#accountCategory', function(){
@@ -118,6 +105,72 @@ $(function(){
 			    });
 			}
 
+			StatistiqueEndpoint.prototype.validateOperationListener = function(){
+				$('body').on('click','.validate-operation', function(){
+
+					$('input[name="operation-input-id"]').val($(this).data('operation'));
+					$('input[name="account-input-id"]').val($(this).data('account'));
+					$('input[name="type-input-id"]').val($(this).data('type'));
+
+					var feedbackMessage = JSON.parse(JSON.stringify({
+						'title' : 'Validation of the operation',
+						'message' : 'Confirm, You agree that the operation is correct?',
+						'type' : 'warning',
+						'confirmeButtonText' : 'Yes I confirm',
+						'callback' : statistiqueEndpoint.validateOperation
+					}));
+
+					statistiqueEndpoint.feedbackHelper.showLoaderMessage(feedbackMessage.title, feedbackMessage.message, feedbackMessage.type, feedbackMessage.confirmeButtonText, statistiqueEndpoint.validateOperation);
+				})
+
+			}
+
+			StatistiqueEndpoint.prototype.validateOperation = function(){
+
+				var data = JSON.parse(JSON.stringify(
+					{
+						"idOperation" : $('input[name="operation-input-id"]').val(),
+						"account" : $('input[name="account-input-id"]').val(),
+						"type" : $('input[name="type-input-id"]').val()
+					}
+				));
+
+				console.log(data);
+
+				$.ajax({
+					method 		: "POST", 
+					data 		: {data : data},
+					url 		: URL_ROOT + "/validate/operation", 
+					dataType 	: "JSON",
+					beforeSend 	: function(){
+
+					},
+					success 	: function(returnedData){
+						console.log(returnedData);
+
+						var feedbackMessage = JSON.parse(JSON.stringify({
+							'title' : 'Operation Validated',
+							'message' : 'Success',
+							'type' : 'success',
+							'timeout' : 3000
+						}));
+
+						statistiqueEndpoint.feedbackHelper.showAutoCloseMessage(feedbackMessage.title, feedbackMessage.message, feedbackMessage.type, feedbackMessage.timeout);
+						location.reload();
+					}, 
+					error : function(returnedData){
+						console.error('something wrong happened on the server');
+						var feedbackMessage = JSON.parse(JSON.stringify({
+							'title' 	: 'error',
+							'message' 	: 'An error occur, if it persist contact the administrator',
+							'type' 		: 'error',
+							'timeout' 	: 20000
+						}));
+						statistiqueEndpoint.feedbackHelper.showAutoCloseMessage(feedbackMessage.title, feedbackMessage.message, feedbackMessage.type, feedbackMessage.timeout);
+					}
+				});
+
+			}
 			//this should be at the end
 			statistiqueEndpoint.initializeView();
 			statistiqueEndpoint.setListeners();

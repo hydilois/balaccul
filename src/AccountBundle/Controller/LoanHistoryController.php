@@ -208,7 +208,6 @@ class LoanHistoryController extends Controller
 
         $logger = $this->get('logger');
 
-        $loanhistory = new Loanhistory();
 
         // Get the current user connected
         $currentUserId  = $this->get('security.token_storage')->getToken()->getUser()->getId();
@@ -216,6 +215,7 @@ class LoanHistoryController extends Controller
 
 
         try{
+            $loanhistory = new Loanhistory();
             //first thing we get the classe with the JSON format
             $loanHistoryJSON = json_decode(json_encode($request->request->get('data')), true);
 
@@ -249,10 +249,10 @@ class LoanHistoryController extends Controller
                 //set the unpaid to recover after in the next payment
                 $loanhistory->setRemainAmount($latestLoanHistory->getRemainAmount() - $loanHistoryJSON["monthlyPayment"]);
 
-                $interest = ($loanHistory->getRemainAmount() * $loan->getRate())/100;
+                $interest = ($loanhistory->getRemainAmount() * $loan->getRate())/100;
                 $dailyInterestPayment = $interest/30;
                 
-                $date = strtotime($loanHistory->getDateOperation()->format('Y-m-d'));
+                $date = strtotime($loanhistory->getDateOperation()->format('Y-m-d'));
                 $dateNow = time();
 
                 $interestToPay = $dailyInterestPayment * floor(($dateNow - $date)/(60*60*24));
@@ -283,7 +283,6 @@ class LoanHistoryController extends Controller
                 $loanhistory->setRemainAmount($loan->getLoanAmount() - $loanHistoryJSON["monthlyPayment"]);
             }
             
-            // $loanhistory->setNewInterest(($loanhistory->getRemainAmount() * $loan->getRate())/100);
             
             $loanhistory->setLoan($loan);
 

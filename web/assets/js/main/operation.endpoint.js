@@ -229,7 +229,8 @@ $(function() {
             var data = JSON.parse(JSON.stringify({
                 "idAccount" : $("#accountNumber").val(),
                 "accountCategory" : $("#accountCategory").val(),
-                "amount" : $('input[type="number"]').val()
+                "amount" : $('input[type="number"]').val(),
+                "fees" : $('input[name="fees"]').val(),
             }));
 
             console.log(data);

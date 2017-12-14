@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
     {% block title %}
-        {{parent()}}
+        {{parent()}} Details Operation
     {% endblock %}
 {% block contenu %}
     <h1 class="text-center">Operation Details</h1>
@@ -29,6 +29,23 @@
             <tr>
                 <th>Date operation</th>
                 <td>{% if operation.dateOperation %}{{ operation.dateOperation|date('d-m-Y') }}{% endif %}</td>
+            </tr>
+            <tr>
+                <th>Balance</th>
+                <td>{{ operation.currentBalance }}</td>
+            </tr>
+            <tr>
+                <th>Casher</th>
+                <td>{{ operation.currentUser }}</td>
+            </tr>
+            <tr>
+                <th>Confirm ?</th>
+                <td>{% if operation.isConfirmed %}
+                        <span class="label label-success">Yes</span>
+                    {% else %}
+                        <span class="label label-danger">No</span>
+                    {% endif %}
+             </td>
             </tr>
         </tbody>
     </table>

@@ -26,7 +26,7 @@
                         <span class="divider"></span>
                     </div>
                         <h3 class="portlet-title">
-                            Daily Report
+                            CASH BOOK FILE
                         </h3>
                     <div class="clearfix"></div>
                 </div>
@@ -38,7 +38,43 @@
                                     <label class="control-label col-sm-4">Day</label>
                                     <div class="col-sm-4">
                                         <div class="input-group">
-                                            <input type="text" class="form-control" id="datepicker-autoclose" name="currentDate">
+                                            <input type="text" class="form-control" id="datepicker-autoclose2" name="currentDate">
+                                            <span class="input-group-addon bg-custom b-0 text-white"><i class="icon-calender"></i></span>
+                                        </div><!-- input-group -->
+                                        <br>
+                                        <input  type="submit" class="btn btn-default" value="Submit"/>
+                                    </div>
+                                
+                                </div>
+                            </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <div class=" col-lg-offset-2 col-lg-8 col-md-8 col-sm-8 col-xs-8 ">
+            <div class="portlet">
+                <div class="portlet-heading bg-custom">
+                    <div class="portlet-widgets pull-left">
+                        <span class="divider"></span>
+                        <a data-toggle="collapse" data-parent="#accordion1" href="#bg-info12" class="collapsed"><i class="ion-minus-round"></i></a>
+                        <span class="divider"></span>
+                    </div>
+                        <h3 class="portlet-title">
+                            CONFIRM TRANSACTIONS
+                        </h3>
+                    <div class="clearfix"></div>
+                </div>
+                <div id="bg-info12" class="panel-collapse collapse">
+                    <div class="portlet-body">
+                        <div class="p-20">
+                            <form method="POST" action="{{ path('operation_confirmation') }}" class="form-horizontal">
+                                <div class="form-group">
+                                    <label class="control-label col-sm-4">Day</label>
+                                    <div class="col-sm-4">
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" id="datepicker-autoclose" name="dateOperation">
                                             <span class="input-group-addon bg-custom b-0 text-white"><i class="icon-calender"></i></span>
                                         </div><!-- input-group -->
                                         <br>
@@ -139,8 +175,8 @@
                     </div>
                 </div>
             </div>
-        </div> <!-- End row -->
         </fieldset>
+        </div> <!-- End row -->
 
          {# Hidden inputs #}
     <select name="accountNumber" class="selecteur-zone form-control hide" id=""></select>

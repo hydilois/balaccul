@@ -10,8 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="loan_history")
  * @ORM\Entity(repositoryClass="AccountBundle\Repository\LoanHistoryRepository")
  */
-class LoanHistory
-{
+class LoanHistory{
     /**
      * @var int
      *
@@ -83,11 +82,28 @@ class LoanHistory
      */
     private $loan;
 
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="is_confirmed", type="boolean")
+     */
+    private $isConfirmed;
+
+
+    /**
+     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\Utilisateur")
+     * @ORM\JoinColumn(name="id_user", referencedColumnName="id")
+     */
+    private $userConfirmed;
+
 
     public function __construct(){
         $this->dateOperation = new \DateTime('now');
         $this->monthlyPayement = 0;
         $this->interest = 0;
+        $this->unpaidInterest = 0;
+        $this->newInterest = 0;
+        $this->isConfirmed = false;
     }
 
     /**
@@ -290,5 +306,29 @@ class LoanHistory
     public function getLoan()
     {
         return $this->loan;
+    }
+
+    /**
+     * Set unpaidInterest
+     *
+     * @param integer $unpaidInterest
+     *
+     * @return LoanHistory
+     */
+    public function setUnpaidInterest($unpaidInterest)
+    {
+        $this->unpaidInterest = $unpaidInterest;
+
+        return $this;
+    }
+
+    /**
+     * Get unpaidInterest
+     *
+     * @return integer
+     */
+    public function getUnpaidInterest()
+    {
+        return $this->unpaidInterest;
     }
 }

@@ -13,16 +13,16 @@
     </li>
   </ol>
         <h1 class="text-center">ACCOUNTS CREDIT OPERATIONS</h1>
-        <section class="col-lg-6">
+        <section class="col-lg-4">
             <fieldset>
                 <legend>Operation</legend>
                 <div class="form-group template">
-                    <label class="control-label col-sm-4">Account Category</label>
+                    <label class="control-label">Account Category</label>
                         <select id="accountCategory" name="objetStatistique" class="form-control">
                             <option value="">&lt;------ Select ------&gt;</option>
-                            <option value="1">SAVING</option>
-                            <option value="2">SHARE</option>
-                            <option value="3">DEPOSIT</option>
+                            <option value="1">SAVINGS</option>
+                            <option value="2">SHARES</option>
+                            <option value="3">DEPOSITS</option>
                         </select>
                     </div>
                     <div id="zoneAccounts">
@@ -31,8 +31,12 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="">Cash In amount</label>
+                        <label for="">Amount</label>
                         <input type="number" class="form-control" value="0" />
+                    </div>
+                    <div class="form-group">
+                        <label for="">Charges</label>
+                        <input name="fees" type="number" class="form-control" value="0" />
                     </div>
                     <div class="form-group">
                         <a class="btn btn-default" id="saveCredit" href="#">Save</a>
@@ -41,7 +45,7 @@
             </fieldset>
             
         </section>
-        <section  class="col-lg-6">
+        <section  class="col-lg-8">
             <fieldset id="detailAddcount" class="fadeInDown animated hide">
                 <legend>Details on the account</legend>
 

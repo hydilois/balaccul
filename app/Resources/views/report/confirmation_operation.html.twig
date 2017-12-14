@@ -1,0 +1,235 @@
+{% extends 'base.html.twig' %}
+{% block title %}{{parent()}} Report{% endblock %}
+{% block contenu %}
+ <ol class="breadcrumb">
+    <li>
+      <a href="#">BALACCUL</a>
+    </li>
+    <li>
+      <a href="#">Activities</a>
+    </li>
+    <li class="active">
+      Confirmation
+    </li>
+  </ol>
+
+  <div class="row">
+      <fieldset>
+        <legend>
+              ACITIVITIES CONFIRMATION
+        </legend>
+        <h2 class="text-center">Date: {{currentDate}}</h2>
+            {% if operations %}
+              <div class=" col-lg-offset-1 col-lg-10 col-md-10 col-sm-10 col-xs-10">
+                  <div class="portlet">
+                      <div class="portlet-heading bg-custom">
+                          <div class="portlet-widgets pull-left">
+                              <span class="divider"></span>
+                              <a data-toggle="collapse" data-parent="#accordion1" href="#bg-info11" class="collapsed"><i class="ion-minus-round"></i></a>
+                              <span class="divider"></span>
+                          </div>
+                              <h3 class="portlet-title">
+                                  ACCOUNT OPERATIONS
+                              </h3>
+                          <div class="clearfix"></div>
+                      </div>
+                      <div id="bg-info11" class="panel-collapse collapse">
+                          <div class="portlet-body">
+                            <div class="p-20">
+                                <table class="table">
+                                    <tr>
+                                        <th>Valider</th>
+                                        <th>Operation</th>
+                                        <th>Account</th>
+                                        <th>Name</th>
+                                        <th>Amount</th>
+                                        <th>Fees</th>
+                                        <th>Casher</th>
+                                    </tr>
+                                        {% for operation in operations %}
+                                            <tr>
+                                                <td>
+                                                    <a  {%  if operation.savingAccount %}
+                                                     data-account = "1"
+                                                    {% elseif operation.shareAccount %}
+                                                        data-account = "2"
+                                                    {% else %}
+                                                        data-account = "3"
+                                                    {% endif %}
+                                                    {%  if operation.typeOperation == "CREDIT" %}
+                                                     data-type = "1"
+                                                    {% elseif operation.typeOperation == "DEBIT" %}
+                                                        data-type = "2"
+                                                    {% else %}
+                                                        data-type = "3"
+                                                    {% endif %}
+                                                    data-operation="{{operation.id}}"
+                                                     class="btn btn-default validate-operation">
+                                                        <i class="fa fa-legal"></i> Validate
+                                                    </a>
+                                                </td>
+                                                <td>{{operation.typeOperation}}</td>
+                                                <td>
+                                                    {% if operation.savingAccount %}
+                                                        SAVING
+                                                    {% elseif operation.shareAccount %}
+                                                        SHARES
+                                                    {% else %}
+                                                        DEPOSIT
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    {% if operation.savingAccount %}
+                                                        {% if operation.savingAccount.moralMember %}
+                                                            {{operation.savingAccount.moralMember|upper}}
+                                                        {% else %}
+                                                            {{operation.savingAccount.physicalMember|upper}}
+                                                        {% endif %}
+
+                                                    {% elseif operation.shareAccount %}
+                                                        {% if operation.shareAccount.moralMember %}
+                                                            {{operation.shareAccount.moralMember|upper}}
+                                                        {% else %}
+                                                            {{operation.shareAccount.physicalMember|upper}}
+                                                        {% endif %}
+                                                    {% else %}
+                                                        {% if operation.depositAccount.moralMember %}
+                                                            {{operation.depositAccount.moralMember|upper}}
+                                                        {% else %}
+                                                            {{operation.depositAccount.physicalMember |upper}}
+                                                        {% endif %}
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                        {{operation.amount}}
+                                                </td>
+                                                <td>
+                                                    {% if operation.typeOperation == "TRANSFER" %}
+                                                        {{operation.transferFees}}
+                                                    {% else %}
+                                                        {{operation.debitFees}}
+                                                    {% endif %}
+                                                </td>
+                                                <td>{{operation.currentUser}}</td>
+                                            </tr>
+                                    {% endfor %}
+                                            
+                                </table>
+                            </div>
+                      </div>
+                  </div>
+              </div>
+            </div>
+            {% endif %}
+
+
+            {% if operations %}
+              <div class=" col-lg-offset-1 col-lg-10 col-md-10 col-sm-10 col-xs-10">
+                  <div class="portlet">
+                      <div class="portlet-heading bg-custom">
+                          <div class="portlet-widgets pull-left">
+                              <span class="divider"></span>
+                              <a data-toggle="collapse" data-parent="#accordion1" href="#bg-info11" class="collapsed"><i class="ion-minus-round"></i></a>
+                              <span class="divider"></span>
+                          </div>
+                              <h3 class="portlet-title">
+                                  LOANS OPERATIONS
+                              </h3>
+                          <div class="clearfix"></div>
+                      </div>
+                      <div id="bg-info11" class="panel-collapse collapse">
+                          <div class="portlet-body">
+                            <div class="p-20">
+                                <table class="table">
+                                    <tr>
+                                        <th>Valider</th>
+                                        <th>Operation</th>
+                                        <th>Account</th>
+                                        <th>Name</th>
+                                        <th>Amount</th>
+                                        <th>Fees</th>
+                                        <th>Casher</th>
+                                    </tr>
+                                        {% for operation in operations %}
+                                            <tr>
+                                                <td>
+                                                    <a  {%  if operation.savingAccount %}
+                                                     data-account = "1"
+                                                    {% elseif operation.shareAccount %}
+                                                        data-account = "2"
+                                                    {% else %}
+                                                        data-account = "3"
+                                                    {% endif %}
+                                                    {%  if operation.typeOperation == "CREDIT" %}
+                                                     data-type = "1"
+                                                    {% elseif operation.typeOperation == "DEBIT" %}
+                                                        data-type = "2"
+                                                    {% else %}
+                                                        data-type = "3"
+                                                    {% endif %}
+                                                    data-operation="{{operation.id}}"
+                                                     class="btn btn-default validate-operation">
+                                                        <i class="fa fa-legal"></i> Validate
+                                                    </a>
+                                                </td>
+                                                <td>{{operation.typeOperation}}</td>
+                                                <td>
+                                                    {% if operation.savingAccount %}
+                                                        SAVING
+                                                    {% elseif operation.shareAccount %}
+                                                        SHARES
+                                                    {% else %}
+                                                        DEPOSIT
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    {% if operation.savingAccount %}
+                                                        {% if operation.savingAccount.moralMember %}
+                                                            {{operation.savingAccount.moralMember|upper}}
+                                                        {% else %}
+                                                            {{operation.savingAccount.physicalMember|upper}}
+                                                        {% endif %}
+
+                                                    {% elseif operation.shareAccount %}
+                                                        {% if operation.shareAccount.moralMember %}
+                                                            {{operation.shareAccount.moralMember|upper}}
+                                                        {% else %}
+                                                            {{operation.shareAccount.physicalMember|upper}}
+                                                        {% endif %}
+                                                    {% else %}
+                                                        {% if operation.depositAccount.moralMember %}
+                                                            {{operation.depositAccount.moralMember|upper}}
+                                                        {% else %}
+                                                            {{operation.depositAccount.physicalMember |upper}}
+                                                        {% endif %}
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                        {{operation.amount}}
+                                                </td>
+                                                <td>
+                                                    {% if operation.typeOperation == "TRANSFER" %}
+                                                        {{operation.transferFees}}
+                                                    {% else %}
+                                                        {{operation.debitFees}}
+                                                    {% endif %}
+                                                </td>
+                                                <td>{{operation.currentUser}}</td>
+                                            </tr>
+                                    {% endfor %}
+                                            
+                                </table>
+                            </div>
+                      </div>
+                  </div>
+              </div>
+            </div>
+            {% endif %}
+
+    </div> <!-- End row -->
+    <input type="hidden" name="operation-input-id"/>
+    <input type="hidden" name="type-input-id"/>
+    <input type="hidden" name="account-input-id"/>
+    {% include '/report/extras_report.css.html.twig' %}
+    {% include '/report/extras_report.js.html.twig' %}
+{% endblock %}

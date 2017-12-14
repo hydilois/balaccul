@@ -160,8 +160,7 @@ class MemberController extends Controller
      * @Route("/{id}", name="member_delete")
      * @Method("DELETE")
      */
-    public function deleteAction(Request $request, Member $member)
-    {
+    public function deleteAction(Request $request, Member $member){
         $form = $this->createDeleteForm($member);
         $form->handleRequest($request);
 

@@ -135,13 +135,12 @@ class OperationController extends Controller{
      * @Route("/{id}/receipt", name="operation_receipt")
      * @Method("GET")
      */
-    public function debitReceiptAction(Operation $operation){
+    public function operationReceiptAction(Operation $operation){
 
         $em = $this->getDoctrine()->getManager();
-        // $qb = $em->createQueryBuilder();
         $agency = $em->getRepository('ConfigBundle:Agency')->find(1);
 
-        $html =  $this->renderView('operation/withdrawl_receipt_file.html.twig', array(
+        $html =  $this->renderView('operation/operation_receipt_file.html.twig', array(
             'agency' => $agency,
             'operation' => $operation,
         ));
@@ -311,58 +310,28 @@ class OperationController extends Controller{
             $operation->setDateOperation(new \DateTime('now'));
             $operation->setTypeOperation(Operation::TYPE_CREDIT);
             $operation->setAmount($accountJSON["amount"]);
-
-
-
-
+            $operation->setDebitFees($accountJSON["fees"]);
 
             switch ($accountJSON["accountCategory"]) {
-                case 1:
+                case 1://Saving Account
                     $account = $entityManager->getRepository('AccountBundle:Saving')->find($accountJSON["idAccount"]);
                     $operation->setSavingAccount($account);
                     $operation->setCurrentBalance($account->getSolde()  + $accountJSON["amount"]);
 
                     break;
-                case 2:
+                case 2://Share Account
                     $account = $entityManager->getRepository('AccountBundle:Share')->find($accountJSON["idAccount"]);
                     $operation->setShareAccount($account);
                     $operation->setCurrentBalance($account->getSolde()  + $accountJSON["amount"]);
-
-                    //update the internal account
-                    $internalAccount = $entityManager->getRepository('ClassBundle:InternalAccount')->find($account->getNternalAccount()->getId());
-                    $internalAccount->setAmount($internalAccount->getAmount()  + $accountJSON["amount"]);
-
-                    // Make records
-
-                    $entityManager->persist($internalAccount);
-                    $entityManager->flush();
-                    
-                    //Update the classe account
-                    $classe = $entityManager->getRepository('ClassBundle:Classe')->find($internalAccount->getClasse()->getId());
-                    $classe->setTotalAmount($classe->getTotalAmount() + $accountJSON['amount']);
-
-                    $entityManager->persist($classe);
-                    $entityManager->flush();
-
-
-                    //Update the first level classe account
-                    $motherClass = $entityManager->getRepository('ClassBundle:Classe')->find($classe->getClassCategory()->getId());
-                    $motherClass->setTotalAmount($motherClass->getTotalAmount() + $accountJSON['amount']);
-
-                    $entityManager->persist($motherClass);
-                    $entityManager->flush();
-
 
                     break;
                 case 3:
                     $account = $entityManager->getRepository('AccountBundle:Deposit')->find($accountJSON["idAccount"]);
                     $operation->setDepositAccount($account);
-
                     $operation->setCurrentBalance($account->getSolde()  + $accountJSON["amount"]);
 
                     break;
                 default:
-                    # code...
                     break;
             }
 
@@ -371,21 +340,6 @@ class OperationController extends Controller{
             **/
             
             $entityManager->persist($operation);
-            // $entityManager->flush();
-
-
-
-            // Update the current Account accord to the amount that had been added
-            $account->setSolde($account->getSolde() + $accountJSON["amount"]);
-            
-
-            //update the cash in hand
-            $cashInHandAccount  = $entityManager->getRepository('ClassBundle:InternalAccount')->find(9);
-            $cashInHandAccount->setAmount($cashInHandAccount->getAmount() + $accountJSON["amount"]);
-
-            $entityManager->persist($cashInHandAccount);
-
-            $entityManager->persist($account);
             $entityManager->flush();
 
             $response["data"]               = $accountJSON;
@@ -436,7 +390,7 @@ class OperationController extends Controller{
 
 
             switch ($accountJSON["accountCategory"]) {
-                case 1:
+                case 1: //Saving Account
                     $account = $entityManager->getRepository('AccountBundle:Saving')->find($accountJSON["idAccount"]);
                     $operation->setSavingAccount($account);
                     $operation->setCurrentBalance($account->getSolde()  - $accountJSON["amount"]-$accountJSON["fees"]);
@@ -447,38 +401,34 @@ class OperationController extends Controller{
                     $operation->setShareAccount($account);
                     $operation->setCurrentBalance($account->getSolde()  - $accountJSON["amount"]-$accountJSON["fees"]);
 
-                    //update the internal account
-                    $internalAccount = $entityManager->getRepository('ClassBundle:InternalAccount')->find($account->getNternalAccount()->getId());
-                    $internalAccount->setAmount($internalAccount->getAmount()  - $accountJSON["amount"]-$accountJSON["fees"]);
+                    // //update the internal account
+                    // $internalAccount = $entityManager->getRepository('ClassBundle:InternalAccount')->find($account->getNternalAccount()->getId());
+                    // $internalAccount->setAmount($internalAccount->getAmount()  - $accountJSON["amount"]-$accountJSON["fees"]);
 
-                    // Make records
+                    // // Make records
 
-                    $entityManager->persist($internalAccount);
-                    $entityManager->flush();
+                    // $entityManager->persist($internalAccount);
+                    // $entityManager->flush();
                     
-                    //Update the classe account
-                    $classe = $entityManager->getRepository('ClassBundle:Classe')->find($internalAccount->getClasse()->getId());
-                    $classe->setTotalAmount($classe->getTotalAmount() - $accountJSON['amount']-$accountJSON["fees"]);
+                    // //Update the classe account
+                    // $classe = $entityManager->getRepository('ClassBundle:Classe')->find($internalAccount->getClasse()->getId());
+                    // $classe->setTotalAmount($classe->getTotalAmount() - $accountJSON['amount']-$accountJSON["fees"]);
 
-                    $entityManager->persist($classe);
-                    $entityManager->flush();
-
-
-                    //Update the first level classe account
-                    $motherClass = $entityManager->getRepository('ClassBundle:Classe')->find($classe->getClassCategory()->getId());
-                    $motherClass->setTotalAmount($motherClass->getTotalAmount() - $accountJSON['amount']-$accountJSON["fees"]);
-
-                    $entityManager->persist($motherClass);
-                    $entityManager->flush();
+                    // $entityManager->persist($classe);
+                    // $entityManager->flush();
 
 
+                    // //Update the first level classe account
+                    // $motherClass = $entityManager->getRepository('ClassBundle:Classe')->find($classe->getClassCategory()->getId());
+                    // $motherClass->setTotalAmount($motherClass->getTotalAmount() - $accountJSON['amount']-$accountJSON["fees"]);
+
+                    // $entityManager->persist($motherClass);
+                    // $entityManager->flush();
                     break;
                 case 3:
                     $account = $entityManager->getRepository('AccountBundle:Deposit')->find($accountJSON["idAccount"]);
                     $operation->setDepositAccount($account);
-
                     $operation->setCurrentBalance($account->getSolde()  - $accountJSON["amount"] - $accountJSON["fees"]);
-
                     break;
                 default:
                     # code...
@@ -488,25 +438,25 @@ class OperationController extends Controller{
 
 
             // Update the current Account accord to the amount that had been added
-            $account->setSolde($account->getSolde() - $accountJSON["amount"] - $accountJSON["fees"]);
+            // $account->setSolde($account->getSolde() - $accountJSON["amount"] - $accountJSON["fees"]);
 
-            $income = new TransactionIncome();
+            // $income = new TransactionIncome();
 
-            $income->setAmount($accountJSON["fees"]);
-            $income->setDescription("Debit fees. Account Number: ".$account->getAccountNumber()." // Amount: ".$accountJSON['fees']);
+            // $income->setAmount($accountJSON["fees"]);
+            // $income->setDescription("Debit fees. Account Number: ".$account->getAccountNumber()." // Amount: ".$accountJSON['fees']);
 
             /**
             *** Making record here
             **/
             //update the cash in hand
-            $cashInHandAccount  = $entityManager->getRepository('ClassBundle:InternalAccount')->find(9);
-            $cashInHandAccount->setAmount($cashInHandAccount->getAmount() - $accountJSON["amount"] + $accountJSON["fees"]);
+            // $cashInHandAccount  = $entityManager->getRepository('ClassBundle:InternalAccount')->find(9);
+            // $cashInHandAccount->setAmount($cashInHandAccount->getAmount() - $accountJSON["amount"] + $accountJSON["fees"]);
 
-            $entityManager->persist($cashInHandAccount);
+            // $entityManager->persist($cashInHandAccount);
 
-            $entityManager->persist($account);
+            // $entityManager->persist($account);
             $entityManager->persist($operation);
-            $entityManager->persist($income);
+            // $entityManager->persist($income);
             $entityManager->flush();
 
 
