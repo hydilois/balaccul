@@ -145,7 +145,7 @@ class DefaultController extends Controller{
     }
 
     /**
-     * @Route("/garde", name="page_garde")
+     * @Route("/lock_screen", name="lock_screen")
      */
     public function pageGardeAction(Request $request){
 

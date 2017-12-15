@@ -158,7 +158,8 @@ class Member{
     private $phoneNumber;
 
     public function __toString(){
-        return $this->name." -- ".$this->memberNumber;
+        return $this->name;
+        // return $this->name." -- ".$this->memberNumber;
     }
 
 
@@ -167,6 +168,7 @@ class Member{
         // The default date of the membership creation is now
         $this->membershipDateCreation = new \DateTime('now');
         $this->buildingFees = 0;
+        $this->registrationFees = 0;
         $this->isAproved = true;
     }
 

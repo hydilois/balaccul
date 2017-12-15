@@ -42,7 +42,7 @@ class SessionIdleHandler{
                 $this->session->getFlashBag()->add('info', 'Vous êtes déconnecté dû à votre inactivité pour un certain moment.');
 
                 // redirect the user to the login page.
-                $event->setResponse(new RedirectResponse($this->router->generate('page_garde')));
+                $event->setResponse(new RedirectResponse($this->router->generate('lock_screen')));
             }
         }
     }

@@ -252,7 +252,7 @@ class LoanHistoryController extends Controller
                 $interest = ($loanhistory->getRemainAmount() * $loan->getRate())/100;
                 $dailyInterestPayment = $interest/30;
                 
-                $date = strtotime($loanhistory->getDateOperation()->format('Y-m-d'));
+                $date = strtotime($latestLoanHistory->getDateOperation()->format('Y-m-d'));
                 $dateNow = time();
 
                 $interestToPay = $dailyInterestPayment * floor(($dateNow - $date)/(60*60*24));

@@ -45,7 +45,7 @@
             <th style="background: gray" class="20p">Fees(for Debit or transfert)</th>
             <th style="background: gray" class="20p">Observation</th>
         </tr>
-            {% set total = value %}
+            {# {% set total = value %} #}
             {% for operation in operations %}
                 <tr>
                     <td>{{operation.dateOperation |date('d-m-Y') }}</td>
