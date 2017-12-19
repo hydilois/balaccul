@@ -82,10 +82,7 @@ class MemberEditType extends AbstractType
         )
         ->add('witnessName')
 
-        ->add('phoneNumber')
-        // ->add('registrationFees')
-        // ->add('buildingFees')
-        ;
+        ->add('phoneNumber');
     }
     
     /**

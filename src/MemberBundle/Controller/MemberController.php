@@ -122,19 +122,12 @@ class MemberController extends Controller
      * @Route("/{id}/edit", name="member_edit")
      * @Method({"GET", "POST"})
      */
-    public function editAction(Request $request, Member $member)
-    {
+    public function editAction(Request $request, Member $member){
         $deleteForm = $this->createDeleteForm($member);
         $editForm = $this->createForm('MemberBundle\Form\MemberEditType', $member);
         $editForm->handleRequest($request);
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
-            
-            $buildingFees = $this->getDoctrine()->getManager()->getRepository('ClassBundle:InternalAccount')->find(10);
-            $buildingFees->setAmount($buildingFees->getAmount() + $member->getBuildingFees());
-
-            $this->getDoctrine()->getManager()->persist($buildingFees);
-
             $this->getDoctrine()->getManager()->flush();
             return $this->redirectToRoute('member_index');
         }
