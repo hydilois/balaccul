@@ -17,7 +17,7 @@ class AgencyController extends Controller
     /**
      * Lists all agency entities.
      *
-     * @Route("/", name="agency_index")
+     * @Route("/list", name="agency_index")
      * @Method("GET")
      */
     public function indexAction()

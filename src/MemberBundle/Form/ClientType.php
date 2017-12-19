@@ -18,14 +18,16 @@ class ClientType extends AbstractType
         $builder
         ->add('name')
         // ->add('idNumber')
-        ->add('collector', EntityType::class,[
-                'class' => 'UserBundle:Utilisateur',
-                'query_builder' => function(EntityRepository $er){
-                         return $er->createQueryBuilder('u')
-                            ->innerJoin('UserBundle:Groupe','gr','WITH','u.groupe = gr.id')
-                            ->where('gr.id = 3');
-                        }
-            ])
+        ->add('collector'
+            // , EntityType::class,[
+            //     'class' => 'UserBundle:Utilisateur',
+            //     'query_builder' => function(EntityRepository $er){
+            //              return $er->createQueryBuilder('u')
+            //                 ->innerJoin('UserBundle:Groupe','gr','WITH','u.groupe = gr.id')
+            //                 ->where('gr.id = 3');
+            //             }
+            // ]
+            )
         ;
     }
     

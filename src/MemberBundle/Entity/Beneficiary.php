@@ -50,6 +50,15 @@ class Beneficiary
      */
     private $ratio;
 
+    public function __toString(){
+        return $this->name;
+        // return $this->name." -- ".$this->memberNumber;
+    }
+
+    public function __construct(){
+        $this->ratio = 0;
+    }
+
 
     /**
      * Get id

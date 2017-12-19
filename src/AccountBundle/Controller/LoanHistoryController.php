@@ -78,10 +78,7 @@ class LoanHistoryController extends Controller
     public function loanPaymentAction(){
         $em = $this->getDoctrine()->getManager();
 
-        $loans = $em->getRepository('AccountBundle:Loan')->findBy(
-            [
-                'status' => true,
-            ]);
+        $loans = $em->getRepository('AccountBundle:Loan')->findBy(['status' => true]);
 
         $loanHistory = new Loanhistory();
         $form = $this->createForm('AccountBundle\Form\LoanHistoryType', $loanHistory);
@@ -311,6 +308,44 @@ class LoanHistoryController extends Controller
             $response["success"] = true;
 
             return new Response(json_encode($response));
+       
+        }catch(Exception $ex){
+
+            $logger("AN ERROR OCCURED");
+            $response["success"] = false;
+            return new Response(json_encode($response));
+        }
+    }
+
+
+    /**
+     * @param Request $request [contains the http request that is passed on]
+     * 
+     * @Route("/close", name="loan_save_close")
+     * @Method({"GET", "POST"})
+     */
+    function closeLoanFromJSON(Request $request){
+        $entityManager = $this->getDoctrine()->getManager();
+        $logger = $this->get('logger');
+        try{
+            $loanJSON = json_decode(json_encode($request->request->get('data')), true);
+
+            if ($loanJSON["unpaidInterest"] > 0 || $loanJSON["loanRemaint"] > 0 ) {
+                        return json_encode([
+                            "message" => "Impossible to close the loan Check the loan unpaid or the unpaid Interest", 
+                            "params" => $loanJSON, 
+                            "status" => "failed"
+                        ]);
+            }
+            $loan = $entityManager->getRepository("AccountBundle:Loan")->find($loanJSON["loanId"]);
+            $loan->setStatus(false);
+            $entityManager->flush();
+
+            return json_encode([
+                "message" => "The loan has been closed", 
+                "params" => $loanJSON,
+                "status" => "success"
+            ]);
        
         }catch(Exception $ex){
 

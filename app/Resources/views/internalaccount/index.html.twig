@@ -1,5 +1,5 @@
 {% extends 'base.html.twig' %}
-{% block title %}{{parent()}} Internalaccount list{% endblock %}
+{% block title %}{{parent()}} Accounts list{% endblock %}
 {% block contenu %}
      <ol class="breadcrumb">
     <li>
@@ -14,18 +14,18 @@
   </ol>
     <div class="row">
         <div class="col-sm-12">
-            <div class="card-box table-responsive"><a name="btn-IA-create" class="btn btn-default pull-left">Add a new account</a><br>
-            <h4 class="m-t-0 header-title text-center"><b>Internal Account list</b></h4>
+            <div class="card-box table-responsive"><a class="btn btn-default pull-left" href="{{path('internalaccount_new')}}">Add a new account</a><br>
+            <h4 class="m-t-0 header-title text-center"><b>Account list</b></h4>
             <table id="datatable-buttons" class="table table-striped table-bordered">
                 <thead>
                     <tr>
                         <th style="width: 100px;">Actions</th>
-                        <th>Name</th>
                         <th>Account Number</th>
-                        <th>Class</th>
-                        <th>Amount</th>
-                        <th>Type</th>
-                        <th>Description</th>
+                        <th>Account Name</th>
+                        <th>Begining Balance</th>
+                        <th>Debit</th>
+                        <th>Credit</th>
+                        <th>Ending Balance</th>
                     </tr>
                 </thead>
                 {% for internalAccount in internalAccounts %}
@@ -42,104 +42,18 @@
                               </ul>
                             </div>
                     </td>
-                    <td>{{ internalAccount.name }}</td>
                     <td>{{ internalAccount.accountNumber }}</td>
-                    <td>
-                        {% if internalAccount.classe.classCategory %}
-                            <span class="label label-info">{{internalAccount.classe.classCategory}}</span> => <span class="label label-success">{{internalAccount.classe}}</span>
-                        {% else %}
-                            <span class="label label-info">{{internalAccount.classe}}</span>
-                        {% endif %}
-                    </td>
-                    <td>{{ internalAccount.amount }}</td>
-                    <td>{{ internalAccount.type }}</td>
-                    <td>{{ internalAccount.description }}</td>
+                    <td>{{ internalAccount.accountName }}</td>
+                    <td>{{ internalAccount.beginingBalance |number_format(0, '.', ' ') }} <b>{{internalAccount.beginBalanceCode}}</b></td>
+                    <td>{{ internalAccount.debit |number_format(0, '.', ' ') }}</td>
+                    <td>{{ internalAccount.credit |number_format(0, '.', ' ')}}</td>
+                    <td>{{ internalAccount.endingBalance |number_format(0, '.', ' ')}} <b>{{internalAccount.endingBalanceCode}}</b></td>
                 </tr>
         {% endfor %}
         </tbody>
     </table>
 </div>
 </div>
-
-    <!-- fenetre modal pour afficher le formulaire de mise à jour d'un poste pour un employé -->
-    <div class="modal fade modal-set-IA-create" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-      <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h3 class="text-center">Add a new account</h3>
-        </div>
-        <div class="modal-body">
-          <div class="row">
-            <div class="col-md-12 col-sm-12 col-xs-12">
-                <div class="col-md-4 col-sm-4">
-                    <div class="form-group">
-                        {{form_label(formIA.accountNumber)}}
-                        {{form_errors(formIA.accountNumber)}}
-                        {{ form_widget(formIA.accountNumber, {'attr':{'class':'form-control'}}) }}
-                    </div>
-                </div>
-                <div class="col-md-4 col-sm-4">
-                    <div class="form-group">
-                        {{form_label(formIA.name)}}
-                        {{form_errors(formIA.name)}}
-                        {{ form_widget(formIA.name, {'attr':{'class':'form-control'}}) }}
-                    </div>
-                </div>
-                <div class="col-md-4 col-sm-4">
-                    <div class="form-group">
-                        {{form_label(formIA.amount, "Initial Amount of the account")}}
-                        {{form_errors(formIA.amount)}}
-                        {{ form_widget(formIA.amount, {'attr':{'class':'form-control'}}) }}
-                    </div>
-                </div>
-                <div class="col-md-6 col-sm-6 template">
-                    <div class="form-group">
-                        {{form_label(formIA.classe)}}
-                        {{form_errors(formIA.classe)}}
-                        {{form_widget(formIA.classe, {'attr':{'class':'form-control'}}) }}
-                    </div>
-                </div>
-                <div class="col-md-6 col-sm-6">
-                    <div class="form-group">
-                        {{form_label(formIA.type)}}
-                        {{form_errors(formIA.type)}}
-                        {{form_widget(formIA.type, {'attr':{'class':'form-control'}}) }}
-                    </div>
-                </div>
-                <div class="row" id="zoneSubClasse">
-                    <div class="col-md-12 col-sm-12 col-xs-12 subClasse_container">
-                            
-                    </div>
-                </div>
-                <div class="col-md-12 col-sm-12">
-                    <div class="form-group">
-                        {{form_label(formIA.description)}}
-                        {{form_errors(formIA.description)}}
-                        {{ form_widget(formIA.description, {'attr':{'class':'form-control'}}) }}
-                    </div>
-                </div>
-                <div class="col-md-1 col-sm-1 col-xs-1">
-                    <div class="form-group">
-                        <table>
-                            <tr>
-                                <td>
-                                    <a href="#" class="btn btn-default" name="save-account">Save</a>
-                                </td>
-                                <td>&nbsp;&nbsp;</td>
-                                <td>
-                                    <a class="btn btn-primary" href="#" name="reset-data">Reset form</a>
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
-                </div>
-        </div>
-    </div>
-    </div>
-    </div>
-    </div>
-</div>
-    <select name="" class="selecteur-zone form-control" id=""></select>
 
 </div>
         

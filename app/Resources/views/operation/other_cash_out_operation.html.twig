@@ -1,0 +1,147 @@
+{% extends 'base.html.twig' %}
+{% block title %} {{ parent() }} Cash Out operation{% endblock %}
+{% block contenu %}
+    <ol class="breadcrumb">
+    <li>
+      <a href="#">BALACCUL</a>
+    </li>
+    <li>
+      <a href="#">Operation</a>
+    </li>
+    <li class="active">
+      Other Cash Out
+    </li>
+  </ol>
+            <h1 class="text-center">OTHER CASH OUT OPERATION</h1>
+        <form target="_blank" method="POST" action="{{ path('other_operation_cash_out_save') }}">
+        <section class="col-lg-6">
+            <fieldset class="fadeInDown animated">
+                <legend>Purposes</legend>
+                <div class="form-group">
+                            <label class="control-label col-sm-4">Choose the operation</label>
+                        <select name="accountNumber" class="form-control select2" required="required">
+                        <option value="">&lt;------ Select ------&gt;</option>
+                        {% for account in internalAccounts %}
+                            <option value="{{account.id}}">{{account.accountNumber}} -- {{account.accountName}} </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="">Representative or beneficiary</label>
+                    <input required="required" name="representative" type="text" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label for="">Amount</label>
+                    <input name="amount" type="number" min="0" class="form-control" value="0" />
+                </div>
+                    <div class="form-group">
+                        <input class="btn btn-default" type="submit" value="Save">
+                    </div>
+            </fieldset>
+        </section>
+        <section  class="col-lg-6">
+            <fieldset class="fadeInDown animated">
+                <legend>Cash Breakdown</legend>
+
+                <div class="row">
+                    <div class="col-md-offset-3 col-lg-offset-3 col-md-6 col-lg-6">
+                        <span class="btn btn-app" style="font-size: 20px;">
+                            <span class="badge bg-navy">Amount Received</span>
+                                       <input type="number" value="0" disabled="disabled" min="0" class="form-control text-center amount">
+                        </span>
+                    </div>
+                    <div class="col-lg-12">
+                    <table id="analytics" class="table table-bordered table-striped">
+                        <tr>
+                            <th><input type="text" value="10000" class="form-control text-center" disabled="disabled"> </th>
+                            <td><input type="text" class="form-control text-center" value="x" disabled="disabled"> </td>
+                            <td><input class="form-control analytic" required="required" name="10000" type="number" value="0" min="0"/></td>
+                            <td><input type="text" class="form-control text-center" value="=" disabled="disabled"> </td>
+                            <td><input type="number" class="form-control text-center cashResult" disabled="disabled" value="0"></td>
+                        </tr>
+                        <tr>
+                            <th><input type="text" value="5000" class="form-control text-center" disabled="disabled"> </th>
+                            <td><input type="text" class="form-control text-center" value="x" disabled="disabled"> </td>
+                            <td><input class="form-control analytic" required="required" name="5000" type="number" value="0" min="0"/></td>
+                            <td> <input type="text" class="form-control text-center" value="=" disabled="disabled"> </td>
+                            <td><input type="number" class="form-control text-center cashResult" disabled="disabled" value="0"></td>
+                        </tr>
+                        <tr>
+                            <th><input type="text" value="2000" class="form-control text-center" disabled="disabled"> </th>
+                            <td><input type="text" class="form-control text-center" value="x" disabled="disabled"> </td>
+                            <td><input class="form-control analytic" required="required" name="2000" type="number" value="0" min="0"/></td>
+                            <td> <input type="text" class="form-control text-center" value="=" disabled="disabled"> </td>
+                            <td><input type="number" class="form-control text-center cashResult" disabled="disabled" value="0"></td>
+                        </tr>
+                        <tr>
+                            <th><input type="text" value="1000" class="form-control text-center" disabled="disabled"> </th>
+                            <td><input type="text" class="form-control text-center" value="x" disabled="disabled"> </td>
+                            <td><input class="form-control analytic" required="required" name="1000" type="number" value="0" min="0"/></td>
+                            <td> <input type="text" class="form-control text-center" value="=" disabled="disabled"> </td>
+                            <td><input type="number" class="form-control text-center cashResult" disabled="disabled" value="0"></td>
+                        </tr>
+                        <tr>
+                            <th><input type="text" value="500" class="form-control text-center" disabled="disabled"> </th>
+                            <td><input type="text" class="form-control text-center" value="x" disabled="disabled"> </td>
+                            <td><input class="form-control analytic" required="required" name="500" type="number" value="0" min="0"/></td>
+                            <td> <input type="text" class="form-control text-center" value="=" disabled="disabled"> </td>
+                            <td><input type="number" class="form-control text-center cashResult" disabled="disabled" value="0"></td>
+                        </tr>
+                        <tr>
+                            <th><input type="text" value="100" class="form-control text-center" disabled="disabled"> </th>
+                            <td><input type="text" class="form-control text-center" value="x" disabled="disabled"> </td>
+                            <td><input class="form-control analytic" required="required" name="100" type="number" value="0" min="0"/></td>
+                            <td> <input type="text" class="form-control text-center" value="=" disabled="disabled"> </td>
+                            <td><input type="number" class="form-control text-center cashResult" disabled="disabled" value="0"></td>
+                        </tr>
+                        <tr>
+                            <th><input type="text" value="50" class="form-control text-center" disabled="disabled"> </th>
+                            <td><input type="text" class="form-control text-center" value="x" disabled="disabled"> </td>
+                            <td><input class="form-control analytic" required="required" name="50" type="number" value="0" min="0"/></td>
+                            <td> <input type="text" class="form-control text-center" value="=" disabled="disabled"> </td>
+                            <td><input type="number" class="form-control text-center cashResult" disabled="disabled" value="0"></td>
+                        </tr>
+                        <tr>
+                            <th><input type="text" value="25" class="form-control text-center" disabled="disabled"> </th>
+                            <td><input type="text" class="form-control text-center" value="x" disabled="disabled"> </td>
+                            <td><input class="form-control analytic" required="required" name="25" type="number" value="0" min="0"/></td>
+                            <td> <input type="text" class="form-control text-center" value="=" disabled="disabled"> </td>
+                            <td><input type="number" class="form-control text-center cashResult" disabled="disabled" value="0"></td>
+                        </tr>
+                        <tr>
+                            <th><input type="text" value="10" class="form-control text-center" disabled="disabled"> </th>
+                            <td><input type="text" class="form-control text-center" value="x" disabled="disabled"> </td>
+                            <td><input class="form-control analytic" required="required" name="10" type="number" value="0" min="0"/></td>
+                            <td> <input type="text" class="form-control text-center" value="=" disabled="disabled"> </td>
+                            <td><input type="number" class="form-control text-center cashResult" disabled="disabled" value="0"></td>
+                        </tr>
+                        <tr>
+                            <th><input type="text" value="5" class="form-control text-center" disabled="disabled"> </th>
+                            <td><input type="text" class="form-control text-center" value="x" disabled="disabled"> </td>
+                            <td><input class="form-control analytic" required="required" name="5" type="number" value="0" min="0"/></td>
+                            <td> <input type="text" class="form-control text-center" value="=" disabled="disabled"> </td>
+                            <td><input type="number" class="form-control text-center cashResult" disabled="disabled" value="0"></td>
+                        </tr>
+                        <tr>
+                            <th><input type="text" value="1" class="form-control text-center" disabled="disabled"> </th>
+                            <td><input type="text" class="form-control text-center" value="x" disabled="disabled"> </td>
+                            <td><input class="form-control analytic" required="required" name="1" type="number" value="0" min="0"/></td>
+                            <td> <input type="text" class="form-control text-center" value="=" disabled="disabled"> </td>
+                            <td><input type="number" class="form-control text-center cashResult" disabled="disabled" value="0"></td>
+                        </tr>
+                    </table>
+                    <table class="table table-bordered table-striped">
+                        <tr>
+                            <td colspan="2"></td>
+                            <th>TOTAL</th>
+                            <td><input type="text" class="form-control text-center totalCash" name="totalAnalytics" readonly="readonly" value="0"></td>
+                        </tr>
+                    </table>
+                    </div>
+                </div>
+            </fieldset>
+        </section>
+    </form>
+        {% include './operation/extras.css.html.twig' %}
+        {% include './operation/extras_cash_in.js.html.twig' %}
+{% endblock %}

@@ -6,8 +6,8 @@
     <table class="head">
         <tr>
             <td class="60p">
-                 <b>{{agency.abreviation}}</b><br/>
                  <b>{{agency.name}}</b><br>
+                 <b>HEAD OFFICE {{agency.abreviation}}</b><br/>
                  <b>Tel: {{agency.phoneNumber}}</b>
             </td>
             <td  style="text-align: right;" class="40p">
@@ -31,32 +31,34 @@
         </tr>
     </table>
    <table class="zoneoperation">
-        <tr>
-            <td  class="75p"> 
-                    Account Number: <b> 
-                            {{member.memberNumber}}
-                            </b>
+        <tr>{% if member %}
+            <td  class="75p">
+                    Account Name: <b>    
+                        {{member.name}}
+                </b>
             </td>
-            <td style="text-align: center; border-bottom: 1px solid black">Amount</td>
+            {% else %}
+                <td class="75p"></td>
+        {% endif %}
+            <td style="text-align: center; border-bottom: 1px solid black">AMOUNT</td>
         </tr>
         <tr>
             <td colspan="1" class="75p" style="text-align: left; border-right: 1px solid black"> 
-                    Account Name: <b> 
-                    {% if testMember %}
-                        {{member.name}}
-                    {% else %}
-                        {{member.socialReason}}
-                    {% endif %}
-                </b>
             </td>
-            <td style="border:1px solid black; text-align:center; font-size:20px" class="25p"><b>{{totalTransaction}}</b></td>
+            <td style="border:1px solid black; text-align:center; font-size:20px" class="25p"><b>{{totalTransaction |number_format(0, '.', ' ')}}</b></td>
         </tr>
+        </table>
+        <table>
+        <tr>
+            <td class="10p"></td>
+            <td class="90p" style="text-align:right">In letters: <b>{{numberInWord |upper}} FCFA</b></td>
+            </tr>
+        </table>
+        <table>
         {% if representative %}
             <tr>
                 <td colspan="1" class="75p" style="text-align: left;"> Representative: 
-                    <b>
-                        {{representative|upper}}
-                    </b>
+                    <b>{{representative|upper}}</b>
                 </td>
                 <td class="25"></td>
             </tr>
@@ -71,65 +73,26 @@
                         {% if accountOperations %}
                             {% for operation in accountOperations %}
                                 <tr>
-                                    <td class="50p">
-                                        {% if operation.savingAccount %}
-                                             Savings
-                                        {% elseif operation.shareAccount %}
-                                             Shares
-                                        {% else %}
-                                             Deposits
-                                        {% endif %}
+                                    <td class="75p">
+                                             {{operation.account}}
                                     </td>
-                                    <td class="50p">{{operation.amount}}</td>
+                                    <td class="25p">{{operation.amount |number_format(0, '.', ' ')}}</td>
                                 </tr>
                                 {% set totalAcccountOperation = totalAcccountOperation + operation.amount %}
                             {% endfor %}
-
-                        {% endif %}
-                        {% if loanhistory.currentUser %}
-                            {% if loanhistory.monthlyPayement %}
-                            <tr>
-                                <td class="50p">
-                                    Main Loan Repayment
-                                </td>
-                                <td class="50p">{{loanhistory.monthlyPayement}}</td>
-                            </tr>
-                                {% set totalAcccountOperation = totalAcccountOperation + loanhistory.monthlyPayement %}
-                            {% endif %}
-                            {% if loanhistory.interest %}
-                                <tr>
-                                    <td class="50p">
-                                        Loan Interest
-                                    </td>
-                                    <td class="50p">{{loanhistory.interest}}</td>
-                                </tr>
-                                    {% set totalAcccountOperation = totalAcccountOperation + loanhistory.interest %}
-                            {% endif %}
-                        {% endif %}
-                        {% if others %}
-                            {% for other in others %}
-                                <tr>
-                                    <td class="50p">
-                                        {{other.name}}
-                                    </td>
-                                    <td class="50p">{{other.value}}</td>
-                                </tr>
-                                {% set totalAcccountOperation = totalAcccountOperation + other.value %}
-                            {% endfor %}
                         {% endif %}
                             <tr>
-                                <td class="50p" style="border-bottom:1px solid black; height: 2px"></td>
-                                <td class="50p" style="border-bottom:1px solid black; height: 2px"></td>
+                                <td class="75p" style="border-bottom:1px solid black; height: 2px"></td>
+                                <td class="15p" style="border-bottom:1px solid black; height: 2px"></td>
                             </tr>
                             <tr>
-                                <td class="50p"><b>TOTAL</b></td>
-                                <td class="50p">{{totalAcccountOperation}}</td>
+                                <td class="75p"><b>TOTAL</b></td>
+                                <td class="25p">{{totalAcccountOperation |number_format(0, '.', ' ')}}</td>
                             </tr>
                     </table>
-                {# </div> #}
             </td>
             <td class="50p">
-                <h5 style="text-align: center">Analytics</h5>
+                <h5 style="text-align: center">Cash Breakdown</h5>
                     <table class="zoneOperation">
                         {% set totalMoney = 0 %}
                         {% for money in analytics %}
@@ -138,7 +101,7 @@
                                 <td style="text-align:right" class="50p">{{money.name}}    x   {{money.value}} =  </td>
                                 {% set total = 0 %}
                                 {% set total = money.value * money.name %}
-                                <td style="text-align:right" class="50p">{{total}}</td>
+                                <td style="text-align:right" class="50p">{{total |number_format(0, '.', ' ')}}</td>
                             </tr>
                             {% set totalMoney = totalMoney + total %}
                             {% endif %}
@@ -149,7 +112,7 @@
                         </tr>
                         <tr>
                             <td style="text-align:right;  height: 25px" class="50p"><b>TOTAL</b></td>
-                            <td style="text-align:right; height: 25px" class="50p">{{totalMoney}}</td>
+                            <td style="text-align:right; height: 25px" class="50p">{{totalMoney |number_format(0, '.', ' ')}}</td>
                         </tr>
                     </table>
             </td>
@@ -157,8 +120,8 @@
     </table>
     <table style="margin-bottom:0px">
         <tr>
-            <td class="25p" style="border-bottom:1px dashed black;border-right:1px dashed black; text-align:center">MEMBER</td>
-            <td class="25p" style="border-bottom:1px dashed black; text-align:center;">CASHER</td>
+            <td class="25p" style="border-bottom:1px dashed black;border-right:1px dashed black; text-align:center">Member's signature</td>
+            <td class="25p" style="border-bottom:1px dashed black; text-align:center;">Casher's signature</td>
         </tr>
         <tr>
             <td class="15p" style="border-right:1px dashed black">
@@ -170,14 +133,18 @@
         </tr>
     </table>
 
+
+
     ------------------------------------------------------------------------------------------------------------------------------------------------------------
-    <br>
+    <br><br>
+
+
 
      <table class="head">
          <tr>
              <td class="60p">
-                  <b>{{agency.abreviation}}</b><br/>
                   <b>{{agency.name}}</b><br>
+                  <b>HEAD OFFICE {{agency.abreviation}}</b><br/>
                   <b>Tel: {{agency.phoneNumber}}</b>
              </td>
              <td  style="text-align: right;" class="40p">
@@ -201,32 +168,34 @@
          </tr>
      </table>
     <table class="zoneoperation">
-         <tr>
-             <td  class="75p"> 
-                     Account Number: <b> 
-                             {{member.memberNumber}}
-                             </b>
+         <tr>{% if member %}
+             <td  class="75p">
+                     Account Name: <b>    
+                         {{member.name}}
+                 </b>
              </td>
-             <td style="text-align: center; border-bottom: 1px solid black">Amount</td>
+             {% else %}
+                 <td class="75p"></td>
+         {% endif %}
+             <td style="text-align: center; border-bottom: 1px solid black">AMOUNT</td>
          </tr>
          <tr>
              <td colspan="1" class="75p" style="text-align: left; border-right: 1px solid black"> 
-                     Account Name: <b> 
-                     {% if testMember %}
-                         {{member.name}}
-                     {% else %}
-                         {{member.socialReason}}
-                     {% endif %}
-                 </b>
              </td>
-             <td style="border:1px solid black; text-align:center; font-size:20px" class="25p"><b>{{totalTransaction}}</b></td>
+             <td style="border:1px solid black; text-align:center; font-size:20px" class="25p"><b>{{totalTransaction |number_format(0, '.', ' ')}}</b></td>
          </tr>
+         </table>
+         <table>
+         <tr>
+             <td class="10p"></td>
+             <td class="90p" style="text-align:right">In letters: <b>{{numberInWord |upper}} FCFA</b></td>
+             </tr>
+         </table>
+         <table>
          {% if representative %}
              <tr>
                  <td colspan="1" class="75p" style="text-align: left;"> Representative: 
-                     <b>
-                         {{representative|upper}}
-                     </b>
+                     <b>{{representative|upper}}</b>
                  </td>
                  <td class="25"></td>
              </tr>
@@ -241,65 +210,26 @@
                          {% if accountOperations %}
                              {% for operation in accountOperations %}
                                  <tr>
-                                     <td class="50p">
-                                         {% if operation.savingAccount %}
-                                              Savings
-                                         {% elseif operation.shareAccount %}
-                                              Shares
-                                         {% else %}
-                                              Deposits
-                                         {% endif %}
+                                     <td class="75p">
+                                              {{operation.account}}
                                      </td>
-                                     <td class="50p">{{operation.amount}}</td>
+                                     <td class="25p">{{operation.amount |number_format(0, '.', ' ')}}</td>
                                  </tr>
                                  {% set totalAcccountOperation = totalAcccountOperation + operation.amount %}
                              {% endfor %}
-
-                         {% endif %}
-                         {% if loanhistory.currentUser %}
-                             {% if loanhistory.monthlyPayement %}
-                             <tr>
-                                 <td class="50p">
-                                     Main Loan Repayment
-                                 </td>
-                                 <td class="50p">{{loanhistory.monthlyPayement}}</td>
-                             </tr>
-                                 {% set totalAcccountOperation = totalAcccountOperation + loanhistory.monthlyPayement %}
-                             {% endif %}
-                             {% if loanhistory.interest %}
-                                 <tr>
-                                     <td class="50p">
-                                         Loan Interest
-                                     </td>
-                                     <td class="50p">{{loanhistory.interest}}</td>
-                                 </tr>
-                                     {% set totalAcccountOperation = totalAcccountOperation + loanhistory.interest %}
-                             {% endif %}
-                         {% endif %}
-                         {% if others %}
-                             {% for other in others %}
-                                 <tr>
-                                     <td class="50p">
-                                         {{other.name}}
-                                     </td>
-                                     <td class="50p">{{other.value}}</td>
-                                 </tr>
-                                 {% set totalAcccountOperation = totalAcccountOperation + other.value %}
-                             {% endfor %}
                          {% endif %}
                              <tr>
-                                 <td class="50p" style="border-bottom:1px solid black; height: 2px"></td>
-                                 <td class="50p" style="border-bottom:1px solid black; height: 2px"></td>
+                                 <td class="75p" style="border-bottom:1px solid black; height: 2px"></td>
+                                 <td class="15p" style="border-bottom:1px solid black; height: 2px"></td>
                              </tr>
                              <tr>
-                                 <td class="50p"><b>TOTAL</b></td>
-                                 <td class="50p">{{totalAcccountOperation}}</td>
+                                 <td class="75p"><b>TOTAL</b></td>
+                                 <td class="25p">{{totalAcccountOperation |number_format(0, '.', ' ')}}</td>
                              </tr>
                      </table>
-                 {# </div> #}
              </td>
              <td class="50p">
-                 <h5 style="text-align: center">Analytics</h5>
+                 <h5 style="text-align: center">Cash Breakdown</h5>
                      <table class="zoneOperation">
                          {% set totalMoney = 0 %}
                          {% for money in analytics %}
@@ -308,7 +238,7 @@
                                  <td style="text-align:right" class="50p">{{money.name}}    x   {{money.value}} =  </td>
                                  {% set total = 0 %}
                                  {% set total = money.value * money.name %}
-                                 <td style="text-align:right" class="50p">{{total}}</td>
+                                 <td style="text-align:right" class="50p">{{total |number_format(0, '.', ' ')}}</td>
                              </tr>
                              {% set totalMoney = totalMoney + total %}
                              {% endif %}
@@ -319,7 +249,7 @@
                          </tr>
                          <tr>
                              <td style="text-align:right;  height: 25px" class="50p"><b>TOTAL</b></td>
-                             <td style="text-align:right; height: 25px" class="50p">{{totalMoney}}</td>
+                             <td style="text-align:right; height: 25px" class="50p">{{totalMoney |number_format(0, '.', ' ')}}</td>
                          </tr>
                      </table>
              </td>
@@ -327,8 +257,8 @@
      </table>
      <table style="margin-bottom:0px">
          <tr>
-             <td class="25p" style="border-bottom:1px dashed black;border-right:1px dashed black; text-align:center">MEMBER</td>
-             <td class="25p" style="border-bottom:1px dashed black; text-align:center;">CASHER</td>
+             <td class="25p" style="border-bottom:1px dashed black;border-right:1px dashed black; text-align:center">Member's signature</td>
+             <td class="25p" style="border-bottom:1px dashed black; text-align:center;">Casher's signature</td>
          </tr>
          <tr>
              <td class="15p" style="border-right:1px dashed black">

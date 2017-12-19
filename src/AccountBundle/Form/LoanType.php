@@ -14,7 +14,6 @@ class LoanType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options){
         $builder
-        // ->add('deadline')
         ->add('deadline', DateType::class, 
             [
                 'widget' => 'single_text',

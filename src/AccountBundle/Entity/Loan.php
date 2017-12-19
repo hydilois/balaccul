@@ -83,12 +83,6 @@ class Loan{
      */
     private $physicalMember;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="MemberBundle\Entity\MoralMember")
-     * @ORM\JoinColumn(name="id_moral_member")
-     */
-    private $moralMember;
-
 
     /**
      * @var string
@@ -106,13 +100,15 @@ class Loan{
         $this->dateLoan = new \DateTime('now');
 
         $this->loanProcessingFees = 0;
+        $this->loanAmount = 0;
         
         $this->rate = 2;
 
         $this->monthlyPayment = 0;
+        $this->loanCode = "BL-";
 
         $this->deadline = new \DateTime('now') ;
-        $this->deadline->setTimestamp(strtotime('+6 month'));
+        $this->deadline->setTimestamp(strtotime('+1 month'));
 
 
     }
@@ -277,30 +273,6 @@ class Loan{
     public function getPhysicalMember()
     {
         return $this->physicalMember;
-    }
-
-    /**
-     * Set moralMember
-     *
-     * @param \MemberBundle\Entity\MoralMember $moralMember
-     *
-     * @return Loan
-     */
-    public function setMoralMember(\MemberBundle\Entity\MoralMember $moralMember = null)
-    {
-        $this->moralMember = $moralMember;
-
-        return $this;
-    }
-
-    /**
-     * Get moralMember
-     *
-     * @return \MemberBundle\Entity\MoralMember
-     */
-    public function getMoralMember()
-    {
-        return $this->moralMember;
     }
 
     /**

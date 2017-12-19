@@ -38,6 +38,7 @@ $(function() {
          */
         ClientEndpoint.prototype.initializeView = function() {
             console.log("Here stands  DAILY SERVICE");
+            $('#clientBox').css({'overflow-x' : 'scroll'});
         }
 
         /**

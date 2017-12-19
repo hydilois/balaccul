@@ -1,56 +1,43 @@
 security:
     access_control:
         -
-            path: ^/eleve/list
+            path: ^/internalaccount/list
             roles:
-                - ROLE_USER
+                - ROLE_ADMINISTRATOR
+                - ROLE_MANAGER
+                - ROLE_BOARD
         -
-            path: ^/eleve/new
+            path: ^/internalaccount/new
             roles:
-                - ROLE_USER
+                - ROLE_ADMINISTRATOR
+                - ROLE_MANAGER
+                - ROLE_BOARD
         -
-            path: ^/annee
+            path: ^/classe/list
             roles:
-                - ROLE_SUPER_ADMIN
+                - ROLE_ADMINISTRATOR
+                - ROLE_MANAGER
+                - ROLE_BOARD
         -
-            path: ^/annee/new
+            path: ^/classe/new
             roles:
-                - ROLE_SUPER_ADMIN
+                - ROLE_ADMINISTRATOR
+                - ROLE_MANAGER
+                - ROLE_BOARD
         -
-            path: ^/eleve/import/fileform
+            path: ^/loanparameter/new
             roles:
-                - ROLE_SUPER_ADMIN
+                - ROLE_ADMINISTRATOR
+                - ROLE_MANAGER
+                - ROLE_BOARD
         -
-            path: ^/transfert/
+            path: ^/loanparameter/list
             roles:
-                - ROLE_SUPER_ADMIN
-        -
-            path: ^/examen
-            roles:
-                - ROLE_SUPER_ADMIN
-        -
-            path: ^/annee/[0-9]+/edit
-            roles:
-                - ROLE_SUPER_ADMIN
-        -
-            path: ^/annee/[0-9]+/show
-            roles:
-                - ROLE_SUPER_ADMIN
-        
-        -
-            path: ^/statistiques/periodique
-            roles:
-                - ROLE_USER
-        -
-            path: ^/statistiques/journalier
-            roles:
-                - ROLE_USER
+                - ROLE_ADMINISTRATOR
+                - ROLE_MANAGER
+                - ROLE_BOARD
         -
             path: ^/eleve/[0-9]+/show
-            roles:
-                - ROLE_USER
-        -
-            path: ^/eleve/[0-9]+/edit
             roles:
                 - ROLE_USER
         -

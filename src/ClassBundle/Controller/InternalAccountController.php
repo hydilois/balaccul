@@ -20,20 +20,20 @@ class InternalAccountController extends Controller
     /**
      * Lists all internalAccount entities.
      *
-     * @Route("/", name="internalaccount_index")
+     * @Route("/list", name="internalaccount_index")
      * @Method("GET")
      */
     public function indexAction(){
         $em = $this->getDoctrine()->getManager();
         
         $internalAccount = new InternalAccount();
-        $formIA = $this->createForm('ClassBundle\Form\InternalAccountType', $internalAccount);
+        // $formIA = $this->createForm('ClassBundle\Form\InternalAccountType', $internalAccount);
 
         $internalAccounts = $em->getRepository('ClassBundle:InternalAccount')->findAll();
 
         return $this->render('internalaccount/index.html.twig', array(
             'internalAccounts' => $internalAccounts,
-            'formIA' => $formIA->createView(),
+            // 'formIA' => $formIA->createView(),
         ));
     }
 
@@ -121,20 +121,19 @@ class InternalAccountController extends Controller
      * @Method({"GET", "POST"})
      */
     public function editAction(Request $request, InternalAccount $internalAccount){
-        $deleteForm = $this->createDeleteForm($internalAccount);
+        // $deleteForm = $this->createDeleteForm($internalAccount);
         $editForm = $this->createForm('ClassBundle\Form\InternalAccountEditType', $internalAccount);
         $editForm->handleRequest($request);
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
             $this->getDoctrine()->getManager()->flush();
-
             return $this->redirectToRoute('internalaccount_index');
         }
 
         return $this->render('internalaccount/edit.html.twig', array(
             'internalAccount' => $internalAccount,
             'edit_form' => $editForm->createView(),
-            'delete_form' => $deleteForm->createView(),
+            // 'delete_form' => $deleteForm->createView(),
         ));
     }
 

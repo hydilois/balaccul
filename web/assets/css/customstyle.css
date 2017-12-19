@@ -25,7 +25,7 @@ File: Pages
   border-color: #ddd;
   border-bottom-color: #ddd;
 }
-.btn.btn-default:hover,
+/*.btn.btn-default:hover,*/
 .btn.btn-default:active,
 .btn.btn-default.hover {
   background-color: #f4f4f4!important;

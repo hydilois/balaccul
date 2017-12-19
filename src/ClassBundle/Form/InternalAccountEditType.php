@@ -14,35 +14,14 @@ class InternalAccountEditType extends AbstractType
     /**
      * {@inheritdoc}
      */
-    public function buildForm(FormBuilderInterface $builder, array $options)
-    {
+    public function buildForm(FormBuilderInterface $builder, array $options){
         $builder
-        ->add('name')
-        // ->add('accountNumber')
-        ->add('description')
-        ->add('amount')
-        ->add('type', ChoiceType::class, [
-            'choices' => [
-                'CREDIT' => 'CREDIT',
-                'DEBIT' => 'DEBIT',
-                'UNDEFINED' => 'UNDEFINED'
-            ],
-            "required" =>'required'
-        ])
-        ->add('classe', EntityType::class,
-            [
-                'class' => 'ClassBundle:Classe',
-                'query_builder' => function(EntityRepository $er){
-                    return $er->createQueryBuilder('c')
-                        ->where('c.classCategory is NULL');
-                }, 
-                'required' => true,
-                'attr' => 
-                    [
-                        'data-type' => 'text'
-                    ] 
-                ]
-            )
+        ->add('accountName')
+        // ->add('beginingBalance')
+        // ->add('endingBalance')
+        // ->add('credit')
+        // ->add('debit')
+        // ->add('classe')
         ;
     }
     

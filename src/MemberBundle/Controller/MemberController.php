@@ -3,6 +3,7 @@
 namespace MemberBundle\Controller;
 
 use MemberBundle\Entity\Member;
+use AccountBundle\Entity\Operation;
 use ConfigBundle\Entity\TransactionIncome;
 use MemberBundle\Entity\Beneficiary;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -24,20 +25,11 @@ class MemberController extends Controller
      * @Route("/", name="member_index")
      * @Method("GET")
      */
-    public function indexAction()
-    {
+    public function indexAction(){
+        
         $entityManager = $this->getDoctrine()->getManager();
 
-        $query  = $entityManager->createQueryBuilder()
-                ->select('m, sh, sa, de')
-                ->from('MemberBundle:Member', 'm')
-                ->leftJoin('AccountBundle:Share', 'sh', 'WITH', 'm.id = sh.physicalMember')
-                ->leftJoin('AccountBundle:Saving', 'sa', 'WITH', 'm.id = sa.physicalMember')
-                ->leftJoin('AccountBundle:Deposit', 'de', 'WITH', 'm.id = de.physicalMember')
-                ->orderBy('m.memberNumber')
-                ->getQuery();
-
-        $members = $query->getScalarResult();
+        $members = $entityManager->getRepository('MemberBundle:Member')->findAll();
 
         return $this->render('member/index.html.twig', array(
             'members' => $members,
@@ -198,18 +190,29 @@ class MemberController extends Controller
     function addNewMemberFromJSON(Request $request){
 
         $entityManager = $this->getDoctrine()->getManager();
-
         $logger = $this->get('logger');
-
         $member = new Member();
-
-        $currentMemberID = 0;
-
-        try{
             //first thing we get the member with the JSON format
             $memberJSON = json_decode(json_encode($request->request->get('data')), true);
+            try{
+                $totalPercent = 0;
+                foreach ($memberJSON["beneficiary"] as $key => $value) {
+                    if ($value['name'] != "") {
+                        $totalPercent += $value['ratio'];
+                    }
+                }
+                if ($totalPercent > 100) {
+                            return json_encode([
+                                "message" => "The Sum of Beneficiary Ratio should not be more than 100 %", 
+                                "params" => $memberJSON, 
+                                "status" => "failed"
+                            ]);
+                }
+            }catch(Exception $ex){
+                $logger->error('SOMETHING WENT WRONG : MemberController : trying to insert Beneficiary');
+            }
 
-
+        try{
             $member->setName($memberJSON["name"]);
             $member->setSex($memberJSON["sex"]);
             $member->setDateOfBirth(new \DateTime($memberJSON["dateOfBirth"]));
@@ -228,21 +231,10 @@ class MemberController extends Controller
             $member->setWitnessName($memberJSON["witnessName"]);
             $member->setPhoneNumber($memberJSON["phoneNumber"]);
             $member->setRegistrationFees($memberJSON["registrationFees"]);
-
-
-            /*register the register income in the month income*/
-
-            $income = new TransactionIncome();
-
-            $income->setAmount($memberJSON["registrationFees"]);
-            $income->setDescription("Member Registration fees. Member number: ".$member->getMemberNumber()." // Member Name: ".$member->getName()." // Amount: ".$income->getAmount());
-
-            //update the cash in hand
-            $cashInHandAccount  = $entityManager->getRepository('ClassBundle:InternalAccount')->find(9);
-            $cashInHandAccount->setAmount($cashInHandAccount->getAmount() + $memberJSON["registrationFees"]);
-
-            $entityManager->persist($cashInHandAccount);
-
+            $member->setShare($memberJSON["share"]);
+            $member->setSaving($memberJSON["saving"]);
+            $member->setDeposit($memberJSON["deposit"]);
+            $member->setBuildingFees($memberJSON["buildingFees"]);
 
             /**
              * making recordds here
@@ -250,12 +242,7 @@ class MemberController extends Controller
              */
         
             $entityManager->persist($member);
-            $entityManager->persist($income);
-
             $entityManager->flush();
-       
-            $currentMemberID = $member->getId();
-        
 
         }catch(Exception $ex){
 
@@ -267,35 +254,108 @@ class MemberController extends Controller
          * At this point we need to register all the dependant objects
          * ---------------------
          */
-        
         try{
-
             foreach ($memberJSON["beneficiary"] as $key => $value) {
+                if ($value['name'] != "") {
+                    $beneficiary = new Beneficiary();
+                    $beneficiary->setIdMember($member);
+                    $beneficiary->setName($value['name']);
+                    $beneficiary->setRelation($value['relation']);
+                    $beneficiary->setRatio($value['ratio']);
 
-                $beneficiary = new Beneficiary();
-
-                $beneficiary->setIdMember($member);
-                $beneficiary->setName($value['name']);
-                $beneficiary->setRelation($value['relation']);
-                $beneficiary->setRatio($value['ratio']);
-
-
-                $entityManager->persist($beneficiary);
-                $entityManager->flush();
-                
+                    $entityManager->persist($beneficiary);
+                    $entityManager->flush();
+                }
             }
         }catch(Exception $ex){
             $logger->error('SOMETHING WENT WRONG : MemberController : trying to insert Beneficiary');
-            #TODO : here we roll back eveything in case it fails
         }
 
-        // $reponse["message"]             = 
-        $response["data"]               = $memberJSON;
-        $response["optionalData"]       = json_encode((array)$member->getMemberNumber());
+        $currentUserId  = $this->get('security.token_storage')->getToken()->getUser()->getId();
+        $currentUser    = $entityManager->getRepository('UserBundle:Utilisateur')->find($currentUserId);
 
-        //we say everything went well
-        $response["success"] = true;
+        /**
+        * Record the member situaton at the the creation
+        */
+        if ($member->getShare() != 0) { //memmber shares is not null
+            $operationShare = new Operation();
+            $operationShare->setIsShare(true);
+            $operationShare->setCurrentUser($currentUser);
+            $operationShare->setAmount($member->getShare());
+            $operationShare->setBalance($member->getShare());
+            $operationShare->setTypeOperation(Operation::TYPE_CASH_IN);
+            $operationShare->setMember($member);
 
-        return new Response(json_encode($response));
+            $entityManager->persist($operationShare);
+
+            $memberShares  = $entityManager->getRepository('ClassBundle:InternalAccount')->find(1);
+            $memberShares->setCredit($memberShares->getCredit() + $member->getShare());
+            $memberShares->setEndingBalance($memberShares->getCredit() - $memberShares->getDebit() + $memberShares->getBeginingBalance());
+
+            $entityManager->persist($memberShares);
+            $entityManager->flush();
+        }
+
+        if ($member->getSaving() != 0) {//Member savings is not null
+            $operationSaving = new Operation();
+            $operationSaving->setIsSaving(true);
+            $operationSaving->setCurrentUser($currentUser);
+            $operationSaving->setAmount($member->getSaving());
+            $operationSaving->setBalance($member->getSaving());
+            $operationSaving->setTypeOperation(Operation::TYPE_CASH_IN);
+            $operationSaving->setMember($member);
+
+            $entityManager->persist($operationSaving);
+
+            $memberSavings  = $entityManager->getRepository('ClassBundle:InternalAccount')->find(44);
+            $memberSavings->setCredit($memberSavings->getCredit() + $member->getSaving());
+            $memberSavings->setEndingBalance($memberSavings->getCredit() - $memberSavings->getDebit() + $memberSavings->getBeginingBalance());
+
+            $entityManager->persist($memberSavings);
+            $entityManager->flush();
+        }
+
+        if ($member->getDeposit() != 0) {//member depost is not null
+            $operationDeposit = new Operation();
+            $operationDeposit->setIsDeposit(true);
+            $operationDeposit->setCurrentUser($currentUser);
+            $operationDeposit->setAmount($member->getDeposit());
+            $operationDeposit->setBalance($member->getDeposit());
+            $operationDeposit->setTypeOperation(Operation::TYPE_CASH_IN);
+            $operationDeposit->setMember($member);
+
+            $entityManager->persist($operationDeposit);
+
+            $memberDeposits  = $entityManager->getRepository('ClassBundle:InternalAccount')->find(42);
+            $memberDeposits->setCredit($memberDeposits->getCredit() + $member->getDeposit());
+            $memberDeposits->setEndingBalance($memberDeposits->getCredit() - $memberDeposits->getDebit() + $memberDeposits->getBeginingBalance());
+
+            $entityManager->flush();
+        }
+
+        
+        if ($member->getRegistrationFees() != 0) {//Member registration fees
+            $memberEntranceFees  = $entityManager->getRepository('ClassBundle:InternalAccount')->find(151);
+            $memberEntranceFees->setCredit($memberEntranceFees->getCredit() + $member->getRegistrationFees());
+            $memberEntranceFees->setEndingBalance($memberEntranceFees->getCredit() - $memberEntranceFees->getDebit() + $memberEntranceFees->getBeginingBalance());
+
+            $entityManager->persist($memberEntranceFees);
+            $entityManager->flush();
+        }
+
+        if ($member->getBuildingFees() != 0) {//Member registration fees
+            $memberBuildingFees  = $entityManager->getRepository('ClassBundle:InternalAccount')->find(6);
+            $memberBuildingFees->setCredit($memberBuildingFees->getCredit() + $member->getBuildingFees());
+            $memberBuildingFees->setEndingBalance($memberBuildingFees->getCredit() - $memberBuildingFees->getDebit() + $memberBuildingFees->getBeginingBalance());
+
+            $entityManager->persist($memberBuildingFees);
+            $entityManager->flush();
+        }
+
+        return json_encode([
+            "message" => "The member has bee saved successfully %", 
+            "params" => $memberJSON, 
+            "status" => "success"
+        ]);
     }
 }

@@ -67,7 +67,7 @@
                         <!-- LOGO -->
                         <div class="topbar-left">
                             <div class="text-center">
-                                <a href="{{path('homepage')}}" class="logo"><i class=" icon-diamond icon-c-logo"></i><span>BALA<i class="md md-album"></i>CCUL</span></a>
+                                <a href="{{path('homepage')}}" class="logo"><i class=" icon-diamond icon-c-logo"></i><span>BALA<i class=" icon-diamond"></i>CCUL</span></a>
                             </div>
                         </div>
 
@@ -81,14 +81,14 @@
                                         </button>
                                         <span class="clearfix"></span>
                                     </div>
-
-                                    <form role="search" class="navbar-left app-search pull-left hidden-xs">
-                                         <input type="text" placeholder="Recherche..." class="form-control">
-                                         <a href=""><i class="fa fa-search"></i></a>
-                                    </form>
-
-
                                     <ul class="nav navbar-nav navbar-right pull-right">
+                                         {# ti-face-smile #}
+                                         <li class="hidden-xs">
+                                            <a href="#" data-target="#" class="dropdown-toggle waves-effect waves-light" data-toggle="dropdown" aria-expanded="true">
+                                                <i class="icon-people"></i> <span class="badge badge-xs badge-info">{{ render(controller('UserBundle:Utilisateur:whoIsOnline')) }}</span>
+                                            </a>
+                                         </li>
+
                                         <li class="dropdown top-menu-item-xs">
                                             <a href="#" data-target="#" class="dropdown-toggle waves-effect waves-light" data-toggle="dropdown" aria-expanded="true">
                                                 <i class="icon-bell"></i> <span id="numberNotif" class="badge badge-xs badge-warning">0</span>
@@ -116,6 +116,9 @@
                                                     </a>
                                                 </li>
                                             </ul>
+                                        </li>
+                                        <li class="hidden-xs">
+                                            <a href="#" id="btn-backup" class="waves-effect waves-light"><i class="icon-support"></i></a>
                                         </li>
                                         <li class="hidden-xs">
                                             <a href="#" id="btn-fullscreen" class="waves-effect waves-light"><i class="icon-size-fullscreen"></i></a>
@@ -151,108 +154,58 @@
                                         <a href="{{path('homepage')}}" class="waves-effect"><i class="ti-home"></i> <span> Home </span></a>
                                     </li>
 
-                                    {% if is_granted("ROLE_COLLECTOR") or is_granted("ROLE_MANAGER") or is_granted("ROLE_ADMINISTRATOR") %}
+                                    {% if is_granted("ROLE_COLLECTOR") or is_granted("ROLE_MANAGER") or is_granted("ROLE_ADMINISTRATOR") or is_granted("ROLE_CASHER") %}
                                          <li class="has_sub">
-                                            <a href="javascript:void(0)" class="waves-effect"><i class="md-today"></i> <span> Daily Service</span> <span class="menu-arrow"></span></a>
+                                            <a href="javascript:void(0)" class="waves-effect"><i class="ti-calendar"></i> <span> Daily Service</span> <span class="menu-arrow"></span></a>
                                             <ul class="list-unstyled">
                                                 <li><a href="{{path('client_index')}}">Clients</a></li>
                                                 <li><a href="{{path('report_client_money')}}">New Collection</a></li>
                                                 <li><a href="{{path('client_charges')}}">Charges</a></li>
-                                                {# <li><a href="{{path('client_daily_service_operations')}}"><span>Operations</span></a></li> #}
                                             </ul>
                                          </li>
                                     {% endif %}
-                                    {% if is_granted("ROLE_MANAGER") or is_granted("ROLE_ADMINISTRATOR") %}
+                                    {% if is_granted("ROLE_MANAGER") or is_granted("ROLE_ADMINISTRATOR") or is_granted("ROLE_CASHER") or is_granted("ROLE_BOARD")   %}
                                     <li class="has_sub">
-                                        <a href="javascript:void(0)" class="waves-effect"><i class="md-input"></i> <span> Cash IN</span> <span class="menu-arrow"></span></a>
+                                        <a href="javascript:void(0)" class="waves-effect"><i class="ti-angle-double-right"></i> <span> Cash IN</span> <span class="menu-arrow"></span></a>
                                         <ul class="list-unstyled">
-                                            <li><a href="{{path('new_credit_operation')}}">From members</a></li>
-                                            <li><a href="{{path('new_cash_in_operation')}}">From members 2</a></li>
-                                            <li class="has_sub">
-                                                <a href="javascript:void(0);" class="waves-effect"><span>Others</span>  <span class="menu-arrow"></span></a>
-                                                <ul style="">
-                                                    <li><a href="{{path('loanhistory_new_payement')}}"><span>Loans Payement</span></a></li>
-                                                    <li><a href="{{path('new_transfert_operation')}}"><span>Transfer</span></a></li>
-                                                    <li><a href="{{path('transactionincome_new')}}"><span>Income</span></a></li>
-                                                    <li><a href="{{path('loanhistory_index')}}"><span>Interest</span></a></li>
-                                                </ul>
-                                            </li>
+                                            <li><a href="{{path('new_cash_in_operation')}}">From members</a></li>
+                                            <li><a href="{{path('other_cash_in_operations')}}">Other Cash IN</a></li>
+                                            <li><a href="{{path('member_new')}}">New Member</a></li>
                                         </ul>
                                      </li>
                                      <li class="has_sub">
-                                        <a href="javascript:void(0)" class="waves-effect"><i class="md-reply-all"></i> <span> Cash OUT</span> <span class="menu-arrow"></span></a>
+                                        <a href="javascript:void(0)" class="waves-effect"><i class="ti-angle-double-left"></i> <span> Cash OUT</span> <span class="menu-arrow"></span></a>
                                         <ul class="list-unstyled">
-                                            <li><a href="{{path('new_debit_operation')}}">For members</a></li>
-                                            <li><a href="{{path('loan_index')}}"><span>Loans</span></a></li>
+                                            <li><a href="{{path('cash_out_operations')}}">For members</a></li>
+                                            <li><a href="{{path('other_cash_out_operations')}}">Other Cash Out</a></li>
+                                            <li><a href="{{path('loan_new')}}"><span>New Loan</span></a></li>
                                         </ul>
                                      </li>
                                      <li class="has_sub">
-                                        <a href="javascript:void(0)" class="waves-effect"><i class="ti-server"></i> <span> Accounts</span> <span class="menu-arrow"></span></a>
-                                        <ul class="list-unstyled">
-                                            <li><a href="{{path('share_index')}}">Shares</a></li>
-                                            <li><a href="{{path('saving_index')}}">Savings</a></li>
-                                            <li><a href="{{path('deposit_index')}}">Deposits</a></li>
-                                        </ul>
-                                     </li>
-                                     <li class="has_sub">
-                                         <a href="javascript:void(0)" class="waves-effect"><i class="md-desktop-mac"></i> <span> Internals Accounts</span> <span class="menu-arrow"></span> </a>
+                                         <a href="javascript:void(0)" class="waves-effect"><i class="ti-files"></i> <span> Reports </span> <span class="menu-arrow"></span> </a>
                                          <ul class="list-unstyled">
-                                             <li><a href="{{path('new_cashin_operation')}}">Cash IN</a></li>
-                                             <li><a href="{{path('new_cashout_operation')}}">Cash OUT</a></li>s
+                                             <li><a href="{{path('report_member_situation')}}">Member Situation</a></li>
+                                             <li><a href="{{path('report_trial_balance')}}">Trial Balance</a></li>
+                                             <li><a href="{{path('operation_index')}}">All Situations</a></li>
+                                             <li><a target="_blank" href="{{path('report_cash_book')}}">Cash Book</a></li>
                                          </ul>
                                      </li>
-                                     <li class="has_sub">
-                                         <a href="javascript:void(0)" class="waves-effect"><i class="md-group"></i> <span> Members </span> <span class="menu-arrow"></span></a>
-                                         <ul class="list-unstyled">
-                                             <li><a href="{{path('member_index')}}">Physical Members</a></li>
-                                             <li><a href="{{path('moralmember_index')}}">Moral Members</a></li>
-                                             <li class="has_sub">
-                                                 <a href="javascript:void(0);" class="waves-effect"><span>New members</span>  <span class="menu-arrow"></span></a>
-                                                 <ul style="">
-                                                     <li><a href="{{path('member_new')}}"><span>New Physical member</span></a></li>
-                                                     <li><a href="{{path('moralmember_new')}}"><span>New Moral member</span></a></li>
-                                                 </ul>
-                                             </li>
-                                         </ul>
-                                      </li>
-                                    <li class="has_sub">
-                                        <a href="javascript:void(0)" class="waves-effect"><i class=" ti-user"></i> <span> Users </span> <span class="menu-arrow"></span> </a>
-                                        <ul class="list-unstyled">
-                                            <li><a href="{{path('utilisateur_index')}}">Consulter</a></li>
-                                        </ul>
-                                    </li>
-                                    <li class="has_sub">
-                                        <a href="javascript:void(0)" class="waves-effect"><i class=" fa fa-file-pdf-o"></i> <span> Reports </span> <span class="menu-arrow"></span> </a>
-                                        <ul class="list-unstyled">
-                                            <li><a href="{{path('report')}}">Report</a></li>
-                                            <li><a href="{{path('report_month')}}">Monthly Report</a></li>
-                                            <li><a href="{{path('operation_index')}}">Account Operations</a></li>
-                                        </ul>
-                                    </li>
-                                    <li class="has_sub">
-                                        <a href="javascript:void(0)" class="waves-effect"><i class=" ti-settings"></i> <span> Settings </span> <span class="menu-arrow"></span> </a>
-                                        <ul class="list-unstyled">
-                                            <li><a href="{{path('classe_index')}}">Classes</a></li>
-                                            <li><a href="{{path('internalaccount_index')}}">Internal Accounts</a></li>
-                                            <li><a href="{{path('agency_index')}}">Agency</a></li>
-                                            <li><a href="{{path('loanparameter_index')}}">Loan Parameter</a></li>
-                                        </ul>
-                                    </li>
+                                     <li><a href="{{path('loanhistory_new_payement')}}"><i class="md-timer"></i><span> Loans Situation</span></a></li>
+
+                                     <li><a href="{{path('member_index')}}"><i class="ti-view-list-alt"></i><span> Members</span></a></li>
                                   {% endif %}
-{#                                     {% for role in app.user.roles %}
-                                        {% if role == "ROLE_SUPER_ADMIN" %}
+                                  {% if is_granted("ROLE_ADMINISTRATOR") or is_granted("ROLE_BOARD")  %}
+                                     <li><a href="{{path('utilisateur_index')}}"><i class="ti-user"></i><span> Users</span></a></li>
                                         <li class="has_sub">
-                                            <a href="javascript:void(0)" class="waves-effect"><i class=" ti-settings"></i><span> Configurations </span> <span class="menu-arrow"></span></a>
+                                            <a href="javascript:void(0)" class="waves-effect"><i class="ti-settings"></i> <span> Settings </span> <span class="menu-arrow"></span> </a>
                                             <ul class="list-unstyled">
-                                                <li><a href="{{path('annee_index')}}">Année</a></li>
-                                                <li><a href="{{path('etablissement_index')}}">Etablissement</a></li>
-                                                <li><a href="{{path('scolarite_index')}}">Scolarité</a></li>
-                                                <li><a href="{{path('examen_index')}}">Examens</a></li>
-                                                <li><a href="{{path('transfert_eleve_index')}}">Transfert</a></li>
+                                                <li><a href="{{path('classe_index')}}">Classes</a></li>
+                                                <li><a href="{{path('internalaccount_index')}}">Internal Accounts</a></li>
+                                                <li><a href="{{path('agency_index')}}">Agency</a></li>
+                                                <li><a href="{{path('loanparameter_index')}}">Loan Parameter</a></li>
                                             </ul>
                                         </li>
-                                        {% endif %}
-                                    {% endfor %} #}
+                                  {% endif %}
                                 </ul>
                                 <div class="clearfix"></div>
                             </div>

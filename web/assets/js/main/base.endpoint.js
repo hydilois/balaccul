@@ -37,8 +37,7 @@ $(function(){
 
 			BaseEndpoint.prototype.setListerners = function(){
 				this.setAlertListener();
-				this.showNotificationsDetails();
-				// this.setupDatePicker();
+				this.validateBackupListener();
 			}
 
 			BaseEndpoint.prototype.postActions = function(){
@@ -55,7 +54,7 @@ $(function(){
 
 			BaseEndpoint.prototype.setAlertListener = function(){
 				this.setAlert();
-				// setInterval(this.setAlert, 20000);
+				setInterval(this.setAlert, 3600000);
 			}
 
 			/**
@@ -79,8 +78,6 @@ $(function(){
 						returnedDataParsed = JSON.parse(returnedData);
 						console.log(returnedDataParsed);
 						data = returnedDataParsed.data;
-						// mvtdata = returnedDataParsed.mouvementdata;
-
 						$('#numberNotif').text(data.length);
 
 						var notificationMenu = $('.dropdown-menu-lg .notification-list');
@@ -88,40 +85,15 @@ $(function(){
 						for(var i in data){
 
 							var singleObject = data[i];
-							// we only happend if not in the array otherwise it gets redundant
-							// if( -1 == $.inArray(singleObject.nh_id, baseEndpoint.alertsArray)){
-
 								var liElement = $('.dropdown-menu-lg .notification-list a.template').clone();
 								liElement.find('.media-heading').text(singleObject.l_loanCode);
 								liElement.find('.detail').text("At least the first installement and interest are not paid");
 								liElement.removeClass('template');
 								liElement.removeClass('hide');
 								liElement.attr("href", URL_ROOT+"/loan/"+singleObject.l_id);
-								// liElement.find('a').attr("alert-type", "notification");
 								liElement.prependTo(notificationMenu);
-								// liElement.fadeIn('slow');
-								
-								// baseEndpoint.alertsArray.push(singleObject.nh_id);
-							// }
+
 						}
-
-						// for(var i in mvtdata){
-
-						// 	var singleObject = mvtdata[i];
-						// 	// we only happend if not in the array otherwise it gets redundant
-						// 	if( -1 == $.inArray(singleObject.mh_id, baseEndpoint.alertsArray)){
-
-						// 		var liElement = $('.notifications-menu .dropdown-menu li.template').clone();
-						// 		liElement.find('.notification-message').text(singleObject.mh_type + " par " + singleObject.u_nom +  " avec le role: " + singleObject.g_nom.toLowerCase());
-						// 		liElement.removeClass('template');
-						// 		liElement.find('a').attr("data-alert", singleObject.mh_id);
-						// 		liElement.find('a').attr("alert-type", "mouvement");
-						// 		liElement.prependTo(notificationMenu);
-						// 		liElement.fadeIn('slow');
-								
-						// 		baseEndpoint.alertsArray.push(singleObject.mh_id);
-						// 	}
-						// }
 
 					}, 
 					error : function(returnedData){
@@ -133,69 +105,41 @@ $(function(){
 				});
 			}
 
-			BaseEndpoint.prototype.showNotificationsDetails = function(){
-				$('body').on('click', 'a[name="notification-link"]', function(){
-					var that = this;
-					var data = JSON.parse(JSON.stringify({
-						"idAlert"   : $(this).data('alert'),
-						"alertType" : $(this).attr('alert-type')
-					}));
-					if ($(this).attr('alert-type') == "mouvement") {
-						console.log("Mouvement");
-						$.ajax({
-							method		: "POST",
-							data 		: {data: data},
-							url 		: URL_ROOT+'/mouvement/getHistory',
-							dataType 	: "JSON",
-							beforeSend 	: function(){
-								$('.navbar-static-top').LoadingOverlay('show');
-							},
-							success: function(returnedData){
-								console.log(returnedData);
-								data = returnedData;
-								$('.navbar-static-top').LoadingOverlay('hide');
-								$('#information p').text(data.data.type +" par "+data.data.user_id.nom+" "+data.data.user_id.prenom+" du groupe"+data.data.user_id.groupe.nom);
-								$('.modal-alert-show').modal('show');
-							},
-							error: function(returnedData){
-								console.log(returnedData);
-								$('.navbar-static-top').LoadingOverlay('hide');
-							},
-							complete: function(){
-								console.log("Fin");
-								$('.navbar-static-top').LoadingOverlay('hide');
-							}
-						});
-					}else{
-						console.log("Notification");
-						$.ajax({
-								method		: "POST",
-								data 		: {data: data},
-								url 		: URL_ROOT+'/notification/getHistory',
-								dataType 	: "JSON",
-								beforeSend 	: function(){
-									$('.navbar-static-top').LoadingOverlay('show');
-								},
-								success: function(returnedData){
-									console.log(returnedData);
-									data = returnedData;
-									$('#information p').text(data.data.type +" par "+data.data.user_id.nom+" "+data.data.user_id.prenom+" du groupe"+data.data.user_id.groupe.nom+" pour la notification de réference "+data.data.notification_id.reference);
-									$('.modal-alert-show').modal('show');
-									$('.navbar-static-top').LoadingOverlay('hide');
-								},
-								error: function(returnedData){
-									console.log(returnedData);
-									$('.navbar-static-top').LoadingOverlay('hide');
-								},
-								complete: function(){
-									console.log("Fin");
-									$('.navbar-static-top').LoadingOverlay('hide');
-								}
-							});
-					}
+			BaseEndpoint.prototype.validateBackupListener = function(){
+				$('body').on('click', '#btn-backup', function(){
+			        var feedbackMessage = JSON.parse(JSON.stringify({
+			            'title' : 'System Backup',
+			            'message' : 'You agree that you want to make a backup of the system ?',
+			            'type' : 'warning',
+			            'confirmeButtonText' : 'Yes I confirm',
+			            'callback' : baseEndpoint.systemBackup
+			        }));
 
-				});
+			        baseEndpoint.feedbackHelper.showLoaderMessage(feedbackMessage.title, feedbackMessage.message, feedbackMessage.type, feedbackMessage.confirmeButtonText, baseEndpoint.systemBackup);
+			    });
+
 			}
+
+			BaseEndpoint.prototype.systemBackup = function(){
+				var data = JSON.parse(JSON.stringify({
+				                "info" : "backup of the system",
+				                }));
+			        $.ajax({
+			            method      : "POST", 
+			            data        : {data : data},
+			            url         : URL_ROOT + "/backup",
+			            dataType    : "JSON",
+			            beforeSend  : function(){
+			            },
+			            success     : function(data){
+			                returnedData = JSON.parse(data);
+			                    baseEndpoint.feedbackHelper.showMessageWithPrompt("System Backup", "The Backup of the system has been done succesfully", "success");
+			            }, 
+			            error : function(returnedData){
+			                baseEndpoint.feedbackHelper.showMessageWithPrompt("Sorry", "A problem occur during the request, please contact the administrator", "error");
+			            },
+			        });
+			    }
 
 			var baseEndpoint = new BaseEndpoint();
 			baseEndpoint.initializeView();

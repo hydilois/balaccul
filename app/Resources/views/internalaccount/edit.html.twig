@@ -1,7 +1,7 @@
 {% extends 'base.html.twig' %}
-
+{% block title %}{{parent()}} Edit Account{% endblock %}
 {% block contenu %}
-    <h1 class="text-center">Internal Account edit</h1>
+    <h1 class="text-center">Account edit</h1>
     {{ form_start(edit_form) }}
           <div class="row">
             <div class="col-md-offset-2 col-md-8 col-sm-8 col-xs-8">
@@ -9,69 +9,46 @@
               </div>
                 <div class="col-md-4 col-sm-4">
                     <div class="form-group">
-                        {# {{form_label(edit_form.accountNumber)}} #}
                         <label for="">Account Number</label>
-                        <input type="text" disabled="true" class="form-control" value="{{internalAccount.accountNumber}}">
-                        {# {{ form_widget(edit_form.accountNumber, {'attr':{'class':'form-control', 'disabled':'true'}}) }} #}
+                        <input type="text" readonly="readonly" class="form-control" value="{{internalAccount.accountNumber}}">
                     </div>
                 </div>
                 <div class="col-md-4 col-sm-4">
                     <div class="form-group">
-                        {{form_label(edit_form.name)}}
-                        {{form_errors(edit_form.name)}}
-                        {{ form_widget(edit_form.name, {'attr':{'class':'form-control'}}) }}
+                        {{form_label(edit_form.accountName)}}
+                        {{form_errors(edit_form.accountName)}}
+                        {{ form_widget(edit_form.accountName, {'attr':{'class':'form-control'}}) }}
                     </div>
                 </div>
                 <div class="col-md-4 col-sm-4">
                     <div class="form-group">
-                        {{form_label(edit_form.amount, "Initial Amount of the account")}}
-                        {{form_errors(edit_form.amount)}}
-                        {{ form_widget(edit_form.amount, {'attr':{'class':'form-control'}}) }}
+                        <label for="">BEGINING BALANCE</label>
+                        <input type="text" readonly="readonly" class="form-control" value="{{internalAccount.beginingBalance}}">
                     </div>
                 </div>
-                <div class="col-md-6 col-sm-6">
+                <div class="col-md-4 col-sm-4">
                     <div class="form-group">
-                        {{form_label(edit_form.classe)}}
-                        {{form_errors(edit_form.classe)}}
-                        {{form_widget(edit_form.classe, {'attr':{'class':'form-control'}}) }}
+                        <label for="">DEBIT</label>
+                       <input type="text" readonly="readonly" class="form-control" value="{{internalAccount.debit}}">
                     </div>
                 </div>
-                <div class="col-md-6 col-sm-6">
+                <div class="col-md-4 col-sm-4">
                     <div class="form-group">
-                        {{form_label(edit_form.type, "Account Type")}}
-                        {{form_errors(edit_form.type)}}
-                        {{form_widget(edit_form.type, {'attr':{'class':'form-control'}}) }}
+                        <label for="">CREDIT</label>
+                        <input type="text" readonly="readonly" class="form-control" value="{{internalAccount.credit}}">
                     </div>
                 </div>
-                <div class="col-md-12 col-sm-12">
+                <div class="col-md-4 col-sm-4">
                     <div class="form-group">
-                        {{form_label(edit_form.description)}}
-                        {{form_errors(edit_form.description)}}
-                        {{ form_widget(edit_form.description, {'attr':{'class':'form-control'}}) }}
+                        <label for="">ENDING BALANCE</label>
+                        <input type="text" readonly="readonly" class="form-control" value="{{internalAccount.endingBalance}}">
                     </div>
-                </div>
-                <div class="col-md-1 col-sm-1 col-xs-1">
+                </div><br>
                     <div class="form-group">
-                        <table>
-                            <tr>
-                                <td>
-                                    <a class="btn btn-primary" href="{{ path('internalaccount_index') }}">Back to the list</a>
-                                </td>
-                                <td>&nbsp;&nbsp;</td>
-                                <td>
-                                    <input class="btn btn-default" type="submit" value="Edit" />
-                                </td>
-                                <td>&nbsp;&nbsp;</td>
+                        <input class="btn btn-default" type="submit" value="Save" />
+                        <a class="btn btn-primary" href="{{ path('internalaccount_index') }}">Back to the list</a>
                                 {{ form_end(edit_form) }}
-                                <td>
-                                    {{ form_start(delete_form) }}
-                                        <input class="btn btn-danger" type="submit" value="Delete">
-                                    {{ form_end(delete_form) }}
-                                </td>
-                            </tr>
-                        </table>
                     </div>
-                </div>
         </div>
     </div>
 {% endblock %}

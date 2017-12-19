@@ -12,9 +12,8 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Operation{
     
-    const TYPE_CREDIT          = "CREDIT";
-    const TYPE_DEBIT           = "DEBIT";
-    const TYPE_TRANSFER        = "TRANSFER";
+    const TYPE_CASH_IN     = "CASH IN";
+    const TYPE_CASH_OUT    = "CASH OUT";
 
     /**
      * @var int
@@ -32,21 +31,13 @@ class Operation{
      */
     private $amount;
 
-
     /**
      * @var int
      *
-     * @ORM\Column(name="transferFees", type="bigint")
+     * @ORM\Column(name="balance", type="bigint")
      */
-    private $transferFees;/*if it is a transfer*/
+    private $balance;
 
-
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="debitFees", type="bigint")
-     */
-    private $debitFees;/*if it is a debit operation for daily saving */
 
     /**
      * @var string
@@ -62,64 +53,23 @@ class Operation{
      */
     private $dateOperation;
 
-
-    /**
-     * @ORM\ManyToOne(targetEntity="AccountBundle\Entity\Saving")
-     * @ORM\JoinColumn(name="id_saving", referencedColumnName="id")
-     */
-    private $savingAccount;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="AccountBundle\Entity\Share")
-     * @ORM\JoinColumn(name="id_share", referencedColumnName="id")
-     */
-    private $shareAccount;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="AccountBundle\Entity\Deposit")
-     * @ORM\JoinColumn(name="id_deposit", referencedColumnName="id")
-     */
-    private $depositAccount;
-
-
-    /**
-     * @ORM\ManyToOne(targetEntity="AccountBundle\Entity\Saving")
-     * @ORM\JoinColumn(name="id_receive_saving", referencedColumnName="id")
-     */
-    private $receiveSavingAccount;/*For transfer operations*/
-
-    /**
-     * @ORM\ManyToOne(targetEntity="AccountBundle\Entity\Share")
-     * @ORM\JoinColumn(name="id_receive_share", referencedColumnName="id")
-     */
-    private $receiveShareAccount;/*For transfer operations*/
-
-    /**
-     * @ORM\ManyToOne(targetEntity="AccountBundle\Entity\Deposit")
-     * @ORM\JoinColumn(name="id_receive_deposit", referencedColumnName="id")
-     */
-    private $receiveDepositAccount;/*For transfer operations*/
-
     /**
      * @ORM\ManyToOne(targetEntity="UserBundle\Entity\Utilisateur")
-     * @ORM\JoinColumn(name="id_currentUser", referencedColumnName="id")
+     * @ORM\JoinColumn(name="id_user", referencedColumnName="id")
      */
     private $currentUser;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="ClassBundle\Entity\InternalAccount")
+     * @ORM\JoinColumn(name="id_internalAccount", referencedColumnName="id")
+     */
+    private $account;
 
     /**
-     * @var int
-     *
-     * @ORM\Column(name="currentBalance", type="bigint")
+     * @ORM\ManyToOne(targetEntity="MemberBundle\Entity\Member")
+     * @ORM\JoinColumn(name="member")
      */
-    private $currentBalance;
-
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="receiveAccountcurrentBalance", type="bigint")
-     */
-    private $receiveAccountcurrentBalance; /*For transfer operations*/
+    private $member;
 
 
     /**
@@ -129,21 +79,50 @@ class Operation{
      */
     private $isConfirmed;
 
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="is_share", type="boolean")
+     */
+    private $isShare;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="is_saving", type="boolean")
+     */
+    private $isSaving;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="is_deposit", type="boolean")
+     */
+    private $isDeposit;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="representative", type="string", length=50)
+     */
+    private $representative;
+
 
     /**
      * @ORM\ManyToOne(targetEntity="UserBundle\Entity\Utilisateur")
-     * @ORM\JoinColumn(name="id_user", referencedColumnName="id")
+     * @ORM\JoinColumn(name="id_user_confirmed", referencedColumnName="id")
      */
     private $userConfirmed;
 
 
-
     public function __construct(){
-
-        //the default date of the loan is now
-        $this->transferFees = 0;
-        $this->receiveAccountcurrentBalance = 0;
-        $this->debitFees = 0;
+        $this->amount = 0;
+        $this->balance = 0;
+        $this->isConfirmed = true;
+        $this->isShare = false;
+        $this->isSaving = false;
+        $this->isDeposit = false;
+        $this->dateOperation = new \DateTime('now');
     }
 
 
@@ -152,8 +131,7 @@ class Operation{
      *
      * @return int
      */
-    public function getId()
-    {
+    public function getId(){
         return $this->id;
     }
 
@@ -174,7 +152,7 @@ class Operation{
     /**
      * Get amount
      *
-     * @return int
+     * @return integer
      */
     public function getAmount()
     {
@@ -182,75 +160,27 @@ class Operation{
     }
 
     /**
-     * Set dateOperation
+     * Set balance
      *
-     * @param \DateTime $dateOperation
+     * @param integer $balance
      *
      * @return Operation
      */
-    public function setDateOperation($dateOperation)
+    public function setBalance($balance)
     {
-        $this->dateOperation = $dateOperation;
+        $this->balance = $balance;
 
         return $this;
     }
 
     /**
-     * Get dateOperation
+     * Get balance
      *
-     * @return \DateTime
+     * @return integer
      */
-    public function getDateOperation()
+    public function getBalance()
     {
-        return $this->dateOperation;
-    }
-
-    /**
-     * Set savingAccount
-     *
-     * @param \AccountBundle\Entity\Saving $savingAccount
-     *
-     * @return Operation
-     */
-    public function setSavingAccount(\AccountBundle\Entity\Saving $savingAccount = null)
-    {
-        $this->savingAccount = $savingAccount;
-
-        return $this;
-    }
-
-    /**
-     * Get savingAccount
-     *
-     * @return \AccountBundle\Entity\Saving
-     */
-    public function getSavingAccount()
-    {
-        return $this->savingAccount;
-    }
-
-    /**
-     * Set currentUser
-     *
-     * @param \UserBundle\Entity\Utilisateur $currentUser
-     *
-     * @return Operation
-     */
-    public function setCurrentUser(\UserBundle\Entity\Utilisateur $currentUser = null)
-    {
-        $this->currentUser = $currentUser;
-
-        return $this;
-    }
-
-    /**
-     * Get currentUser
-     *
-     * @return \UserBundle\Entity\Utilisateur
-     */
-    public function getCurrentUser()
-    {
-        return $this->currentUser;
+        return $this->balance;
     }
 
     /**
@@ -278,218 +208,218 @@ class Operation{
     }
 
     /**
-     * Set shareAccount
+     * Set dateOperation
      *
-     * @param \AccountBundle\Entity\Share $shareAccount
+     * @param \DateTime $dateOperation
      *
      * @return Operation
      */
-    public function setShareAccount(\AccountBundle\Entity\Share $shareAccount = null)
+    public function setDateOperation($dateOperation)
     {
-        $this->shareAccount = $shareAccount;
+        $this->dateOperation = $dateOperation;
 
         return $this;
     }
 
     /**
-     * Get shareAccount
+     * Get dateOperation
      *
-     * @return \AccountBundle\Entity\Share
+     * @return \DateTime
      */
-    public function getShareAccount()
+    public function getDateOperation()
     {
-        return $this->shareAccount;
+        return $this->dateOperation;
     }
 
     /**
-     * Set depositAccount
+     * Set isConfirmed
      *
-     * @param \AccountBundle\Entity\Deposit $depositAccount
+     * @param boolean $isConfirmed
      *
      * @return Operation
      */
-    public function setDepositAccount(\AccountBundle\Entity\Deposit $depositAccount = null)
+    public function setIsConfirmed($isConfirmed)
     {
-        $this->depositAccount = $depositAccount;
+        $this->isConfirmed = $isConfirmed;
 
         return $this;
     }
 
     /**
-     * Get depositAccount
+     * Get isConfirmed
      *
-     * @return \AccountBundle\Entity\Deposit
+     * @return boolean
      */
-    public function getDepositAccount()
+    public function getIsConfirmed()
     {
-        return $this->depositAccount;
+        return $this->isConfirmed;
     }
 
     /**
-     * Set currentBalance
+     * Set isShare
      *
-     * @param integer $currentBalance
+     * @param boolean $isShare
      *
      * @return Operation
      */
-    public function setCurrentBalance($currentBalance)
+    public function setIsShare($isShare)
     {
-        $this->currentBalance = $currentBalance;
+        $this->isShare = $isShare;
 
         return $this;
     }
 
     /**
-     * Get currentBalance
+     * Get isShare
      *
-     * @return integer
+     * @return boolean
      */
-    public function getCurrentBalance()
+    public function getIsShare()
     {
-        return $this->currentBalance;
+        return $this->isShare;
     }
 
     /**
-     * Set receiveSavingAccount
+     * Set isSaving
      *
-     * @param \AccountBundle\Entity\Saving $receiveSavingAccount
+     * @param boolean $isSaving
      *
      * @return Operation
      */
-    public function setReceiveSavingAccount(\AccountBundle\Entity\Saving $receiveSavingAccount = null)
+    public function setIsSaving($isSaving)
     {
-        $this->receiveSavingAccount = $receiveSavingAccount;
+        $this->isSaving = $isSaving;
 
         return $this;
     }
 
     /**
-     * Get receiveSavingAccount
+     * Get isSaving
      *
-     * @return \AccountBundle\Entity\Saving
+     * @return boolean
      */
-    public function getReceiveSavingAccount()
+    public function getIsSaving()
     {
-        return $this->receiveSavingAccount;
+        return $this->isSaving;
     }
 
     /**
-     * Set receiveShareAccount
+     * Set isDeposit
      *
-     * @param \AccountBundle\Entity\Share $receiveShareAccount
+     * @param boolean $isDeposit
      *
      * @return Operation
      */
-    public function setReceiveShareAccount(\AccountBundle\Entity\Share $receiveShareAccount = null)
+    public function setIsDeposit($isDeposit)
     {
-        $this->receiveShareAccount = $receiveShareAccount;
+        $this->isDeposit = $isDeposit;
 
         return $this;
     }
 
     /**
-     * Get receiveShareAccount
+     * Get isDeposit
      *
-     * @return \AccountBundle\Entity\Share
+     * @return boolean
      */
-    public function getReceiveShareAccount()
+    public function getIsDeposit()
     {
-        return $this->receiveShareAccount;
+        return $this->isDeposit;
     }
 
     /**
-     * Set receiveDepositAccount
+     * Set currentUser
      *
-     * @param \AccountBundle\Entity\Deposit $receiveDepositAccount
+     * @param \UserBundle\Entity\Utilisateur $currentUser
      *
      * @return Operation
      */
-    public function setReceiveDepositAccount(\AccountBundle\Entity\Deposit $receiveDepositAccount = null)
+    public function setCurrentUser(\UserBundle\Entity\Utilisateur $currentUser = null)
     {
-        $this->receiveDepositAccount = $receiveDepositAccount;
+        $this->currentUser = $currentUser;
 
         return $this;
     }
 
     /**
-     * Get receiveDepositAccount
+     * Get currentUser
      *
-     * @return \AccountBundle\Entity\Deposit
+     * @return \UserBundle\Entity\Utilisateur
      */
-    public function getReceiveDepositAccount()
+    public function getCurrentUser()
     {
-        return $this->receiveDepositAccount;
+        return $this->currentUser;
     }
 
     /**
-     * Set transferFees
+     * Set member
      *
-     * @param integer $transferFees
+     * @param \MemberBundle\Entity\Member $member
      *
      * @return Operation
      */
-    public function setTransferFees($transferFees)
+    public function setMember(\MemberBundle\Entity\Member $member = null)
     {
-        $this->transferFees = $transferFees;
+        $this->member = $member;
 
         return $this;
     }
 
     /**
-     * Get transferFees
+     * Get member
      *
-     * @return integer
+     * @return \MemberBundle\Entity\Member
      */
-    public function getTransferFees()
+    public function getMember()
     {
-        return $this->transferFees;
+        return $this->member;
     }
 
     /**
-     * Set receiveAccountcurrentBalance
+     * Set userConfirmed
      *
-     * @param integer $receiveAccountcurrentBalance
+     * @param \UserBundle\Entity\Utilisateur $userConfirmed
      *
      * @return Operation
      */
-    public function setReceiveAccountcurrentBalance($receiveAccountcurrentBalance)
+    public function setUserConfirmed(\UserBundle\Entity\Utilisateur $userConfirmed = null)
     {
-        $this->receiveAccountcurrentBalance = $receiveAccountcurrentBalance;
+        $this->userConfirmed = $userConfirmed;
 
         return $this;
     }
 
     /**
-     * Get receiveAccountcurrentBalance
+     * Get userConfirmed
      *
-     * @return integer
+     * @return \UserBundle\Entity\Utilisateur
      */
-    public function getReceiveAccountcurrentBalance()
+    public function getUserConfirmed()
     {
-        return $this->receiveAccountcurrentBalance;
+        return $this->userConfirmed;
     }
 
     /**
-     * Set debitFees
+     * Set account
      *
-     * @param integer $debitFees
+     * @param \ClassBundle\Entity\InternalAccount $account
      *
      * @return Operation
      */
-    public function setDebitFees($debitFees)
+    public function setAccount(\ClassBundle\Entity\InternalAccount $account = null)
     {
-        $this->debitFees = $debitFees;
+        $this->account = $account;
 
         return $this;
     }
 
     /**
-     * Get debitFees
+     * Get account
      *
-     * @return integer
+     * @return \ClassBundle\Entity\InternalAccount
      */
-    public function getDebitFees()
+    public function getAccount()
     {
-        return $this->debitFees;
+        return $this->account;
     }
 }

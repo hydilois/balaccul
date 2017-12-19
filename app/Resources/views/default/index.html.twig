@@ -1,102 +1,90 @@
 {% extends "base.html.twig" %}
 
 {% block title %}
-    {{parent()}} Accueil
+    {{parent()}} Home
 {% endblock %}
 
 {% block contenu %}
     <div class="well">
-                    <h1 class="{# m-t-0 header-title #} text-center"><b>{{agency.name}}</b></h1><br>
-        <div class="row">
+                    <h1 class="text-center"><b>{{agency.name}}</b></h1><br>
+         <div class="row">
             <div class="col-md-6 col-sm-6 col-lg-3">
                 <div class="card-box widget-box-1 bg-white">
-                    <a href="{{path('share_index')}}" class="fa fa-info-circle text-muted pull-right inform" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="More Details"></a>
+                    <a href="{{path('member_index')}}"><i class="fa fa-info-circle text-muted pull-right inform" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="More Details"></i></a>
                     <h4 class="text-dark">Total Amount Shares</h4>
                     <h2 class="text-primary text-center"><span data-plugin="counterup">{{totalShares}}</span> F</h2>
-                    <p class="text-muted">Total Accounts: {{sharesNumber }} <span class="pull-right">{# <i class="fa fa-caret-up text-primary m-r-5"></i>10.25% #}</span></p>
+                    <p class="text-muted">Total Members: {{members|length }} <span class="pull-right"></span></p>
                 </div>
             </div>
-
             <div class="col-md-6 col-sm-6 col-lg-3">
                 <div class="card-box widget-box-1 bg-white">
-                    <a href="{{path('saving_index')}}" class="fa fa-info-circle text-muted pull-right inform" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="More Details"></a>
+                    <a href="{{path('member_index')}}"><i class="fa fa-info-circle text-muted pull-right inform" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="More Details"></i></a>
                     <h4 class="text-dark">Total Amount Savings</h4>
                     <h2 class="text-pink text-center"><span data-plugin="counterup">{{totalSaving}}</span> F</h2>
-                    <p class="text-muted">Total Account: {{savingsNumber}} <span class="pull-right">{# <i class="fa fa-caret-down text-danger m-r-5"></i>7.85% #}</span></p>
+                    <p class="text-muted">Total Account: {{members|length }} <span class="pull-right"></span></p>
                 </div>
             </div>
-
+{# 
             <div class="col-md-6 col-sm-6 col-lg-3">
                 <div class="card-box widget-box-1 bg-white">
                     <i class="fa fa-info-circle text-muted pull-right inform" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Last 24 Hours"></i>
                     <h4 class="text-dark">Daily Collection</h4>
                     <h2 class="text-success text-center"><span data-plugin="counterup">{{totalDailyCollections}}</span> F</h2>
-                    <p class="text-muted">Total Clients: {{clients |length}} <span class="pull-right">{# <i class="fa fa-caret-up text-primary m-r-5"></i>10.25% #}</span></p>
+                    <p class="text-muted">Total Clients: {{clients |length}} <span class="pull-right"></span></p>
                 </div>
-            </div>
+            </div> #}
 
             <div class="col-md-6 col-sm-6 col-lg-3">
                 <div class="card-box widget-box-1 bg-white">
-                    <i class="fa fa-info-circle text-muted pull-right inform" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Last 24 Hours"></i>
+                    <a href="{{path('member_index')}}"><i class="fa fa-info-circle text-muted pull-right inform" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="More details"></i></a>
                     <h4 class="text-dark">Deposit</h4>
                     <h2 class="text-warning text-center"><span data-plugin="counterup">{{totalDeposit}}</span> F</h2>
-                    <p class="text-muted">Total Account: {{depositsNumber}} <span class="pull-right">{# <i class="fa fa-caret-down text-danger m-r-5"></i>7.85% #}</span></p>
+                    <p class="text-muted">Total Account: {{members|length }} <span class="pull-right"></span></p>
                 </div>
             </div>
+{#         </div>
 
-        </div>
-
-        <div class="row">
+        <div class="row"> #}
             <div class="col-md-6 col-sm-6 col-lg-3">
                 <div class="card-box widget-box-1 bg-white">
-                    <a href="#" class="fa fa-info-circle text-muted pull-right inform" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="More Details"></a>
+                    <a href="{{path('member_index')}}"><i class="fa fa-info-circle text-muted pull-right inform" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="More Details"></i></a>
                     <h4 class="text-dark">Building fees</h4>
-                    <h2 class="text-dark text-center"><span data-plugin="counterup">{{buildingFees.amount}}</span> F</h2>
-                    <p class="text-muted">Total Accounts: {# {{sharesNumber }} #} <span class="pull-right">{# <i class="fa fa-caret-up text-primary m-r-5"></i>10.25% #}</span></p>
+                    <h2 class="text-dark text-center"><span data-plugin="counterup">{{buildingFees}}</span> F</h2>
+                    <p class="text-muted">Total Accounts: {{members|length }} <span class="pull-right"></span></p>
                 </div>
             </div>
-
-            <div class="col-md-6 col-sm-6 col-lg-3">
-                <div class="card-box widget-box-1 bg-white">
-                    <i class="fa fa-info-circle text-muted pull-right inform" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Last 24 Hours"></i>
-                    <h4 class="text-dark">Total Income</h4>
-                    <h2 class="text-muted text-center"><span data-plugin="counterup">{{totalIncome}}</span> F</h2>
-                    <p class="text-muted">Total Users Online: {{ render(controller('UserBundle:Utilisateur:whoIsOnline')) }} <span class="pull-right">{# <i class="fa fa-caret-down text-danger m-r-5"></i>7.85% #}</span></p>
-                </div>
-            </div>
-
-            <div class="col-md-6 col-sm-6 col-lg-3">
+{#             <div class="col-md-6 col-sm-6 col-lg-3">
                 <div class="card-box widget-box-1 bg-white">
                     <i class="fa fa-info-circle text-muted pull-right inform" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Last 24 Hours"></i>
                     <h4 class="text-dark">Cash in Hand</h4>
                     <h2 class="text-purple text-center"><span data-plugin="counterup">{{cashInHand.amount}}</span> F</h2>
-                    <p class="text-muted">Total members and Clients: {{ clients |length + physicalMembersNumber + moralMembersNumber}} <span class="pull-right">{# <i class="fa fa-caret-up text-primary m-r-5"></i>10.25% #}</span></p>
+                    <p class="text-muted">Total members and Clients: {{ clients |length + physicalMembersNumber + moralMembersNumber}} <span class="pull-right"></span></p>
                 </div>
-            </div>
+            </div> #}
 
-            <div class="col-md-6 col-sm-6 col-lg-3">
+{#             <div class="col-md-6 col-sm-6 col-lg-3">
                 <div class="card-box widget-box-1 bg-white">
                     <i class="fa fa-info-circle text-muted pull-right inform" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Last 24 Hours"></i>
                     <h4 class="text-dark">Reserve</h4>
                     <h2 class="text-custom text-center"><span data-plugin="counterup">{{reserves.amount}}</span> F</h2>
-                    <p class="text-muted">Total Account: {# {{depositsNumber}} #} <span class="pull-right">{# <i class="fa fa-caret-down text-danger m-r-5"></i>7.85% #}</span></p>
+                    <p class="text-muted">Total Account: <span class="pull-right"></span></p>
                 </div>
-            </div>
+            </div> #}
 
             <div class="col-md-6 col-sm-6 col-lg-3">
                 <div class="card-box widget-box-1 bg-white">
-                    <i class="fa fa-info-circle text-muted pull-right inform" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Last 24 Hours"></i>
+                    <a href="{{path('member_index')}}"><i class="fa fa-info-circle text-muted pull-right inform" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="More Details"></i></a>
                     <h4 class="text-dark">Registration Fees</h4>
                     <h2 class="text-custom text-center"><span data-plugin="counterup">{{totalRegistration}}</span> F</h2>
-                    <p class="text-muted">Total Members: {{ physicalMembersNumber + moralMembersNumber}} <span class="pull-right">{# <i class="fa fa-caret-down text-danger m-r-5"></i>7.85% #}</span></p>
+                    <p class="text-muted">Total Members: {{members|length }} <span class="pull-right"></span></p>
                 </div>
             </div>
             <div class="col-md-6 col-sm-6 col-lg-3">
                 <div class="card-box widget-box-1 bg-white">
-                    <i class="fa fa-info-circle text-muted pull-right inform" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Last 24 Hours"></i>
+                    <a href="{{path('loan_index')}}"><i class="fa fa-info-circle text-muted pull-right inform" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="More Details"></i></a>
                     <h4 class="text-dark">Total Loan Contracted</h4>
                     <h2 class="text-custom text-center"><span data-plugin="counterup">{{loanContracted}}</span> F</h2>
-                    <p class="text-muted">Total Loans: {{loans |length}} <span class="pull-right">{# <i class="fa fa-caret-down text-danger m-r-5"></i>7.85% #}</span></p>
+                    <p class="text-muted">Total Loans: {{loans |length}} <span class="pull-right"></span></p>
                 </div>
             </div>
             <div class="col-md-6 col-sm-6 col-lg-3">
@@ -104,7 +92,7 @@
                     <i class="fa fa-info-circle text-muted pull-right inform" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Last 24 Hours"></i>
                     <h4 class="text-dark">Unpaid Loan</h4>
                     <h2 class="text-custom text-center"><span data-plugin="counterup">{{loanUnpaid}}</span> F</h2>
-                    <p class="text-muted">Total loans: {{loans |length}} <span class="pull-right">{# <i class="fa fa-caret-down text-danger m-r-5"></i>7.85% #}</span></p>
+                    <p class="text-muted">Total loans: {{loans |length}} <span class="pull-right"></span></p>
                 </div>
             </div>
             <div class="col-md-6 col-sm-6 col-lg-3">
@@ -112,11 +100,11 @@
                     <i class="fa fa-info-circle text-muted pull-right inform" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Last 24 Hours"></i>
                     <h4 class="text-dark">Unpaid Interest</h4>
                     <h2 class="text-custom text-center"><span data-plugin="counterup">{{unpaidInterest}}</span> F</h2>
-                    <p class="text-muted">Total Loans: {{ loans|length}} <span class="pull-right">{# <i class="fa fa-caret-down text-danger m-r-5"></i>7.85% #}</span></p>
+                    <p class="text-muted">Total Loans: {{ loans|length}} <span class="pull-right"></span></p>
                 </div>
             </div>
-
         </div>
+        
 {#         <a class="btn btn-app document-request">
                         <span class="badge bg-navy">A préciser</span>
                         <i class="fa fa-folder-open-o"></i> Demande de Documents

@@ -19,7 +19,7 @@ class ClasseController extends Controller
     /**
      * Lists all classe entities.
      *
-     * @Route("/", name="classe_index")
+     * @Route("/list", name="classe_index")
      * @Method("GET")
      */
     public function indexAction()
@@ -53,9 +53,8 @@ class ClasseController extends Controller
             $em->persist($classe);
             $em->flush();
 
-            return $this->redirectToRoute('classe_show', array('id' => $classe->getId()));
+            return $this->redirectToRoute('classe_index');
         }
-
         return $this->render('classe/new.html.twig', array(
             'classe' => $classe,
             'form' => $form->createView(),

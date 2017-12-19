@@ -2,6 +2,7 @@
 
 namespace AccountBundle\Controller;
 
+use AccountBundle\Entity\Operation;
 use AccountBundle\Entity\Loan;
 use ConfigBundle\Entity\TransactionIncome;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -73,56 +74,56 @@ class LoanController extends Controller{
      * @Route("/new", name="loan_new")
      * @Method({"GET", "POST"})
      */
-    public function newAction(Request $request)
-    {
+    public function newAction(Request $request){
         $loan = new Loan();
         $form = $this->createForm('AccountBundle\Form\LoanType', $loan);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
+            // Get the current user connected
+            $currentUserId  = $this->get('security.token_storage')->getToken()->getUser()->getId();
+            $currentUser    = $em->getRepository('UserBundle:Utilisateur')->find($currentUserId);
+
             $loanParameter = $em->getRepository('ConfigBundle:LoanParameter')->find(1)->getParameter();
-            
-            $shares = $em->getRepository('AccountBundle:Share')->findBy(
-                    [
-                        'physicalMember' => $loan->getPhysicalMember(),
-                    ]
-                );
 
-            $savings = $em->getRepository('AccountBundle:Saving')->findBy(
-                    [
-                        'physicalMember' => $loan->getPhysicalMember(),
-                    ]
-                );
+            $member = $loan->getPhysicalMember();
 
-            $accountsAmount = 0;
-
-            foreach ($shares as $share) {
-                $accountsAmount += $share->getSolde();
-            }
-
-            foreach ($savings as $saving) {
-                $accountsAmount += $saving->getSolde();
-            }
-
-            if (($accountsAmount * $loanParameter) <= $loan->getLoanAmount()) {
+            $target = $loan->getLoanAmount()/$loanParameter;
+            if ($target >= ($member->getShare() + $member->getSaving())) {
                 $this->addFlash('warning', 'The loan cannot be done!!!! check the amount of your share and savings accounts');
             }else{
+                $operation = new Operation();
+                $account = $em->getRepository('ClassBundle:InternalAccount')->find(32);//Normal Loan Identification
+                $operation->setCurrentUser($currentUser);
+                $operation->setTypeOperation(Operation::TYPE_CASH_OUT);
+                $operation->setAmount($loan->getLoanAmount());
+                $operation->setMember($loan->getPhysicalMember());
+                $operation->setAccount($account);
+                $operation->setIsConfirmed(true);
 
-                $income = new TransactionIncome();
+                $account->setDebit($account->getDebit() + $loan->getLoanAmount());
+                $account->setEndingBalance($account->getCredit() - $account->getDebit() + $account->getBeginingBalance());
 
-                $income->setAmount($loan->getLoanProcessingFees());
-                $income->setDescription("Loan processing fees. Loan Code: ".$loan->getLoanCode()." // Loan Owner: ".$loan->getPhysicalMember()." // Amount: ".$loan->getLoanProcessingFees());
+                $operation->setBalance($account->getEndingBalance());
+                $em->persist($operation);
 
-                //update the cash in hand
-                $cashInHandAccount  = $em->getRepository('ClassBundle:InternalAccount')->find(9);
-                $cashInHandAccount->setAmount($cashInHandAccount->getAmount() + $loan->getLoanProcessingFees());
+                $operationProcessing = new Operation();
+                $accountProcessing = $em->getRepository('ClassBundle:InternalAccount')->find(140);//Processing Fees
+                $operationProcessing->setCurrentUser($currentUser);
+                $operationProcessing->setTypeOperation(Operation::TYPE_CASH_IN);
+                $operationProcessing->setAmount($loan->getLoanProcessingFees());
+                $operationProcessing->setMember($loan->getPhysicalMember());
+                $operationProcessing->setAccount($accountProcessing);
+                $operationProcessing->setIsConfirmed(true);
 
-                $em->persist($cashInHandAccount);
+                $accountProcessing->setCredit($accountProcessing->getCredit() + $loan->getLoanProcessingFees());
+                $accountProcessing->setEndingBalance($accountProcessing->getCredit() - $accountProcessing->getDebit() + $accountProcessing->getBeginingBalance());
 
+                $operationProcessing->setBalance($accountProcessing->getEndingBalance());
+
+                $em->persist($operationProcessing);
                 $em->persist($loan);
-                $em->persist($income);
-
                 $em->flush();
                 return $this->redirectToRoute('loan_index');
             }
@@ -206,8 +207,8 @@ class LoanController extends Controller{
      * @Method("GET")
      */
     public function showAction(Loan $loan){
-        $entityManager = $this->getDoctrine()->getManager();
-        $lowest_remain_amount_LoanHistory = $entityManager->createQueryBuilder()
+        $em = $this->getDoctrine()->getManager();
+        $lowest_remain_amount_LoanHistory = $em->createQueryBuilder()
             ->select('MIN(lh.remainAmount)')
             ->from('AccountBundle:LoanHistory', 'lh')
             ->innerJoin('AccountBundle:Loan', 'l', 'WITH','lh.loan = l.id')
@@ -215,18 +216,12 @@ class LoanController extends Controller{
             ->getQuery()
             ->getSingleScalarResult();
 
-        $latestLoanHistory = $entityManager->getRepository('AccountBundle:LoanHistory')->findOneBy([
+        $latestLoanHistory = $em->getRepository('AccountBundle:LoanHistory')->findOneBy([
                             'remainAmount' => $lowest_remain_amount_LoanHistory,
                             'loan' => $loan],
                             ['id' => 'DESC']);
 
-        $loanHistories = $entityManager->getRepository('AccountBundle:LoanHistory')->findBy(
-                            [
-                                'loan' => $loan
-                            ]
-                            );
-
-
+        $loanHistories = $em->getRepository('AccountBundle:LoanHistory')->findBy(['loan' => $loan]);
 
         return $this->render('loan/show.html.twig', array(
             'loan' => $loan,

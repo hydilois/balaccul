@@ -13,19 +13,16 @@
     </li>
   </ol>
             <h1 class="text-center">CASH IN</h1>
-        <form method="POST" action="{{ path('operation_cash_in_save') }}">
+        <form target="_blank" method="POST" action="{{ path('operation_cash_in_save') }}">
         <section class="col-lg-6">
             <fieldset class="fadeInDown animated">
                 <legend>Purposes</legend>
                 <div class="form-group">
-                    <label class="control-label">Account Number</label>
-                    <select id="accountId" name="accountNumber" required="required" class="form-control">
+                            <label class="control-label col-sm-4">Choose the member</label>
+                        <select name="accountNumber" class="form-control select2" required="required">
                         <option value="">&lt;------ Select ------&gt;</option>
                         {% for member in members %}
-                            <option value="{{member.memberNumber}}">{{member.name}} -- {{member.memberNumber}}</option>
-                        {% endfor %}
-                        {% for member in moralMembers %}
-                            <option value="{{member.memberNumber}}">{{member.socialReason}} -- {{member.memberNumber}}</option>
+                            <option value="{{member.id}}">{{member.name}} -- {{member.memberNumber}} </option>
                         {% endfor %}
                     </select>
                 </div>
@@ -68,8 +65,8 @@
                                 <select class="form-control hide" name="other" id="otherItem">
                                     <option value="">&lt;------ Select ------&gt;</option>
                                     <option value="Charges">Charges</option>
-                                    <option value="PassBook">PassBook</option>
-                                    {# <option value="Registration">Registration</option> #}
+                                    <option value="Registration">Registration</option>
+                                    <option value="Building Fees">Building Fees</option>
                                 </select>    
                             </td>
                         </tr>

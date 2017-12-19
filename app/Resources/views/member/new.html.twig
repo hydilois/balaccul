@@ -7,10 +7,10 @@
             <a href="#">BALACCUL</a>
         </li>
         <li>
-            <a href="#">Members</a>
+            <a href="#">CASH IN</a>
         </li>
         <li class="active">
-            new
+            New Member
         </li>
     </ol>
 
@@ -34,7 +34,7 @@
             <li class="tab"> 
                 <a href="#beneficiary" data-toggle="tab" aria-expanded="true"> 
                     <span class="visible-xs"><i class="fa fa-envelope-o"></i></span> 
-                    <span class="hidden-xs">Beneficiary</span> 
+                    <span class="hidden-xs">Beneficiary or Representant</span> 
                 </a> 
             </li> 
             <li class="tab"> 
@@ -156,14 +156,14 @@
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        {{form_label(bForm.relation)}}
+                                        {{form_label(bForm.relation, 'Relation or Post')}}
                                         {{form_errors(bForm.relation)}}
                                         {{form_widget(bForm.relation, {'attr':{'class':'form-control'}})}}
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        {{form_label(bForm.ratio)}}
+                                        {{form_label(bForm.ratio, 'Ratio (Put 0 for Moral Member)')}}
                                         {{form_errors(bForm.ratio)}}
                                         {{form_widget(bForm.ratio, {'attr':{'class':'form-control'}})}}
                                     </div>
@@ -183,28 +183,61 @@
             </div> 
             <div class="tab-pane" id="conclusion">
                 <div class="row">
-                    <div class="col-lg-offset-2 col-lg-7 col-md-7 col-sm-12 col-xs-12" >
+                    <div class="col-lg-3" >
                        <div class="form-group">
                             {{form_label(form.memberNumber)}}
                             {{form_errors(form.memberNumber)}}
                             {{form_widget(form.memberNumber, {'attr':{'class':'form-control'}})}}
                         </div>
+                    </div>
+                    <div class="col-lg-3">
                         <div class="form-group">
                             {{form_label(form.registrationFees)}}
                             {{form_errors(form.registrationFees)}}
                             {{form_widget(form.registrationFees, {'attr':{'class':'form-control'}})}}
                         </div>
+                    </div>
+                    <div class="col-lg-3">        
+                        <div class="form-group">
+                            {{form_label(form.share)}}
+                            {{form_errors(form.share)}}
+                            {{form_widget(form.share, {'attr':{'class':'form-control'}})}}
+                        </div>
+                    </div>
+                    <div class="col-lg-3">        
+                        <div class="form-group">
+                            {{form_label(form.saving)}}
+                            {{form_errors(form.saving)}}
+                            {{form_widget(form.saving, {'attr':{'class':'form-control'}})}}
+                        </div>
+                    </div>
+                    <div class="col-lg-3">        
+                        <div class="form-group">
+                            {{form_label(form.deposit)}}
+                            {{form_errors(form.deposit)}}
+                            {{form_widget(form.deposit, {'attr':{'class':'form-control'}})}}
+                        </div>
+                    </div>
+                    <div class="col-lg-3">        
+                        <div class="form-group">
+                            {{form_label(form.buildingFees)}}
+                            {{form_errors(form.buildingFees)}}
+                            {{form_widget(form.buildingFees, {'attr':{'class':'form-control'}})}}
+                        </div>
+                    </div>
+                    <div class="col-lg-3">        
                         <div class="form-group">
                             {{form_label(form.isAproved)}}
                             {{form_errors(form.isAproved)}}
-                            {{form_widget(form.isAproved)}}
-                        </div> 
+                            {{form_widget(form.isAproved, {'attr':{'class':'form-control'}})}}
+                        </div>
                     </div>
-                    <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12" >
+                    <div class="col-lg-3">        
                         <div class="form-group">
                             <button  class="btn btn-default" id="submit"><i class="fa fa-plus-circle"></i> Register the member</a>
                         </div>
                     </div>
+                </div>
                 </div>
             </div> 
         </div> 

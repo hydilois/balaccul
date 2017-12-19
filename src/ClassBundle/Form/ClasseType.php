@@ -13,28 +13,9 @@ class ClasseType extends AbstractType
     /**
      * {@inheritdoc}
      */
-    public function buildForm(FormBuilderInterface $builder, array $options)
-    {
+    public function buildForm(FormBuilderInterface $builder, array $options){
         $builder
-        ->add('name')
-        ->add('description')
-        // ->add('totalAmount')
-        ->add('classCategory', EntityType::class,
-                [
-                    'class' => 'ClassBundle:Classe',
-                    'query_builder' => function(EntityRepository $er){
-                        return $er->createQueryBuilder('c')
-                            ->where('c.classCategory is NULL');
-
-                    }, 
-                    'required' => false, 
-                    'attr' => 
-                        [
-                            'data-type' => 'text'
-                        ] 
-                ]
-            )
-        ;
+        ->add('name');
     }
     
     /**

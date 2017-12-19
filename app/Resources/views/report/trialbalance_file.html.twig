@@ -1,94 +1,68 @@
 <page backtop="10mm" backleft="10mm" backright="10mm" backbottom="10mm" footer="page;">
     <page_footer>
         <hr />
-        <span>BALACCUL</span><span style="margin-left:550px;">GreenSoft-Team</span>
+        <span>{{agency.abreviation}}</span> <span style="margin-left:50px;">Printed By <b>{{currentUser}}</b></span><span style="margin-left:100px;">GreenSoft-Team</span>
     </page_footer>
-
     <table>
         <tr>
-            <td class="100p">
-                <h2 style="text-align:center"><strong>BALATCHI COOPERATIVE CREDIT UNION LTD</strong></h2>
+            <td class="60p">
+                 <b>{{agency.name}}</b> <br/>
+                 <b>{{agency.abreviation}} HEAD OFFICE</b> <br/>
+                 <b>Tel: {{agency.phoneNumber}}</b>
+            </td>
+            <td  style="text-align: right;" class="40p">
+                <img style="height:80px;" src="./assets/images/users/logo_cu1.jpg"  alt="logo">
             </td>
         </tr>
+    </table>
+    <table>
         <tr>
             <td class="100p">
                 <h3 style="text-align:center"><strong>TRIAL BALANCE</strong></h3>
             </td>
         </tr>
     </table>
-
     <table>
         <tr>
-            <td class="50p">Printed By: <strong>{{currentUser}}</strong> </td>
-            <td class="25p">Printed On: <strong>{{date |date('d-m-Y')}}</strong></td>
-            <td class="25p">XAF:<strong> F CFA</strong></td>
+            <td class="25p">Date: <strong>{{date |date('d-m-Y H:m:s')}}</strong></td>
+            <td style="text-align:right" class="75p">Period From: <b>{{ displayDateStart}}</b> to <b>{{displayDateEnd}}</b></td>
         </tr>
     </table> <br>
-
-
-    <table >
+    <table class="trialbalance">
         <tr>
-            <td class="50p" style="text-align: left; border: none">From: <b>
-                {{ displayDateStart}}</b> to <b>{{displayDateEnd}}</b>
-            </td>
+            <th style="background: gray; text-align:center" class="10p">A/C N°</th>
+            <th style="background: gray; text-align:center" class="30p">ACCOUNT NAME</th>
+            <th style="background: gray; text-align:center" class="15p">START BALANCE</th>
+            <th style="background: gray; text-align:center" class="15p">DEBIT</th>
+            <th style="background: gray; text-align:center" class="15p">CREDIT</th>
+            <th style="background: gray; text-align:center" class="15p">FINAL BALANCE</th>
         </tr>
-    </table>
-
-    <table class="eleves">
-        <tr>
-            <th class="20p">Account Number</th>
-            <th class="40p">Description</th>
-            <th class="15p">Debit</th>
-            <th class="15p">Credit</th>
-            <th class="10p">Balance</th>
-        </tr>
-
-        {% set totalIncome = 0 %}
-        {% set totalExpenditure = 0 %}
-        {% for classe in classes %}
-            {% for account in classe.listeAccounts %} 
+            {% set totalCredit = 0 %}
+            {% set totalDebit = 0 %}
+            {% set totalBeginBalance = 0 %}
+            {% set totalEndBalance = 0 %}
+            {% for account in internalAccounts %} 
                 <tr>
-                    <td>{{account.accountNumber }}</td>
-                    <td>{{account.name}}</td>
-                    <td>{% if account.type =="DEBIT"  %}
-                            {{account.amount}}
-                            {% set totalExpenditure = totalExpenditure + account.amount %}
-                        {% else %}
-                            0
-                            {% set totalExpenditure = totalExpenditure + 0 %}
-                        {% endif %}
-                    </td>
-                    <td>{% if account.type =="CREDIT"  %}
-                            {{account.amount}}
-                            {% set totalIncome = totalIncome + account.amount %}
-                        {% else %}
-                                0
-                                {% set totalIncome = totalIncome + 0 %}
-                        {% endif %}
-                    </td>
-                    <td></td>
+                    <td style="text-align:center">{{account.accountNumber }}</td>
+                    <td style="text-align:center">{{account.accountName[:30]}}</td>
+                    <td style="text-align:center">{{account.beginingBalance |number_format(0, '.', ' ')}}</td>
+                    <td style="text-align:center">{{account.debit |number_format(0, '.', ' ')}}</td>
+                    <td style="text-align:center">{{account.credit |number_format(0, '.', ' ')}}</td>
+                    <td style="text-align:center">{{account.endingBalance |number_format(0, '.', ' ')}}</td>
                 </tr>
+                {% set totalCredit = totalCredit + account.credit %}
+                {% set totalDebit = totalDebit + account.debit %}
+                {% set totalBeginBalance = totalBeginBalance + 0  %}
+                {% set totalEndBalance = totalEndBalance + 0 %}
             {% endfor %}
-        {% endfor %}
-                <tr>
-                    <td style="border-right:none;" colspan="1"></td>
-                    <td>
-                        <b>PARTIAL TOTAL</b>
-                    </td>
-                    <td style="text-align:center"><b>{{totalExpenditure }}</b></td>
-                    <td style="text-align:center"> <b>{{totalIncome }}</b> </td>
-                    <td>  </td>
-                </tr>
-                <tr>
-                    <td style="border-right:none;">                        
-                    </td>
-                    <td colspan="3">
-                        <b>NET BENEFIT FOR THE MONTH</b>
-                    </td>
-                    <td>
-                        <b>{% set balance = totalIncome - totalExpenditure %} {{balance}}</b>
-                    </td>
-                </tr>
+            <tr>
+                <td class="10p"></td>
+                <td class="30p" style="text-align:center"><b>TOTAL</b></td>
+                <td class="15p" style="text-align:center"><b>{{totalBeginBalance |number_format(0, '.', ' ')}}</b></td>
+                <td class="15p" style="text-align:center"><b>{{totalDebit |number_format(0, '.', ' ')}}</b></td>
+                <td class="15p" style="text-align:center"><b>{{totalCredit |number_format(0, '.', ' ')}}</b></td>
+                <td class="15p" style="text-align:center"><b>{{totalEndBalance |number_format(0, '.', ' ')}}</b></td>
+            </tr>
     </table>
 </page>
 

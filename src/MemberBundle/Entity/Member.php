@@ -148,6 +148,27 @@ class Member{
      */
     private $buildingFees;
 
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="share", type="bigint")
+     */
+    private $share;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="saving", type="bigint")
+     */
+    private $saving;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="deposit", type="bigint")
+     */
+    private $deposit;
+
 
 
     /**
@@ -164,12 +185,25 @@ class Member{
 
 
     public function __construct(){
-
         // The default date of the membership creation is now
         $this->membershipDateCreation = new \DateTime('now');
+        $this->issuedOn = new \DateTime('now');
+        $this->dateOfBirth = new \DateTime('now');
         $this->buildingFees = 0;
         $this->registrationFees = 0;
+        $this->share = 0;
+        $this->saving = 0;
+        $this->deposit = 0;
         $this->isAproved = true;
+        $this->aprovedBy = "BOARD OF DIRECTORS";
+        $this->doneAt = "BAMENDA";
+        $this->occupation = "TRADER";
+        $this->witnessName = "//";
+        $this->proposedBy = "//";
+        $this->phoneNumber = "//";
+        $this->address = "//";
+        $this->placeOfBirth = "//";
+        $this->issuedAt = "//";
     }
 
     /**
@@ -177,8 +211,7 @@ class Member{
      *
      * @return int
      */
-    public function getId()
-    {
+    public function getId(){
         return $this->id;
     }
 
@@ -636,5 +669,77 @@ class Member{
     public function getBuildingFees()
     {
         return $this->buildingFees;
+    }
+
+    /**
+     * Set share
+     *
+     * @param integer $share
+     *
+     * @return Member
+     */
+    public function setShare($share)
+    {
+        $this->share = $share;
+
+        return $this;
+    }
+
+    /**
+     * Get share
+     *
+     * @return integer
+     */
+    public function getShare()
+    {
+        return $this->share;
+    }
+
+    /**
+     * Set saving
+     *
+     * @param integer $saving
+     *
+     * @return Member
+     */
+    public function setSaving($saving)
+    {
+        $this->saving = $saving;
+
+        return $this;
+    }
+
+    /**
+     * Get saving
+     *
+     * @return integer
+     */
+    public function getSaving()
+    {
+        return $this->saving;
+    }
+
+    /**
+     * Set deposit
+     *
+     * @param integer $deposit
+     *
+     * @return Member
+     */
+    public function setDeposit($deposit)
+    {
+        $this->deposit = $deposit;
+
+        return $this;
+    }
+
+    /**
+     * Get deposit
+     *
+     * @return integer
+     */
+    public function getDeposit()
+    {
+        return $this->deposit;
     }
 }

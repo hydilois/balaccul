@@ -17,32 +17,23 @@ class InternalAccountType extends AbstractType{
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-        ->add('name')
+        ->add('accountName')
         ->add('accountNumber')
-        ->add('description')
-        ->add('amount')
-        ->add('type', ChoiceType::class, [
-            'choices' => [
-                'CREDIT' => 'CREDIT',
-                'DEBIT' => 'DEBIT',
-                'UNDEFINED' => 'UNDEFINED'
-            ],
-            "required" =>'required'
-        ])
-        ->add('classe', EntityType::class,
-            [
-                'class' => 'ClassBundle:Classe',
-                'query_builder' => function(EntityRepository $er){
-                    return $er->createQueryBuilder('c')
-                        ->where('c.classCategory is NULL');
-                }, 
-                'required' => false, 
-                'attr' => 
-                    [
-                        'data-type' => 'text'
-                    ] 
-                ]
-            )
+        // ->add('beginingBalance')
+        // ->add('endingBalance')
+        // ->add('credit')
+        // ->add('debit')
+        ->add('classe')
+        // ->add('classe', EntityType::class,
+        //     [
+        //         'class' => 'ClassBundle:Classe',
+        //         'query_builder' => function(EntityRepository $er){
+        //             return $er->createQueryBuilder('c')
+        //                 ->where('c.id = 7');
+        //         }, 
+        //         'required' => true,
+        //         'attr' => ['data-type' => 'text'] 
+        //         ])
         ;
     }
     

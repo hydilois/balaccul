@@ -20,7 +20,6 @@ $(function() {
 
     head.load([
         APP_ROOT + "/assets/js/main/helpers/FeedbackHelper.js",
-        // APP_ROOT + "/assets/js/main/helpers/ValidateFormsHelper.js",
         APP_ROOT + "/assets/js/main/models/Member.model.js",
     ], function() {
         /**
@@ -115,13 +114,9 @@ $(function() {
 
         }
 
-
-
         MemberEndpoint.prototype.setRegisterMemberListener = function(){
-
                 var data = memberEndpoint.member.getJSONValues();
                 console.log(data);
-                    
                     //We send an ajax requeset to register the mouvement object
                     $.ajax({
                         method      : "POST", 
@@ -129,13 +124,18 @@ $(function() {
                         url         : URL_ROOT+"/member/new_json", 
                         dataType    : "JSON", 
                         success     : function(returnedData){
-                            returnedDataParsed = returnedData;
+                            returnedData = JSON.parse(returnedData);
                             console.log(returnedData);
-                            window.location.href = URL_ROOT + "/member";
+                            if(returnedData.status == "success"){
+                                memberEndpoint.feedbackHelper.showAutoCloseMessage("Member Registred", "The member is registred successfully", "success", 3000);
+                                window.location.href = URL_ROOT + "/member";
+                            }else{
+                                memberEndpoint.feedbackHelper.showMessageWithPrompt("Sorry", returnedData.message, "error")
+                            }
                         }, 
                         error : function(returnedData){
                             console.error(returnedData);
-                            memberEndpoint.feedbackHelper.showMessageWithPrompt("Désolé", "un problème est survenu pendant la soumission de votre requête si le problème persiste, contactez votre administrateur", "error");
+                            memberEndpoint.feedbackHelper.showMessageWithPrompt("Sorry", "A problem occur during the request, please contact the administrator", "error");
                         }
                     });
 

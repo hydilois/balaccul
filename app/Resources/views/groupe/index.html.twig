@@ -2,20 +2,23 @@
 
 {% block contenu %}
     <h1 class="text-center">Groupes list</h1>
-
-<a href="{{path('groupe_new')}}" class="btn btn-default pull-left">Add a group</a><br>
-    <table class="table">
+            <div class="card-box">
+<a href="{{path('groupe_new')}}" class="btn btn-default pull-left">Add a group</a><br><br>   
+    <table class="table table-bordered">
         <thead>
             <tr>
+                <th>#</th>
                 <th>Name</th>
             </tr>
         </thead>
         <tbody>
-        {% for groupe in groupes %}
+        {% for key, groupe in groupes %}
             <tr>
+                <td>{{ key + 1 }}</td>
                 <td>{{ groupe.name }}</td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
+</div>
 {% endblock %}

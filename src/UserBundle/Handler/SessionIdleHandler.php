@@ -39,7 +39,8 @@ class SessionIdleHandler{
 
                 $this->securityToken->setToken(null);
 
-                $this->session->getFlashBag()->add('info', 'Vous êtes déconnecté dû à votre inactivité pour un certain moment.');
+                $this->session->getFlashBag()->add('info', 'You are logged out due of your inactivity for a moment.');
+                // $this->session->getFlashBag()->add('info', 'Vous êtes déconnecté dû à votre inactivité pour un certain moment.');
 
                 // redirect the user to the login page.
                 $event->setResponse(new RedirectResponse($this->router->generate('lock_screen')));

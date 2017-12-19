@@ -29,6 +29,10 @@ function Member(){
 	this.witnessName = null;
 	this.phoneNumber = null;
 	this.registrationFees = null;
+	this.share = null;
+	this.saving = null;
+	this.deposit = null;
+	this.buildingFees = null;
 	this.beneficiary = {};
 
 	this.attributesArray = {};//has to be serialized so we have this form
@@ -40,30 +44,33 @@ var member = new Member();
 
 Member.prototype.getValuesFromForm = function(){
 
-	this.name  				= $("#memberbundle_member_name").val();
-	this.sex 				= $("select#memberbundle_member_sex").val();
-	this.dateOfBirth 		= $("#memberbundle_member_dateOfBirth").val();
-	this.placeOfBirth 		= $("#memberbundle_member_placeOfBirth").val();
-	this.occupation 		= $("#memberbundle_member_occupation").val();
-	this.address 			= $("#memberbundle_member_address").val();
-	this.nicNumber			= $("#memberbundle_member_nicNumber").val();
-	this.issuedOn 			= $("#memberbundle_member_issuedOn").val();
-	this.issuedAt 			= $("#memberbundle_member_issuedAt").val();
-	this.proposedBy 		= $("#memberbundle_member_proposedBy").val();
-	this.isAproved 			= $("input:radio[name='memberbundle_member[isAproved]']:checked").val();
-	this.aprovedBy 			= $("#memberbundle_member_aprovedBy").val();
-	this.memberNumber 		= $("#memberbundle_member_memberNumber").val();
-	this.doneAt 			= $("#memberbundle_member_doneAt").val();
-	this.membershipDateCreation 		= $("#memberbundle_member_membershipDateCreation").val();
-	this.witnessName 		= $("#memberbundle_member_witnessName").val();
-	this.phoneNumber 		= $("#memberbundle_member_phoneNumber").val();
-	this.registrationFees 		= $("#memberbundle_member_registrationFees").val();
+	this.name  						= $("#memberbundle_member_name").val();
+	this.sex 						= $("select#memberbundle_member_sex").val();
+	this.dateOfBirth 				= $("#memberbundle_member_dateOfBirth").val();
+	this.placeOfBirth 				= $("#memberbundle_member_placeOfBirth").val();
+	this.occupation 				= $("#memberbundle_member_occupation").val();
+	this.address 					= $("#memberbundle_member_address").val();
+	this.nicNumber					= $("#memberbundle_member_nicNumber").val();
+	this.issuedOn 					= $("#memberbundle_member_issuedOn").val();
+	this.issuedAt 					= $("#memberbundle_member_issuedAt").val();
+	this.proposedBy 				= $("#memberbundle_member_proposedBy").val();
+	this.isAproved 					= $("select#memberbundle_member_isAproved").val();
+	this.aprovedBy 					= $("#memberbundle_member_aprovedBy").val();
+	this.memberNumber 				= $("#memberbundle_member_memberNumber").val();
+	this.doneAt 					= $("#memberbundle_member_doneAt").val();
+	this.membershipDateCreation 	= $("#memberbundle_member_membershipDateCreation").val();
+	this.witnessName 				= $("#memberbundle_member_witnessName").val();
+	this.phoneNumber 				= $("#memberbundle_member_phoneNumber").val();
+	this.registrationFees 			= $("#memberbundle_member_registrationFees").val();
+	this.share 						= $("#memberbundle_member_share").val();
+	this.saving 					= $("#memberbundle_member_saving").val();
+	this.deposit 					= $("#memberbundle_member_deposit").val();
+	this.buildingFees 				= $("#memberbundle_member_buildingFees").val();
 
 
 	//get the beneficiary values
 	$('.beneficiary_form').not('.template').each(function(index, value){
 		var element = {};
-
 		element['name'] 	= $(this).find("#memberbundle_beneficiary_name").val();
 		element['relation'] 	= $(this).find("#memberbundle_beneficiary_relation").val();
 		element['ratio'] 	= $(this).find("#memberbundle_beneficiary_ratio").val();
@@ -99,6 +106,10 @@ Member.prototype.getJSONValues = function(){
 	this.attributesArray["phoneNumber"]					= this.phoneNumber;
 	this.attributesArray["registrationFees"]			= this.registrationFees;
 	this.attributesArray["beneficiary"]					= this.beneficiary;
+	this.attributesArray["buildingFees"]				= this.buildingFees;
+	this.attributesArray["share"]						= this.share;
+	this.attributesArray["saving"]						= this.saving;
+	this.attributesArray["deposit"]						= this.deposit;
 
 
 	return JSON.parse(JSON.stringify(this.attributesArray));

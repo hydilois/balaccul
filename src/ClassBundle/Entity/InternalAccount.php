@@ -10,8 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="internalaccount")
  * @ORM\Entity(repositoryClass="ClassBundle\Repository\InternalAccountRepository")
  */
-class InternalAccount
-{
+class InternalAccount{
     /**
      * @var int
      *
@@ -24,12 +23,12 @@ class InternalAccount
     /**
      * @var string
      *
-     * @ORM\Column(name="name", type="string", length=255)
+     * @ORM\Column(name="accountName", type="string", length=255)
      */
-    private $name;
+    private $accountName;
 
     /**
-     * @var string
+     * @var int
      *
      * @ORM\Column(name="accountNumber", type="bigint", unique=true)
      */
@@ -42,37 +41,63 @@ class InternalAccount
     private $classe;
 
     /**
-     * @var text
+     * @var decimal
      *
-     * @ORM\Column(name="description", type="text", nullable=true)
+     * @ORM\Column(name="beginingBalance", type="decimal")
      */
-    private $description;
+    private $beginingBalance;
 
     /**
      * @var decimal
      *
-     * @ORM\Column(name="amount", type="decimal")
+     * @ORM\Column(name="endingBalance", type="decimal")
      */
-    private $amount;
+    private $endingBalance;
+
+    /**
+     * @var decimal
+     *
+     * @ORM\Column(name="debit", type="decimal")
+     */
+    private $debit;
+
+    /**
+     * @var decimal
+     *
+     * @ORM\Column(name="credit", type="decimal")
+     */
+    private $credit;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="type", type="string", length=255)
+     * @ORM\Column(name="beginBalanceCode", type="string", length=1, options={"default":"D"})
      */
-    private $type;
+    private $beginBalanceCode;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="endingBalanceCode", type="string", length=1, options={"default":"C"})
+     */
+    private $endingBalanceCode;
+
 
 
 
 
     public function __construct(){
         // The default amount is 0
-        $this->amount = 0;
+        $this->beginingBalance = 0;
+        $this->debit = 0;
+        $this->credit = 0;
+        $this->endingBalance = 0;
+        $this->beginBalanceCode = 'D';
+        $this->beginBalanceCode = 'C';
     }
 
-
     public function __toString(){
-        return $this->name;
+        return $this->accountName;
     }
 
 
@@ -87,76 +112,27 @@ class InternalAccount
     }
 
     /**
-     * Set name
+     * Set accountName
      *
-     * @param string $name
+     * @param string $accountName
      *
      * @return InternalAccount
      */
-    public function setName($name)
+    public function setAccountName($accountName)
     {
-        $this->name = $name;
+        $this->accountName = $accountName;
 
         return $this;
     }
 
     /**
-     * Get name
+     * Get accountName
      *
      * @return string
      */
-    public function getName()
+    public function getAccountName()
     {
-        return $this->name;
-    }
-
-
-    /**
-     * Set amount
-     *
-     * @param string $amount
-     *
-     * @return InternalAccount
-     */
-    public function setAmount($amount)
-    {
-        $this->amount = $amount;
-
-        return $this;
-    }
-
-    /**
-     * Get amount
-     *
-     * @return string
-     */
-    public function getAmount()
-    {
-        return $this->amount;
-    }
-
-    /**
-     * Set classe
-     *
-     * @param \ClassBundle\Entity\Classe $classe
-     *
-     * @return InternalAccount
-     */
-    public function setClasse(\ClassBundle\Entity\Classe $classe = null)
-    {
-        $this->classe = $classe;
-
-        return $this;
-    }
-
-    /**
-     * Get classe
-     *
-     * @return \ClassBundle\Entity\Classe
-     */
-    public function getClasse()
-    {
-        return $this->classe;
+        return $this->accountName;
     }
 
     /**
@@ -184,50 +160,170 @@ class InternalAccount
     }
 
     /**
-     * Set description
+     * Set beginingBalance
      *
-     * @param string $description
+     * @param string $beginingBalance
      *
      * @return InternalAccount
      */
-    public function setDescription($description)
+    public function setBeginingBalance($beginingBalance)
     {
-        $this->description = $description;
+        $this->beginingBalance = $beginingBalance;
 
         return $this;
     }
 
     /**
-     * Get description
+     * Get beginingBalance
      *
      * @return string
      */
-    public function getDescription()
+    public function getBeginingBalance()
     {
-        return $this->description;
+        return $this->beginingBalance;
     }
 
     /**
-     * Set type
+     * Set endingBalance
      *
-     * @param string $type
+     * @param string $endingBalance
      *
      * @return InternalAccount
      */
-    public function setType($type)
+    public function setEndingBalance($endingBalance)
     {
-        $this->type = $type;
+        $this->endingBalance = $endingBalance;
 
         return $this;
     }
 
     /**
-     * Get type
+     * Get endingBalance
      *
      * @return string
      */
-    public function getType()
+    public function getEndingBalance()
     {
-        return $this->type;
+        return $this->endingBalance;
+    }
+
+    /**
+     * Set debit
+     *
+     * @param string $debit
+     *
+     * @return InternalAccount
+     */
+    public function setDebit($debit)
+    {
+        $this->debit = $debit;
+
+        return $this;
+    }
+
+    /**
+     * Get debit
+     *
+     * @return string
+     */
+    public function getDebit()
+    {
+        return $this->debit;
+    }
+
+    /**
+     * Set credit
+     *
+     * @param string $credit
+     *
+     * @return InternalAccount
+     */
+    public function setCredit($credit)
+    {
+        $this->credit = $credit;
+
+        return $this;
+    }
+
+    /**
+     * Get credit
+     *
+     * @return string
+     */
+    public function getCredit()
+    {
+        return $this->credit;
+    }
+
+    /**
+     * Set classe
+     *
+     * @param \ClassBundle\Entity\Classe $classe
+     *
+     * @return InternalAccount
+     */
+    public function setClasse(\ClassBundle\Entity\Classe $classe = null)
+    {
+        $this->classe = $classe;
+
+        return $this;
+    }
+
+    /**
+     * Get classe
+     *
+     * @return \ClassBundle\Entity\Classe
+     */
+    public function getClasse()
+    {
+        return $this->classe;
+    }
+
+    /**
+     * Set beginBalanceCode
+     *
+     * @param string $beginBalanceCode
+     *
+     * @return InternalAccount
+     */
+    public function setBeginBalanceCode($beginBalanceCode)
+    {
+        $this->beginBalanceCode = $beginBalanceCode;
+
+        return $this;
+    }
+
+    /**
+     * Get beginBalanceCode
+     *
+     * @return string
+     */
+    public function getBeginBalanceCode()
+    {
+        return $this->beginBalanceCode;
+    }
+
+    /**
+     * Set endingBalanceCode
+     *
+     * @param string $endingBalanceCode
+     *
+     * @return InternalAccount
+     */
+    public function setEndingBalanceCode($endingBalanceCode)
+    {
+        $this->endingBalanceCode = $endingBalanceCode;
+
+        return $this;
+    }
+
+    /**
+     * Get endingBalanceCode
+     *
+     * @return string
+     */
+    public function getEndingBalanceCode()
+    {
+        return $this->endingBalanceCode;
     }
 }

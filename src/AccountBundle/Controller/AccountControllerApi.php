@@ -173,18 +173,6 @@ class AccountControllerApi extends FOSRestController{
 
             $interestToPay = $dailyInterestPayment * floor(($dateNow - $date)/(60*60*24));
         }
-
-                if ($loan->getMoralMember()) {
-                    $representants = $accountService->getAccountRepresentant($loan->getMoralMember()->getId());
-                    return [
-                        "message" => "Entite Loan", 
-                        "status" => "success", 
-                        "data" => $loan,
-                        "representants" => $representants,
-                        "loanhistory" => $loanHistory,
-                        "interestToPay" => $interestToPay
-                    ];    
-                }else{
                     $beneficiaries = $accountService->getAccountBeneficiary($loan->getPhysicalMember()->getId());
                     return [
                         "message" => "Entite Loan", 
@@ -194,7 +182,6 @@ class AccountControllerApi extends FOSRestController{
                         "loanhistory" => $loanHistory,
                         "interestToPay" => $interestToPay
                     ];
-                }
     }
 
 

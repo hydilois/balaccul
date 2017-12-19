@@ -6,10 +6,10 @@
       <a href="#">BALACCUL</a>
     </li>
     <li>
-      <a href="#">Utilisateurs</a>
+      <a href="#">Users</a>
     </li>
     <li class="active">
-      Consulter
+      List
     </li>
   </ol>
         <div class="row">
@@ -55,15 +55,14 @@
                 <td>{{ utilisateur.groupe }}</td>
                 <td>
                     {% if app.user.username == utilisateur.username %}
-                        <span class="label label-default">Utilisateur Connecté</span>                        
-                    {# {% elseif utilisateur.username == "elsha" %} #}
+                        <span class="label label-default">User Connected</span>
                         
                     {% else %}
                         {% if utilisateur.enabled %}
-                            <a href="{{ path('utilisateur_disable', { 'id': utilisateur.id }) }}" class="btn btn-danger" > Désactiver
+                            <a href="{{ path('utilisateur_disable', { 'id': utilisateur.id }) }}" class="btn btn-danger" > Deactivate
                             </a>
                         {% else %}
-                            <a href="{{ path('utilisateur_enable', { 'id': utilisateur.id }) }}" class="btn btn-warning">Activer</a>
+                            <a href="{{ path('utilisateur_enable', { 'id': utilisateur.id }) }}" class="btn btn-warning">Activate</a>
                         {% endif %}
                     {% endif %}
                 </td>

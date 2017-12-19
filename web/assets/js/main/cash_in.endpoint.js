@@ -49,6 +49,7 @@ $(function() {
             this.setAddOtherItem();
             this.purposeInputKeyUpListener();
             this.analyticInputKeyUpListener();
+            this.setCustomiseButton();
         }
 
         OperationEndpoint.prototype.purposeInputKeyUpListener = function() {
@@ -125,7 +126,9 @@ $(function() {
             }else{
                 $subTr = $("tr.template").clone().removeClass('template');
                 $subTr.find('th').text($(this).val());
-                $subTr.find('td input').attr('name', $(this).val());
+                var myString = $(this).val();
+                var arr = myString.split(' ');
+                $subTr.find('td input').attr('name', arr[0]);
                 $subTr.removeClass('hide');
                 $subTr.addClass('rowTemplate');
                 
@@ -150,6 +153,22 @@ $(function() {
             });
             $('input.total').val(total);
     });
+    }
+
+
+    OperationEndpoint.prototype.setCustomiseButton = function(){
+        $('body').on('change', '#memberNumber', function(){
+            if ($(this).val() == "") {
+                $("#bouton").addClass('hide')
+            }else{
+                $('#saving').attr('href', URL_ROOT+"/report/saving/"+$(this).val());
+                $('#share').attr('href', URL_ROOT+"/report/shares/"+$(this).val());
+                $('#deposit').attr('href', URL_ROOT+"/report/deposit/"+$(this).val());
+                $('#loan').attr('href', URL_ROOT+"/report/loans/"+$(this).val());
+
+                $("#bouton").removeClass('hide')
+            }
+        });
     }
 
         //this should be at the end

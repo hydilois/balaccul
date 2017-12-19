@@ -9,7 +9,7 @@
       <a href="#">Operation</a>
     </li>
     <li class="active">
-      Loan payment
+      Loan Situation
     </li>
   </ol>
         <section class="col-lg-4">
@@ -31,27 +31,24 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        {{form_label(form.monthlyPayement)}}
-                        {{form_errors(form.monthlyPayement)}}
-                        {{form_widget(form.monthlyPayement, {'attr' : {'class':'form-control'}})}}
-                    </div>
-                    <div class="form-group">
-                        {{form_label(form.interest)}}
-                        {{form_errors(form.interest)}}
-                        {{form_widget(form.interest, {'attr' : {'class':'form-control'}})}}
-                    </div>
-                    <div class="form-group">
-                        <a class="btn btn-default" name="btn-loan-payment-save" id="saveCredit" href="#">Save</a>
                         <a class="btn btn-primary" name="btn-formaccount-reset" href="#">Reset</a>
+                        <a target="_blank" class="btn btn-info rotateInDownRight animated hide" id="details" name="btn-details" href="#"><i class="fa fa-eye"></i> More Details</a>
                     </div>
             </fieldset>
-            
         </section>
         <section  class="col-lg-8">
             <fieldset id="detailLoan" class="fadeInDown animated hide">
                 <legend>Details of the loan</legend>
                 <div class="row">
-                    <div class="col-sm-2 col-md-2 col-lg-3">
+                    <div class="col-sm-6 col-md-6 col-lg-3">
+                        <div class="widget-bg-color-icon card-box">
+                            <div class="text-center">
+                                <p class="text-muted">Loan date</p>
+                                <h4 class="text-dark"><b id="loanDate"></b></h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-6 col-lg-3">
                         <div class="widget-bg-color-icon card-box">
                             <div class="text-center">
                                 <p class="text-muted">Loan Code</p>
@@ -63,7 +60,7 @@
                     <div class="col-sm-6 col-md-6 col-lg-3">
                         <div class="widget-bg-color-icon card-box">
                             <div class="text-center">
-                                <p class="text-muted">Loan Amount</p>
+                                <p class="text-muted">Balance</p>
                                 <h4 class="text-dark"><b id="loanAmount" data-plugin="counterup"></b></h4>
                             </div>
                         </div>
@@ -77,12 +74,18 @@
                             </div>
                         </div>
                     </div>
-                    
-                    
                     <div class="col-sm-6 col-md-6 col-lg-3">
                         <div class="widget-bg-color-icon card-box">
                             <div class="text-center">
-                                <p class="text-muted">Interest</p>
+                                <p class="text-muted">Unpaid Interest</p>
+                                <h4 class="text-dark"><b id="unpaidInterest" data-plugin="counterup"></b></h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-6 col-lg-3">
+                        <div class="widget-bg-color-icon card-box">
+                            <div class="text-center">
+                                <p class="text-muted">New Interest</p>
                                 <h4 class="text-dark"><b id="loanInterest" data-plugin="counterup"></b></h4>
                             </div>
                         </div>
@@ -90,58 +93,14 @@
                     <div class="col-sm-6 col-md-6 col-lg-3">
                         <div class="widget-bg-color-icon card-box">
                             <div class="text-center">
-                                <p class="text-muted">Monthly Payment</p>
-                                <h4 class="text-dark"><b id="monthlyPayment" data-plugin="counterup"></b></h4>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-6 col-md-6 col-lg-3">
-                        <div class="widget-bg-color-icon card-box">
-                            <div class="text-center">
-                                <p class="text-muted">Loan date</p>
-                                <h4 class="text-dark"><b id="loanDate"></b></h4>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-6 col-md-6 col-lg-3">
-                        <div class="widget-bg-color-icon card-box">
-                            <div class="text-center">
-                                <p class="text-muted">Dead line</p>
-                                <h4 class="text-dark"><b id="loadDeadLine"></b></h4>
+                                <p class="text-muted">Total Interest</p>
+                                <h4 class="text-dark"><b id="totalInterest" data-plugin="counterup"></b></h4>
                             </div>
                         </div>
                     </div>
                 </div>
             </fieldset>
-
-
-
-
-            <fieldset id="ownerDetails" class=" hide fadeInDown animated">
-                <legend>Details on the account the owner</legend>
-                <div class="row">
-                    <div class="col-sm-12 col-lg-12">
-                        <div class="card-box">
-                            <div class="contact-card">
-                                <a class="pull-left" href="#">
-                                    <img class="img-circle" src="{{asset('assets/images/tba.png')}}" alt="">
-                                </a>
-                                <div class="member-info">
-                                    <h4 class="m-t-0 m-b-5 header-title"><b id="socialReason"></b></h4>
-                                    <p class="text-dark">Member Number: <b  id="memberNumber"></b></p>
-                                    <p class="text-dark">Adress: <b id="address"></b></p>
-                                    <p class="text-dark">Phone Number: <b id="phoneNumber"></b></p>
-                                    <p class="text-dark">Membership date creation : <b id="date"></b></p>
-                                    <p class="text-dark">Witness Name: <b id="witness"></b></p>
-                                    <p class="text-dark">Proposed by: <b id="proposed"></b></p>
-                            </div>
-                        </div>
-                        
-                    </div> <!-- end col -->
-                    
-                </div>
-            </fieldset>
-            <fieldset id="physicalOwnerDetails" class=" hide fadeInDown animated">
+            <fieldset id="physicalOwnerDetails" class=" hide rotateInDownRight animated">
                 <legend>Details on the account the owner</legend>
                 <div class="row">
                     <div class="col-sm-12 col-lg-12">

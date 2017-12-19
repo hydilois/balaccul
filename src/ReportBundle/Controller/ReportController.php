@@ -10,9 +10,14 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use ConfigBundle\Entity\TransactionIncome;
 
+/**
+ * Operation controller.
+ *
+ * @Route("report")
+ */
 class ReportController extends Controller{
     /**
-     * @Route("/report", name="report")
+     * @Route("/trialbalance", name="report_trial_balance")
      */
     public function indexAction(Request $request){
         
@@ -29,70 +34,272 @@ class ReportController extends Controller{
 
 
     /**
-     * @Route("/report/month", name="report_month")
+     * @Route("/cash_book", name="report_cash_book")
      */
-    public function reportMonthAction(Request $request){
-        $em = $this->getDoctrine()->getManager();
-        $qbuilder = $em->createQueryBuilder();
-        $qbuilder->select('ri')
-            ->from('AccountBundle:ReportItem', 'ri')
-            ->where('ri.parentItem IS NOT NULL');
-
-        $reportItems = $qbuilder->getQuery()->getResult();
-
-        // replace this example code with whatever you need
-        return $this->render('report/report_month.html.twig', [
-            'items' => $reportItems,
-        ]);
-    }
-
-
-    /**
-     * @Route("/trialbalance", name="trialbalancereport")
-     * @Method({"GET", "POST"})
-     */
-    public function trialBalanceAction(Request $request){
+    public function cashBookAction(Request $request){
         $em = $this->getDoctrine()->getManager();
 
+        $agency = $em->getRepository('ConfigBundle:Agency')->find(1);
+        $currentDate = new \DateTime('now');
 
         $currentUserId  = $this->get('security.token_storage')->getToken()->getUser()->getId();
         $currentUser    = $em->getRepository('UserBundle:Utilisateur')->find($currentUserId);
 
-        $date = new \DateTime('now');
+        $query  = $em->createQueryBuilder()
+                ->select('op')
+                ->from('AccountBundle:Operation', 'op')
+                ->getQuery();
+        $operations = $query->getResult();
 
-        $classes    = $em->getRepository('ClassBundle:Classe')->findByClassCategory(NULL);
+        // \Doctrine\Common\Util\Debug::dump($operations);
+        // die();
 
-        foreach ($classes as $classe) {
-            $subClasses    = $em->getRepository('ClassBundle:Classe')->findBy(
-                    [
-                        'classCategory' => $classe
-                    ]
-                );
-            if (count($subClasses) != 0) {
-                $listSubClasseAccounts = [];
-                foreach ($subClasses as $subClasse) {
-                    $subClasseinternalAccounts    = $em->getRepository('ClassBundle:InternalAccount')->findBy(
-                        [
-                            'classe' => $subClasse
-                        ]
-                    );
-                    foreach ($subClasseinternalAccounts as $account) {
-                        array_push($listSubClasseAccounts, $account);
-                    }
-                }
-                $classe->setListeAccounts($listSubClasseAccounts);
-            }else{
-                $internalAccounts    = $em->getRepository('ClassBundle:InternalAccount')->findBy(
-                        [
-                            'classe' => $classe
-                        ]
-                    );
-                $classe->setListeAccounts($internalAccounts);
-            }
-        }
+        $html = $this->renderView('situation/cash_book_file.html.twig', [
+            'operations' => $operations,
+            'agency' => $agency,
+            'currentUser' => $currentUser,
+            'date' => $currentDate,
+        ]);
 
+        $html2pdf = $this->get('html2pdf_factory')->create('P', 'A4', 'en', true, 'UTF-8', array(5, 10, 5, 10));
+        $html2pdf->pdf->SetAuthor('GreenSoft-Team');
+        $html2pdf->pdf->SetDisplayMode('real');
+        $html2pdf->pdf->SetTitle('Cash Book');
+        $response = new Response();
+        $html2pdf->pdf->SetTitle('Cash Book');
+        $html2pdf->writeHTML($html);
+        $content = $html2pdf->Output('', true);
+        $response->setContent($content);
+        $response->headers->set('Content-Type', 'application/pdf');
+        $response->headers->set('Content-disposition', 'filename=Cash_Book.pdf');
+        return $response;
+    }
+
+
+
+    /**
+     * member situation.
+     *
+     * @Route("/memberSituation", name="report_member_situation")
+     * @Method("GET")
+     */
+    public function memberSituationAction(){
+
+        $entityManager = $this->getDoctrine()->getManager();
+        $members  = $entityManager->getRepository('MemberBundle:Member')->findBy([],['memberNumber' => 'ASC',]);
+
+        return $this->render('report/member_situation.html.twig', array(
+            'members' => $members,
+        ));
+    }
+
+
+    /**
+     * member situation on saving.
+     *
+     * @Route("/saving/{id}", name="member_situation_saving")
+     * @Method("GET")
+     */
+    public function savingSituationAction($id){
+
+        $entityManager = $this->getDoctrine()->getManager();
+        $member  = $entityManager->getRepository('MemberBundle:Member')->find($id);
+        $agency = $entityManager->getRepository('ConfigBundle:Agency')->find(1);
+        $currentDate = new \DateTime('now');
+
+        $operations = $entityManager->getRepository('AccountBundle:Operation')->findBy([
+            'member' => $member,
+            'isSaving' => true
+            ]);
+
+        $nomMember = str_replace(' ', '_', $member->getName());
+        $type = "Savings";
+        $html =  $this->renderView('situation/saving_situation_file.html.twig', array(
+            'agency' => $agency,
+            'member' => $member,
+            'type' => $type,
+            'currentDate' => $currentDate,
+            'operations' => $operations,
+        ));
+
+        $html2pdf = $this->get('html2pdf_factory')->create('P', 'A4', 'en', true, 'UTF-8', array(5, 10, 5, 10));
+        $html2pdf->pdf->SetAuthor('GreenSoft-Team');
+        $html2pdf->pdf->SetDisplayMode('real');
+        $html2pdf->pdf->SetTitle('Situation_'.$type.'_'.$nomMember);
+        $response = new Response();
+        $html2pdf->pdf->SetTitle('Situation_'.$type.'_'.$nomMember);
+        $html2pdf->writeHTML($html);
+        $content = $html2pdf->Output('', true);
+        $response->setContent($content);
+        $response->headers->set('Content-Type', 'application/pdf');
+        $response->headers->set('Content-disposition', 'filename=Situation_'.$type.'_'.$nomMember.'.pdf');
+        return $response;
+    }
+
+
+    /**
+     * member situation on saving.
+     *
+     * @Route("/shares/{id}", name="member_situation_shares")
+     * @Method("GET")
+     */
+    public function sharesSituationAction($id){
+
+        $entityManager = $this->getDoctrine()->getManager();
+        $member  = $entityManager->getRepository('MemberBundle:Member')->find($id);
+        $agency = $entityManager->getRepository('ConfigBundle:Agency')->find(1);
+        $currentDate = new \DateTime('now');
+
+        $operations = $entityManager->getRepository('AccountBundle:Operation')->findBy([
+            'member' => $member,
+            'isShare' => true
+            ]);
+
+        $nomMember = str_replace(' ', '_', $member->getName());
+        $type = "Shares";
+        $html =  $this->renderView('situation/saving_situation_file.html.twig', array(
+            'agency' => $agency,
+            'member' => $member,
+            'type' => $type,
+            'currentDate' => $currentDate,
+            'operations' => $operations,
+        ));
+
+        $html2pdf = $this->get('html2pdf_factory')->create('P', 'A4', 'en', true, 'UTF-8', array(5, 10, 5, 10));
+        $html2pdf->pdf->SetAuthor('GreenSoft-Team');
+        $html2pdf->pdf->SetDisplayMode('real');
+        $html2pdf->pdf->SetTitle('Situation_'.$type.'_'.$nomMember);
+        $response = new Response();
+        $html2pdf->pdf->SetTitle('Situation_'.$type.'_'.$nomMember);
+        $html2pdf->writeHTML($html);
+        $content = $html2pdf->Output('', true);
+        $response->setContent($content);
+        $response->headers->set('Content-Type', 'application/pdf');
+        $response->headers->set('Content-disposition', 'filename=Situation_'.$type.'_'.$nomMember.'.pdf');
+        return $response;
+    }
+
+    /**
+     * member situation on saving.
+     *
+     * @Route("/deposit/{id}", name="member_situation_deposit")
+     * @Method("GET")
+     */
+    public function depositSituationAction($id){
+
+        $entityManager = $this->getDoctrine()->getManager();
+        $member  = $entityManager->getRepository('MemberBundle:Member')->find($id);
+        $agency = $entityManager->getRepository('ConfigBundle:Agency')->find(1);
+        $currentDate = new \DateTime('now');
+
+        $operations = $entityManager->getRepository('AccountBundle:Operation')->findBy([
+            'member' => $member,
+            'isDeposit' => true
+            ]);
+
+        $nomMember = str_replace(' ', '_', $member->getName());
+        $type = "Deposits";
+        $html =  $this->renderView('situation/saving_situation_file.html.twig', array(
+            'agency' => $agency,
+            'member' => $member,
+            'type' => $type,
+            'currentDate' => $currentDate,
+            'operations' => $operations,
+        ));
+
+        $html2pdf = $this->get('html2pdf_factory')->create('P', 'A4', 'en', true, 'UTF-8', array(5, 10, 5, 10));
+        $html2pdf->pdf->SetAuthor('GreenSoft-Team');
+        $html2pdf->pdf->SetDisplayMode('real');
+        $html2pdf->pdf->SetTitle('Situation_'.$type.'_'.$nomMember);
+        $response = new Response();
+        $html2pdf->pdf->SetTitle('Situation_'.$type.'_'.$nomMember);
+        $html2pdf->writeHTML($html);
+        $content = $html2pdf->Output('', true);
+        $response->setContent($content);
+        $response->headers->set('Content-Type', 'application/pdf');
+        $response->headers->set('Content-disposition', 'filename=Situation_'.$type.'_'.$nomMember.'.pdf');
+        return $response;
+    }
+
+
+    /**
+     * member situation on saving.
+     *
+     * @Route("/loans/{id}", name="member_situation_loan")
+     * @Method("GET")
+     */
+    public function loanSituationAction($id){
+
+        $entityManager = $this->getDoctrine()->getManager();
+        $member  = $entityManager->getRepository('MemberBundle:Member')->find($id);
+        $agency = $entityManager->getRepository('ConfigBundle:Agency')->find(1);
+        $currentDate = new \DateTime('now');
+
+        $loan = $entityManager->getRepository('AccountBundle:Loan')->findOneBy([
+            'physicalMember' => $member,
+            'status' => true
+            ]);
+
+        $loanSituations = $entityManager->getRepository('AccountBundle:LoanHistory')->findBy([
+            'loan' => $loan,
+            ]);
+
+        $nomMember = str_replace(' ', '_', $member->getName());
+        $type = "Loans";
+        $html =  $this->renderView('situation/loan_situation_file.html.twig', array(
+            'agency' => $agency,
+            'member' => $member,
+            'loan' => $loan,
+            'type' => $type,
+            'currentDate' => $currentDate,
+            'loanSituations' => $loanSituations,
+        ));
+
+        $html2pdf = $this->get('html2pdf_factory')->create('P', 'A4', 'en', true, 'UTF-8', array(5, 10, 5, 10));
+        $html2pdf->pdf->SetAuthor('GreenSoft-Team');
+        $html2pdf->pdf->SetDisplayMode('real');
+        $html2pdf->pdf->SetTitle('Situation_'.$type.'_'.$nomMember);
+        $response = new Response();
+        $html2pdf->pdf->SetTitle('Situation_'.$type.'_'.$nomMember);
+        $html2pdf->writeHTML($html);
+        $content = $html2pdf->Output('', true);
+        $response->setContent($content);
+        $response->headers->set('Content-Type', 'application/pdf');
+        $response->headers->set('Content-disposition', 'filename=Situation_'.$type.'_'.$nomMember.'.pdf');
+        return $response;
+    }
+
+
+    /**
+     * @Route("/generate/trialbalance", name="trialbalance_report")
+     * @Method({"GET", "POST"})
+     */
+    public function trialBalanceAction(Request $request){
 
         if ($request->getMethod() == 'POST') {
+            $em = $this->getDoctrine()->getManager();
+            $currentUserId  = $this->get('security.token_storage')->getToken()->getUser()->getId();
+            $currentUser    = $em->getRepository('UserBundle:Utilisateur')->find($currentUserId);
+            $date = new \DateTime('now');
+            $agency = $em->getRepository('ConfigBundle:Agency')->find(1);
+
+            // $internalAccounts = $em->getRepository('ClassBundle:InternalAccount')->findBy([], ['accountNumber' => 'ASC']);
+
+            $internalAccounts = $em->createQueryBuilder()
+                ->select('ia')
+                ->from('ClassBundle:InternalAccount', 'ia')
+                ->where('ia.beginingBalance != :begining')
+                ->orWhere('ia.endingBalance != :ending')
+                ->orWhere('ia.debit != :debit')
+                ->orWhere('ia.credit != :credit')
+                ->setParameters(
+                    [
+                        'begining' => 0,
+                        'ending' => 0,
+                        'debit' => 0,
+                        'credit' => 0,
+                    ]
+                )->getQuery()->getResult();
 
             $dateDebut = $request->get('start');
             $dateFin = $request->get('end');
@@ -103,13 +310,27 @@ class ReportController extends Controller{
             $displayDateStart  = $newDateStart[1]."-".$newDateStart[0]."-".$newDateStart[2];
             $displayDateEnd  = $newDateEnd[1]."-".$newDateEnd[0]."-".$newDateEnd[2];
 
-                return $this->render('report/trialbalance.html.twig', array(
+                $html =  $this->renderView('report/trialbalance_file.html.twig', array(
                     'displayDateStart' => $displayDateStart,
                     'displayDateEnd' => $displayDateEnd,
                     'currentUser' => $currentUser,
                     'date' => $date,
-                    'classes' => $classes,
+                    'agency' => $agency,
+                    'internalAccounts' => $internalAccounts,
                 ));
+
+                $html2pdf = $this->get('html2pdf_factory')->create('P', 'A4', 'en', true, 'UTF-8', array(2.5, 5, 2.5, 5));
+                $html2pdf->pdf->SetAuthor('GreenSoft-Team');
+                $html2pdf->pdf->SetDisplayMode('real');
+                $html2pdf->pdf->SetTitle('Trial Balance');
+                $response = new Response();
+                $html2pdf->pdf->SetTitle('Trial Balance');
+                $html2pdf->writeHTML($html);
+                $content = $html2pdf->Output('', true);
+                $response->setContent($content);
+                $response->headers->set('Content-Type', 'application/pdf');
+                $response->headers->set('Content-disposition', 'filename=Trial_Balance.pdf');
+                return $response;
             }
         }
 

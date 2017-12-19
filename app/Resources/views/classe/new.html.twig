@@ -1,16 +1,17 @@
 {% extends 'base.html.twig' %}
-
-{% block body %}
-    <h1>Classe creation</h1>
-
+{% block title %}{{parent()}} new Class {% endblock %}
+{% block contenu %}
+    <h1 class="text-center">Classe creation</h1>
+<div class="col-lg-offset-3 col-lg-6">
+    
     {{ form_start(form) }}
-        {{ form_widget(form) }}
-        <input type="submit" value="Create" />
+        <div class="form-group">
+            {{form_label(form.name)}}
+            {{form_errors(form.name)}}
+            {{form_widget(form.name, {'attr':{'class':'form-control'}})}}
+        </div>
+        <input class="btn btn-default" type="submit" value="Create" />
+            <a class="btn btn-primary" href="{{ path('classe_index') }}">Back to the list</a>
     {{ form_end(form) }}
-
-    <ul>
-        <li>
-            <a href="{{ path('classe_index') }}">Back to the list</a>
-        </li>
-    </ul>
+</div>
 {% endblock %}

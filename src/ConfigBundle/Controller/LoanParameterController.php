@@ -12,12 +12,11 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;use Symfony\Component
  *
  * @Route("loanparameter")
  */
-class LoanParameterController extends Controller
-{
+class LoanParameterController extends Controller{
     /**
      * Lists all loanParameter entities.
      *
-     * @Route("/", name="loanparameter_index")
+     * @Route("/list", name="loanparameter_index")
      * @Method("GET")
      */
     public function indexAction()

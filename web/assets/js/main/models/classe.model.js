@@ -12,8 +12,6 @@
 function Classe(){
 	this.id = null;
 	this.name = null;
-	this.classCategory = null;
-	this.description = null;
 	
 	this.attributesArray = {};//has to be serialized so we have this form
 
@@ -25,8 +23,6 @@ var classe = new Classe();
 Classe.prototype.getValuesFromForm = function(){
 
 	this.name  				= $("#classbundle_classe_name").val();
-	this.description  		= $("#classbundle_classe_description").val();
-	this.classCategory		= $("select#classbundle_classe_classCategory").val();
 }
 
 /**
@@ -38,8 +34,6 @@ Classe.prototype.getJSONValues = function(){
 	this.getValuesFromForm();
 
 	this.attributesArray["name"]				= this.name;
-	this.attributesArray["description"]		= this.description;
-	this.attributesArray["classCategory"]		= this.classCategory;
 
 	return JSON.parse(JSON.stringify(this.attributesArray));
 }

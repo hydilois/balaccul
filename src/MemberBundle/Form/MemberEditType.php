@@ -21,7 +21,8 @@ class MemberEditType extends AbstractType
         ->add('sex', ChoiceType::class, [
             'choices' => [
                 'Male' => 'Male',
-                'Female' => 'Female'
+                'Female' => 'Female',
+                'Other' => 'Other'
             ],
             "required" =>'required'
         ])
@@ -53,7 +54,7 @@ class MemberEditType extends AbstractType
         ->add('proposedBy')
             ->add('isAproved', ChoiceType::class,
         [
-            'expanded' => true,
+            'expanded' => false,
             'multiple' => false,
             'choices'=>
                 [
@@ -82,8 +83,8 @@ class MemberEditType extends AbstractType
         ->add('witnessName')
 
         ->add('phoneNumber')
-        ->add('registrationFees')
-        ->add('buildingFees')
+        // ->add('registrationFees')
+        // ->add('buildingFees')
         ;
     }
     

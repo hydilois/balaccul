@@ -47,14 +47,15 @@ $(function() {
             this.setLoanCodeSelectorListener();
             this.validateRegisterOperationListener();
             this.setResetForm();
+            this.validateCloseLoanListener();
         }
 
         LoanHistoryEndpoint.prototype.setLoanCodeSelectorListener = function(){
             $('body').on('change', '#loanCode', function(){
 
                 $("#detailLoan").addClass('hide');
-                $("#ownerDetails").addClass('hide');
                 $("#physicalOwnerDetails").addClass('hide');
+                $("#details").addClass('hide');
                 var that = this;
 
                 var loanCode =  $(this).val();
@@ -74,21 +75,24 @@ $(function() {
                         $("#loanRate").text(returnedData.data.rate+"%");
 
                         var formattedDate   = new Date(returnedData.data.date_loan);
-                            var d               = ( '0' + formattedDate.getDate()).slice(-2);
-                            var m               = ( '0' + formattedDate.getMonth()).slice(-2);
-                            var y               = formattedDate.getFullYear();
-                            var stringDate      =  d + "-" + m + "-" + y;
+                        var d = formattedDate.getUTCDate();
+                        if (d >=10) { 
+                        }else{
+                            d = "0"+formattedDate.getUTCDate();
+                        }
+                        var m = formattedDate.getUTCMonth() + 1;
+                        if (m >=10) {}
+                        else{
+                            m = "0"+(formattedDate.getUTCMonth + 1);
+                        }
+                        var y = formattedDate.getUTCFullYear();
+                        if (y >=10) {
+                        }else{
+                            y  = "0" + formattedDate.getUTCFullYear();
+                        }
+
+                        var stringDate      =  d + "-" + m + "-" + y;
                         $("#loanDate").text(stringDate);
-
-                        var formattedDate1   = new Date(returnedData.data.deadline);
-                            var d               = ( '0' + formattedDate1.getDate()).slice(-2);
-                            var m               = ( '0' + formattedDate1.getMonth()).slice(-2);
-                            var y               = formattedDate1.getFullYear();
-                            var stringDate1      =  d + "-" + m + "-" + y;
-
-                        $("#loadDeadLine").text(stringDate1);
-
-                        $("#monthlyPayment").text(returnedData.data.monthly_payment);
 
 
                         if (returnedData.loanhistory) {
@@ -97,36 +101,17 @@ $(function() {
                             $("#loanAmount").text(returnedData.loanhistory.remain_amount);
                             //get the amount of the interest paid
                             var totalInterest  = returnedData.interestToPay + returnedData.loanhistory.unpaid_interest;
-                            $("#loanInterest").text(totalInterest.toFixed(2));
+                            $("#unpaidInterest").text(returnedData.loanhistory.unpaid_interest.toFixed(2));
+                            $("#loanInterest").text(returnedData.interestToPay.toFixed(2));
+                            $("#totalInterest").text(totalInterest.toFixed(2));
 
                         }else{
 
                             $("#loanAmount").text(returnedData.data.loan_amount);
-                            // var loanInterest = (returnedData.data.loan_amount * returnedData.data.rate)/100;
                             $("#loanInterest").text(returnedData.interestToPay.toFixed(2));
+                            $("#totalInterest").text(returnedData.interestToPay.toFixed(2));
 
                         }
-
-                        if (returnedData.data.moral_member) {
-                                console.log("Moral Member existes");
-                                $("#socialReason").text(returnedData.data.moral_member.social_reason);
-                                $("#memberNumber").text(returnedData.data.moral_member.member_number);
-                                $("#address").text(returnedData.data.moral_member.address);
-                                $("#phoneNumber").text(returnedData.data.moral_member.phone_number);
-
-                                var formattedDate   = new Date(returnedData.data.moral_member.membership_date_creation);
-                                    var d               = ( '0' + formattedDate.getDate()).slice(-2);
-                                    var m               = ( '0' + formattedDate.getMonth()).slice(-2);
-                                    var y               = formattedDate.getFullYear();
-                                    var stringDate      =  d + "-" + m + "-" + y;
-                                $("#date").text(stringDate);
-
-                                $("#witness").text(returnedData.data.moral_member.witness_name);
-                                $("#proposed").text(returnedData.data.moral_member.proposed_by);
-                                $("#ownerDetails").removeClass('hide');
-
-                            }else{
-                                console.log("Physical Member existes");
                                 $("#pname").text(returnedData.data.physical_member.name);
                                 $("#pmemberNumber").text(returnedData.data.physical_member.member_number);
                                 $("#poccupation").text(returnedData.data.physical_member.occupation);
@@ -135,27 +120,51 @@ $(function() {
                                 $("#pphoneNumber").text(returnedData.data.physical_member.phone_number);
 
                                 var formattedDate   = new Date(returnedData.data.physical_member.membership_date_creation);
-                                    var d               = ( '0' + formattedDate.getDate()).slice(-2);
-                                    var m               = ( '0' + formattedDate.getMonth()).slice(-2);
-                                    var y               = formattedDate.getFullYear();
+                                    var d = formattedDate.getUTCDate();
+                                    if (d >=10) { 
+                                    }else{
+                                        d = "0"+formattedDate.getUTCDate();
+                                    }
+                                    var m = formattedDate.getUTCMonth() + 1;
+                                    if (m >=10) {}
+                                    else{
+                                        m = "0"+(formattedDate.getUTCMonth + 1);
+                                    }
+                                    var y = formattedDate.getUTCFullYear();
+                                    if (y >=10) {
+                                    }else{
+                                        y  = "0" + formattedDate.getUTCFullYear();
+                                    }
                                     var stringDate      =  d + "-" + m + "-" + y;
+
                                 $("#pdate").text(stringDate);
 
                                 $("#pwitness").text(returnedData.data.physical_member.witness_name);
                                 $("#pproposed").text(returnedData.data.physical_member.proposed_by);
 
                                 var formattedDate1   = new Date(returnedData.data.physical_member.date_of_birth);
-                                    var d               = ( '0' + formattedDate1.getDate()).slice(-2);
-                                    var m               = ( '0' + formattedDate1.getMonth()).slice(-2);
-                                    var y               = formattedDate1.getFullYear();
+                                    var d = formattedDate1.getUTCDate();
+                                    if (d >=10) { 
+                                    }else{
+                                        d = "0"+formattedDate1.getUTCDate();
+                                    }
+                                    var m = formattedDate1.getUTCMonth() + 1;
+                                    if (m >=10) {}
+                                    else{
+                                        m = "0"+(formattedDate1.getUTCMonth + 1);
+                                    }
+                                    var y = formattedDate1.getUTCFullYear();
+                                    if (y >=10) {
+                                    }else{
+                                        y  = "0" + formattedDate1.getUTCFullYear();
+                                    }
                                     var stringDate      =  d + "-" + m + "-" + y;
                                 $("#pdateBirth").text(stringDate);
                                 $("#pPlaceBirth").text(returnedData.data.physical_member.place_of_birth);
-                                
                                 $("#physicalOwnerDetails").removeClass('hide');
-                            }
-
-                            $("#detailLoan").removeClass('hide');
+                                $("#details").attr('href', URL_ROOT+"/loan/"+returnedData.data.id)
+                                $("#details").removeClass('hide');
+                                $("#detailLoan").removeClass('hide');
                     },
                     error : function(returnedData){
                         loanHistoryEndpoint.feedbackHelper.showMessageWithPrompt("Désolé", "A problem occur during the request, please contact the administrator", "error");
@@ -188,8 +197,6 @@ $(function() {
 
     }
 
-
-
     LoanHistoryEndpoint.prototype.setRegisterCashInListener = function(){
             
             var data = JSON.parse(JSON.stringify({
@@ -197,9 +204,7 @@ $(function() {
                 "monthlyPayment" : $('#accountbundle_loanhistory_monthlyPayement').val(),
                 "interest" : $('#accountbundle_loanhistory_interest').val()
             }));
-
             console.log(data);
-
             $.ajax({
                 method      : "POST", 
                 data        : {data : data},
@@ -224,13 +229,56 @@ $(function() {
         $('body').on('click', 'a[name="btn-formaccount-reset"]', function(){
             $("div#zoneAccounts div.accounts_container").html("");
             $("#detailLoan").addClass('hide');
-            $("#ownerDetails").addClass('hide');
+            $("#details").addClass('hide');
             $("#physicalOwnerDetails").addClass('hide');
             $("#loanCode").attr("disabled", false);
-
-
         });
     }
+
+
+    LoanHistoryEndpoint.prototype.validateCloseLoanListener = function(){
+        $('body').on('click', 'a[name="btn-close-loan"]', function(){
+            var feedbackMessage = JSON.parse(JSON.stringify({
+                'title' : 'Validation of the operation',
+                'message' : 'Confirm, You agree that you want to close the loan ?',
+                'type' : 'warning',
+                'confirmeButtonText' : 'Yes I confirm',
+                'callback' : loanHistoryEndpoint.closeLoanListener
+            }));
+
+            loanHistoryEndpoint.feedbackHelper.showLoaderMessage(feedbackMessage.title, feedbackMessage.message, feedbackMessage.type, feedbackMessage.confirmeButtonText, loanHistoryEndpoint.closeLoanListener);
+        });
+    }
+
+    LoanHistoryEndpoint.prototype.closeLoanListener = function(){
+            var data = JSON.parse(JSON.stringify({
+                            "loanId" : $('a[name="btn-close-loan"]').data('loan'),
+                            "unpaidInterest" : $('input[name="unpaid"]').val(),
+                            "loanRemaint" : $('input[name="remain"]').val()
+                            }));
+            console.log(data);
+            $.ajax({
+                method      : "POST", 
+                data        : {data : data},
+                url         : URL_ROOT + "/loanhistory/close",
+                dataType    : "JSON",
+                beforeSend  : function(){
+                },
+                success     : function(data){
+                    returnedData = JSON.parse(data);
+                    console.log(returnedData);
+                    if(returnedData.status == "success"){
+                        loanHistoryEndpoint.feedbackHelper.showAutoCloseMessage("Loan Close", "The loan has been closed succesfully", "success", 3000);
+                        location.reload();
+                    }else{
+                        loanHistoryEndpoint.feedbackHelper.showMessageWithPrompt("Sorry", returnedData.message, "warning")
+                    }
+                }, 
+                error : function(returnedData){
+                    loanHistoryEndpoint.feedbackHelper.showMessageWithPrompt("Sorry", "un problème est survenu pendant la soumission de votre requête si le problème persiste, contactez votre administrateur", "error");
+                },
+            });
+        }
 
         //this should be at the end
         loanHistoryEndpoint.initializeView();
