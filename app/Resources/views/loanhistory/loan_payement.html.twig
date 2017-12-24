@@ -1,9 +1,9 @@
 {% extends 'base.html.twig' %}
-{% block title %} {{ parent() }} Cash in operation{% endblock %}
+{% block title %} {{ parent() }}Cash in operation{% endblock %}
 {% block contenu %}
     <ol class="breadcrumb">
     <li>
-      <a href="#">BALACUL</a>
+      <a href="#">BALACCUL</a>
     </li>
     <li>
       <a href="#">Operation</a>
@@ -12,6 +12,8 @@
       Loan Situation
     </li>
   </ol>
+  <div class="card-box">
+      <div class="row">
         <section class="col-lg-4">
             <fieldset>
                 <legend>Fill the form below</legend>
@@ -130,6 +132,9 @@
                 </div>
             </fieldset>
         </section>
+        </div>
+            
+        </div>
 
         {% include './loanhistory/extras.css.html.twig' %}
         {% include './loanhistory/extras.js.html.twig' %}

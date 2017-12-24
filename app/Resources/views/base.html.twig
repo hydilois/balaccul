@@ -186,8 +186,8 @@
                                          <ul class="list-unstyled">
                                              <li><a href="{{path('report_member_situation')}}">Member Situation</a></li>
                                              <li><a href="{{path('report_trial_balance')}}">Trial Balance</a></li>
-                                             <li><a href="{{path('operation_index')}}">All Situations</a></li>
-                                             <li><a target="_blank" href="{{path('report_cash_book')}}">Cash Book</a></li>
+                                             {# <li><a href="{{path('operation_index')}}">All Situations</a></li> #}
+                                             <li><a {# target="_blank" #} href="{{path('report_general_ledger')}}">General Ledger</a></li>
                                          </ul>
                                      </li>
                                      <li><a href="{{path('loanhistory_new_payement')}}"><i class="md-timer"></i><span> Loans Situation</span></a></li>
@@ -200,7 +200,7 @@
                                             <a href="javascript:void(0)" class="waves-effect"><i class="ti-settings"></i> <span> Settings </span> <span class="menu-arrow"></span> </a>
                                             <ul class="list-unstyled">
                                                 <li><a href="{{path('classe_index')}}">Classes</a></li>
-                                                <li><a href="{{path('internalaccount_index')}}">Internal Accounts</a></li>
+                                                <li><a href="{{path('internalaccount_index')}}"> Accounts</a></li>
                                                 <li><a href="{{path('agency_index')}}">Agency</a></li>
                                                 <li><a href="{{path('loanparameter_index')}}">Loan Parameter</a></li>
                                             </ul>

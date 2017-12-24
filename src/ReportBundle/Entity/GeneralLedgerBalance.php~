@@ -1,0 +1,107 @@
+<?php
+
+namespace ReportBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * GeneralLedgerBalance
+ *
+ * @ORM\Table(name="general_ledger_balance")
+ * @ORM\Entity(repositoryClass="ReportBundle\Repository\GeneralLedgerBalanceRepository")
+ */
+class GeneralLedgerBalance{
+
+    const TYPE_CASH_IN     = "CASH IN";
+    const TYPE_CASH_OUT    = "CASH OUT";
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $id;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="balance", type="bigint")
+     */
+    private $balance;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="type_operation", type="string", length=50)
+     */
+    private $typeOperation;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="dateOperation", type="datetime")
+     */
+    private $dateOperation;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\Utilisateur")
+     * @ORM\JoinColumn(name="id_user", referencedColumnName="id")
+     */
+    private $currentUser;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="ClassBundle\Entity\InternalAccount")
+     * @ORM\JoinColumn(name="id_internalAccount", referencedColumnName="id")
+     */
+    private $account;
+
+    /**
+     * @var decimal
+     *
+     * @ORM\Column(name="debit", type="decimal")
+     */
+    private $debit;
+
+    /**
+     * @var decimal
+     *
+     * @ORM\Column(name="credit", type="decimal")
+     */
+    private $credit;
+
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="is_confirmed", type="boolean")
+     */
+    private $isConfirmed;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="representative", type="string", length=50, nullable=true)
+     */
+    private $representative;
+
+    public function __construct(){
+        $this->credit = 0;
+        $this->debit = 0;
+        $this->balance = 0;
+        $this->isConfirmed = true;
+        $this->dateOperation = new \DateTime('now');
+    }
+
+
+    /**
+     * Get id
+     *
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+}
+

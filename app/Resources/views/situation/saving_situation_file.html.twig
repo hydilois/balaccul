@@ -10,7 +10,7 @@
             <td class="60p">
                  <b>{{agency.name}}</b> <br/>
                  <b>HEAD OFFICE {{agency.abreviation}}</b> <br/>
-                 <b>{{agency.phoneNumber}}</b>
+                 <b>Tel: {{agency.phoneNumber}}</b>
             </td>
             <td  style="text-align: right;" class="40p">
                 <img style="height:80px;" src="./assets/images/users/logo_cu1.jpg"  alt="logo">
@@ -54,20 +54,20 @@
                     <td style="text-align:center">{{operation.typeOperation}}</td>
                     <td style="text-align:center">
                         {% if operation.typeOperation == "CASH OUT" %}
-                            {{operation.amount}}
+                            {{operation.amount |number_format(0, '.', ' ')}}}}
                         {% else %}
                             //
                         {% endif %}
                     </td>
                     <td style="text-align:center">
                         {% if operation.typeOperation == "CASH IN" %}
-                            {{operation.amount}}
+                            {{operation.amount |number_format(0, '.', ' ')}}}}
                         {% else %}
                             //
                         {% endif %}
                     </td>
                     <td style="text-align:center">
-                            {{operation.balance}}
+                            {{operation.balance |number_format(0, '.', ' ')}}}}
                     </td>
                 </tr>
         {% endfor %}

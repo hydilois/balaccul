@@ -38,6 +38,9 @@ $(function() {
          */
         OperationEndpoint.prototype.initializeView = function() {
             console.log("here stands CASH IN");
+            $('.choice').iCheck({
+                            checkboxClass: 'icheckbox_square-purple'
+                        });
         }
 
         /**
@@ -142,6 +145,7 @@ $(function() {
     OperationEndpoint.prototype.setResetForm = function(){
         $('body').on('click', 'a[name="btn-formaccount-reset"]', function(){
             $("#purposes").find("tr.rowTemplate").remove();
+            $("#otherItem").addClass('hide');
 
             var total = 0;
             $("#purposes tr").each(function() {

@@ -3,15 +3,17 @@
 {% block contenu %}
     <ol class="breadcrumb">
     <li>
-      <a href="#">BALACUL</a>
+      <a href="#">BALACCUL</a>
     </li>
     <li>
       <a href="#">Operation</a>
     </li>
     <li class="active">
-      Other Cash In
+      Other Cash IN
     </li>
   </ol>
+  <div class="card-box">
+      <div class="row">
             <h1 class="text-center">OTHER CASH IN OPERATION</h1>
         <form target="_blank" method="POST" action="{{ path('other_operation_cash_in_save') }}">
         <section class="col-lg-6">
@@ -28,10 +30,10 @@
                 </div>
                 <div class="form-group">
                             <label class="control-label col-sm-4">Choose the member</label>
-                        <select name="memberNumber" class="form-control select2">
+                        <select name="memberNumber" class="form-control select2" autofocus>
                         <option value="">&lt;------ Select ------&gt;</option>
                         {% for member in members %}
-                            <option value="{{member.id}}">{{member.name}} --{{member.memberNumber}} </option>
+                            <option value="{{member.id}}">{{member.name}} -- {{member.memberNumber}} </option>
                         {% endfor %}
                     </select>
                 </div>
@@ -41,23 +43,26 @@
                 </div>
                 <div class="form-group">
                     <label for="">Amount</label>
-                    <input name="amount" type="number" min="0" class="form-control" value="0" />
+                    <input name="amount" type="number" required data-parsley-min="1" data-parsley-equalto="#analytic-amount" id="purpose-amount" min="1" class="form-control" value="0" />
                 </div>
+              {#   <input id="checkbox2" type="checkbox" name="balance-display" class="choice text-center">
+                <label style="color:purple; font-size:17px;" for="checkbox2">
+                    <b>Display the member balance</b>
+                </label><br><br> #}
                     <div class="form-group">
                         <input class="btn btn-default" type="submit" value="Save">
-                        {# <a class="btn btn-primary" name="btn-formaccount-reset">Reset</a> #}
                     </div>
             </fieldset>
         </section>
         <section  class="col-lg-6">
             <fieldset class="fadeInDown animated">
-                <legend>Cash Analytics</legend>
+                <legend>Cash Breakdown</legend>
 
                 <div class="row">
                     <div class="col-md-offset-3 col-lg-offset-3 col-md-6 col-lg-6">
                         <span class="btn btn-app" style="font-size: 20px;">
-                            <span class="badge bg-navy">Amount Received</span>
-                                       <input type="number" value="0" disabled="disabled" min="0" class="form-control text-center amount">
+                            <span class="badge bg-blue">Amount Received</span>
+                                       <input type="number" value="0" disabled="disabled" data-parsley-equalto="#purpose-amount" required data-parsley-min="1" min="1" class="form-control text-center amount">
                         </span>
                     </div>
                     <div class="col-lg-12">
@@ -144,7 +149,7 @@
                         <tr>
                             <td colspan="2"></td>
                             <th>TOTAL</th>
-                            <td><input type="text" class="form-control text-center totalCash" name="totalAnalytics" readonly="readonly" value="0"></td>
+                            <td><input type="number" required data-parsley-min="1" min="1" id="analytic-amount" class="form-control text-center totalCash" name="totalAnalytics" readonly="readonly" value="0"></td>
                         </tr>
                     </table>
                     </div>
@@ -152,6 +157,8 @@
             </fieldset>
         </section>
     </form>
+    </div>  
+    </div>
 
     {# Hidden inputs #}
     <select name="" class="selecteur-zone form-control hide" id=""></select>

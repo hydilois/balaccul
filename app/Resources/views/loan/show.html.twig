@@ -22,16 +22,15 @@
                                         {% endif %}
                                      </h4>
                                     <div class="widget-chart text-center"><br><br>
-                                            <div class="circliful-chart m-b-30" {# data-startdegree="180" #} data-dimension="180" data-text="{{percent | number_format(2, '.', ',')}}%" data-info="Loan Paid" data-width="30" data-fontsize="24" data-percent="{{percent | number_format(2, '.', ',')}}" data-fgcolor="#7266ba" data-bgcolor="#ebeff2"></div>
-                                        {# </div> #}
+                                            <div class="circliful-chart m-b-30" data-dimension="180" data-text="{{percent | number_format(2, '.', ',')}}%" data-info="Loan Paid" data-width="30" data-fontsize="24" data-percent="{{percent | number_format(2, '.', ',')}}" data-fgcolor="#7266ba" data-bgcolor="#ebeff2"></div>
 
                                         <h5 class="text-muted m-t-20">Loan Contracted</h5>
-                                        <h2 class="font-600">{{loan.loanAmount}}</h2>
+                                        <h2 class="font-600">{{loan.loanAmount |number_format(0, '.', ' ')}}</h2>
                                         <ul class="list-inline m-t-15">
                                             <li>
                                                 <h5 class="text-muted m-t-20">Loan Repaid</h5>
                                                 {% if loanHistory %}
-                                                    <h4 class="m-b-0">{{loan.loanAmount - loanHistory.remainAmount}}</h4>
+                                                    <h4 class="m-b-0">{{(loan.loanAmount - loanHistory.remainAmount) |number_format(0, '.', ' ')}}</h4>
                                                 {% else %}
                                                     <h4 class="m-b-0">0</h4>
                                                 {% endif %}
@@ -41,17 +40,17 @@
                                                 <h5 class="text-muted m-t-20">Remain Balance</h5>
                                                 {% if loanHistory %}
                                                     <h4 class="m-b-0">
-                                                        {{loanHistory.remainAmount}}
+                                                        {{loanHistory.remainAmount |number_format(0, '.', ' ')}}
                                                     </h4>
                                                 {% else %}
-                                                    <h4 class="m-b-0">{{loan.loanAmount}}</h4>
+                                                    <h4 class="m-b-0">{{loan.loanAmount |number_format(0, '.', ' ')}}</h4>
                                                 {% endif %} 
                                             </li>
                                             <li>
                                                 <h5 class="text-muted m-t-20">Unpaid Interest</h5>
                                                 {% if loanHistory %}
                                                     <h4 class="m-b-0">
-                                                        {{loanHistory.unpaidInterest}}
+                                                        {{loanHistory.unpaidInterest |number_format(0, '.', ' ')}}
                                                     </h4>
                                                 {% else %}
                                                     <h4 class="m-b-0">0</h4>
@@ -81,17 +80,16 @@
                                                 </tr>
                                                 <tr>
                                                     <th>Loan Amount</th>
-                                                    <td>{{ loan.loanAmount }}</td>
+                                                    <td>{{ loan.loanAmount |number_format(0, '.', ' ')}}</td>
                                                 </tr>
                                                 <tr>
-                                                    <th>Monthly Payment</th>
-                                                    <td>{{ loan.monthlyPayment }}</td>
+                                                    <th>Monthly Paid</th>
+                                                    <td>{{ loan.monthlyPayment |number_format(0, '.', ' ')}}</td>
                                                 </tr>
                                                 <tr>
                                                     <th>Status</th>
                                                     <td><a class="btn btn-app document-request">
                                                                 {% if loan.status %}<span class="badge orange">Active</span>{% else %}<span class="badge bg-blue">Close</span>{% endif %}
-                                                                {# <span class="badge bg-navy">A préciser</span> #}
                                                                 <i class="fa  fa-legal"></i> Loan Status
                                                             </a></td>
                                                 </tr>

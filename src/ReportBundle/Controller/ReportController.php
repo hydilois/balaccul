@@ -25,7 +25,6 @@ class ReportController extends Controller{
         if (!$this->container->get('security.authorization_checker')->isGranted('ROLE_USER')) {
             return new RedirectResponse($this->container->get ('router')->generate ('fos_user_security_login'));
         }
-
         // replace this example code with whatever you need
         return $this->render('report/report.html.twig', [
             'base_dir' => realpath($this->getParameter('kernel.project_dir')).DIRECTORY_SEPARATOR,
@@ -34,45 +33,48 @@ class ReportController extends Controller{
 
 
     /**
-     * @Route("/cash_book", name="report_cash_book")
+     * @Route("/general_ledger", name="report_general_ledger")
      */
-    public function cashBookAction(Request $request){
-        $em = $this->getDoctrine()->getManager();
+    public function generalLedgerBalanceAction(Request $request){
+        
+        if ($request->getMethod() =="POST") {
+            $em = $this->getDoctrine()->getManager();
+            $agency = $em->getRepository('ConfigBundle:Agency')->find(1);
+            $currentDate = new \DateTime('now');
 
-        $agency = $em->getRepository('ConfigBundle:Agency')->find(1);
-        $currentDate = new \DateTime('now');
+            $currentUserId  = $this->get('security.token_storage')->getToken()->getUser()->getId();
+            $currentUser    = $em->getRepository('UserBundle:Utilisateur')->find($currentUserId);
 
-        $currentUserId  = $this->get('security.token_storage')->getToken()->getUser()->getId();
-        $currentUser    = $em->getRepository('UserBundle:Utilisateur')->find($currentUserId);
+            $query  = $em->createQueryBuilder()
+                    ->select('glb')
+                    ->from('ReportBundle:GeneralLedgerBalance', 'glb')
+                    ->getQuery();
+            $operations = $query->getResult();
 
-        $query  = $em->createQueryBuilder()
-                ->select('op')
-                ->from('AccountBundle:Operation', 'op')
-                ->getQuery();
-        $operations = $query->getResult();
+            $html = $this->renderView('situation/general_ledger_pdf.html.twig', [
+                'operations' => $operations,
+                'agency' => $agency,
+                'currentUser' => $currentUser,
+                'date' => $currentDate,
+            ]);
 
-        // \Doctrine\Common\Util\Debug::dump($operations);
-        // die();
+            $html2pdf = $this->get('html2pdf_factory')->create('P', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 10));
+            $html2pdf->pdf->SetAuthor('GreenSoft-Team');
+            $html2pdf->pdf->SetDisplayMode('real');
+            $html2pdf->pdf->SetTitle('General Ledger Balance');
+            $response = new Response();
+            $html2pdf->pdf->SetTitle('General Ledger Balance');
+            $html2pdf->writeHTML($html);
+            $content = $html2pdf->Output('', true);
+            $response->setContent($content);
+            $response->headers->set('Content-Type', 'application/pdf');
+            $response->headers->set('Content-disposition', 'filename=GeneralLedger.pdf');
+            return $response;
+        }
 
-        $html = $this->renderView('situation/cash_book_file.html.twig', [
-            'operations' => $operations,
-            'agency' => $agency,
-            'currentUser' => $currentUser,
-            'date' => $currentDate,
+        // replace this example code with whatever you need
+        return $this->render('report/general_ledger.html.twig', [
         ]);
-
-        $html2pdf = $this->get('html2pdf_factory')->create('P', 'A4', 'en', true, 'UTF-8', array(5, 10, 5, 10));
-        $html2pdf->pdf->SetAuthor('GreenSoft-Team');
-        $html2pdf->pdf->SetDisplayMode('real');
-        $html2pdf->pdf->SetTitle('Cash Book');
-        $response = new Response();
-        $html2pdf->pdf->SetTitle('Cash Book');
-        $html2pdf->writeHTML($html);
-        $content = $html2pdf->Output('', true);
-        $response->setContent($content);
-        $response->headers->set('Content-Type', 'application/pdf');
-        $response->headers->set('Content-disposition', 'filename=Cash_Book.pdf');
-        return $response;
     }
 
 
@@ -283,23 +285,23 @@ class ReportController extends Controller{
             $date = new \DateTime('now');
             $agency = $em->getRepository('ConfigBundle:Agency')->find(1);
 
-            // $internalAccounts = $em->getRepository('ClassBundle:InternalAccount')->findBy([], ['accountNumber' => 'ASC']);
+            $internalAccounts = $em->getRepository('ClassBundle:InternalAccount')->findBy([], ['accountNumber' => 'ASC']);
 
-            $internalAccounts = $em->createQueryBuilder()
-                ->select('ia')
-                ->from('ClassBundle:InternalAccount', 'ia')
-                ->where('ia.beginingBalance != :begining')
-                ->orWhere('ia.endingBalance != :ending')
-                ->orWhere('ia.debit != :debit')
-                ->orWhere('ia.credit != :credit')
-                ->setParameters(
-                    [
-                        'begining' => 0,
-                        'ending' => 0,
-                        'debit' => 0,
-                        'credit' => 0,
-                    ]
-                )->getQuery()->getResult();
+            // $internalAccounts = $em->createQueryBuilder()
+            //     ->select('ia')
+            //     ->from('ClassBundle:InternalAccount', 'ia')
+            //     ->where('ia.beginingBalance != :begining')
+            //     ->orWhere('ia.endingBalance != :ending')
+            //     ->orWhere('ia.debit != :debit')
+            //     ->orWhere('ia.credit != :credit')
+            //     ->setParameters(
+            //         [
+            //             'begining' => 0,
+            //             'ending' => 0,
+            //             'debit' => 0,
+            //             'credit' => 0,
+            //         ]
+            //     )->getQuery()->getResult();
 
             $dateDebut = $request->get('start');
             $dateFin = $request->get('end');
@@ -443,77 +445,6 @@ class ReportController extends Controller{
                 return $response;
             }
         }
-
-    /**
-     * @Route("/trialbalance/{date1}/{date2}/pdf", name="trialbalance_pdf_file")
-     */
-    public function trialBalancePdfAction($date1,$date2){
-
-        $em = $this->getDoctrine()->getManager();
-
-        $currentUserId  = $this->get('security.token_storage')->getToken()->getUser()->getId();
-        $currentUser    = $em->getRepository('UserBundle:Utilisateur')->find($currentUserId);
-
-        $date = new \DateTime('now');
-
-        $classes    = $em->getRepository('ClassBundle:Classe')->findByClassCategory(NULL);
-
-        foreach ($classes as $classe) {
-            $subClasses    = $em->getRepository('ClassBundle:Classe')->findBy(
-                    [
-                        'classCategory' => $classe
-                    ]
-                );
-            if (count($subClasses) != 0) {
-                $listSubClasseAccounts = [];
-                foreach ($subClasses as $subClasse) {
-                    $subClasseinternalAccounts    = $em->getRepository('ClassBundle:InternalAccount')->findBy(
-                        [
-                            'classe' => $subClasse
-                        ]
-                    );
-                    foreach ($subClasseinternalAccounts as $account) {
-                        array_push($listSubClasseAccounts, $account);
-                    }
-                }
-                $classe->setListeAccounts($listSubClasseAccounts);
-            }else{
-                $internalAccounts    = $em->getRepository('ClassBundle:InternalAccount')->findBy(
-                        [
-                            'classe' => $classe
-                        ]
-                    );
-                $classe->setListeAccounts($internalAccounts);
-            }
-        }
-
-
-        $newDateStart = explode( "-" , substr($date1,strrpos($date1," ")));
-        $newDateEnd = explode( "-" , substr($date2,strrpos($date2," ")));
-
-        $displayDateStart  = $newDateStart[0]."-".$newDateStart[1]."-".$newDateStart[2];
-        $displayDateEnd  = $newDateEnd[0]."-".$newDateEnd[1]."-".$newDateEnd[2];
-
-        $html =  $this->renderView('report/trialbalance_file.html.twig', array(
-            'classes' => $classes,
-            'displayDateStart' => $displayDateStart,
-            'displayDateEnd' => $displayDateEnd,
-            'currentUser' => $currentUser,
-            'date' => $date,
-        ));
-        $html2pdf = $this->get('html2pdf_factory')->create('P', 'A4', 'en', true, 'UTF-8', array(5, 10, 5, 10));
-        $html2pdf->pdf->SetAuthor('GreenSoft-Team');
-        $html2pdf->pdf->SetDisplayMode('real');
-        $html2pdf->pdf->SetTitle('Trial Balance');
-        $response = new Response();
-        $html2pdf->pdf->SetTitle('Trial Balance');
-        $html2pdf->writeHTML($html);
-        $content = $html2pdf->Output('', true);
-        $response->setContent($content);
-        $response->headers->set('Content-Type', 'application/pdf');
-        $response->headers->set('Content-disposition', 'filename=TrialBalance.pdf');
-        return $response;
-    }
 
 
     /**

@@ -12,6 +12,8 @@
       Other Cash Out
     </li>
   </ol>
+  <div class="card-box">
+      <div class="row">
             <h1 class="text-center">OTHER CASH OUT OPERATION</h1>
         <form target="_blank" method="POST" action="{{ path('other_operation_cash_out_save') }}">
         <section class="col-lg-6">
@@ -32,8 +34,12 @@
                 </div>
                 <div class="form-group">
                     <label for="">Amount</label>
-                    <input name="amount" type="number" min="0" class="form-control" value="0" />
+                    <input name="amount" type="number" required data-parsley-min="1" data-parsley-equalto="#analytic-amount" id="purpose-amount" min="1" class="form-control" value="0" />
                 </div>
+               {#  <input id="checkbox2" type="checkbox" name="balance-display" class="choice text-center">
+                <label style="color:purple; font-size:17px;" for="checkbox2">
+                    <b>Display the member balance</b>
+                </label><br><br> #}
                     <div class="form-group">
                         <input class="btn btn-default" type="submit" value="Save">
                     </div>
@@ -46,8 +52,8 @@
                 <div class="row">
                     <div class="col-md-offset-3 col-lg-offset-3 col-md-6 col-lg-6">
                         <span class="btn btn-app" style="font-size: 20px;">
-                            <span class="badge bg-navy">Amount Received</span>
-                                       <input type="number" value="0" disabled="disabled" min="0" class="form-control text-center amount">
+                            <span class="badge bg-purple">Amount Received</span>
+                                       <input type="number" value="0" readonly  data-parsley-equalto="#purpose-amount" required data-parsley-min="1" min="1"  class="form-control text-center amount">
                         </span>
                     </div>
                     <div class="col-lg-12">
@@ -134,7 +140,7 @@
                         <tr>
                             <td colspan="2"></td>
                             <th>TOTAL</th>
-                            <td><input type="text" class="form-control text-center totalCash" name="totalAnalytics" readonly="readonly" value="0"></td>
+                            <td><input type="number"required data-parsley-min="1" min="1" id="analytic-amount" class="form-control text-center totalCash" name="totalAnalytics" readonly="readonly" value="0"></td>
                         </tr>
                     </table>
                     </div>
@@ -142,6 +148,8 @@
             </fieldset>
         </section>
     </form>
+    </div>  
+    </div>
         {% include './operation/extras.css.html.twig' %}
         {% include './operation/extras_cash_in.js.html.twig' %}
 {% endblock %}
