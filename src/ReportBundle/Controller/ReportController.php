@@ -44,18 +44,27 @@ class ReportController extends Controller{
 
             $currentUserId  = $this->get('security.token_storage')->getToken()->getUser()->getId();
             $currentUser    = $em->getRepository('UserBundle:Utilisateur')->find($currentUserId);
+            $date  = $request->get('currentDate');
+            $date = explode( "/" , substr($date,strrpos($date," ")));
 
-            $query  = $em->createQueryBuilder()
-                    ->select('glb')
-                    ->from('ReportBundle:GeneralLedgerBalance', 'glb')
-                    ->getQuery();
-            $operations = $query->getResult();
+            $today_enddatetime = \DateTime::createFromFormat("Y-m-d H:i:s", date($date[2]."-".$date[1]."-".$date[0]." 23:59:59"));
+            $date  = new \DateTime($date[2]."-".$date[1]."-".$date[0]);
+
+            $operations = $em->createQueryBuilder()
+                ->select('glb')
+                ->from('ReportBundle:GeneralLedgerBalance', 'glb')
+                ->where('glb.dateOperation <= :date')
+                ->setParameters(
+                    ['date' => $today_enddatetime]
+                )->getQuery()
+                 ->getResult();
 
             $html = $this->renderView('situation/general_ledger_pdf.html.twig', [
                 'operations' => $operations,
                 'agency' => $agency,
                 'currentUser' => $currentUser,
                 'date' => $currentDate,
+                'endDate' => $date,
             ]);
 
             $html2pdf = $this->get('html2pdf_factory')->create('P', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 10));
@@ -321,7 +330,7 @@ class ReportController extends Controller{
                     'internalAccounts' => $internalAccounts,
                 ));
 
-                $html2pdf = $this->get('html2pdf_factory')->create('P', 'A4', 'en', true, 'UTF-8', array(2.5, 5, 2.5, 5));
+                $html2pdf = $this->get('html2pdf_factory')->create('P', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 15));
                 $html2pdf->pdf->SetAuthor('GreenSoft-Team');
                 $html2pdf->pdf->SetDisplayMode('real');
                 $html2pdf->pdf->SetTitle('Trial Balance');

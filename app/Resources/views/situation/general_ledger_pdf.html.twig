@@ -25,7 +25,8 @@
     </table>
     <table>
         <tr>
-            <td class="100p">DATE: <strong>{{date |date('d-m-Y H:m:s')}}</strong></td>
+            <td class="50p">Generate on: <strong>{{date |date('d-m-Y H:m:s')}}</strong></td>
+            <td style="text-align:right" class="50p">GLB End date: <strong>{{endDate |date('d-m-Y')}}</strong></td>
         </tr>
     </table><br>
         {% if operations %}
@@ -63,7 +64,6 @@
                     {% if operation.credit != 0 %}
                             {% set totalBalance = totalBalance  - operation.credit %}
                                 {% if totalBalance < 0 %}
-                                    {# {% set absoluteBalance = %} #}
                                     {{totalBalance |abs |number_format(0, '.', ' ')}} <b>C</b>
                                     {% else %}
                                         {{totalBalance |number_format(0, '.', ' ')}} <b>D</b>
@@ -73,6 +73,8 @@
             </tr>
         {% endfor %}
      </table>
+        {% else %}
+            <h1 style="color:red; text-align:center">No Results</h1>
         {% endif %}
 </page>
 

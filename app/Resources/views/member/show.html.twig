@@ -1,6 +1,8 @@
 {% extends 'base.html.twig' %}
-
+{% block title %} {{parent()}}Detail on Member {% endblock %}
 {% block contenu %}
+    <div class="card-box">
+        
 <div class="row">
     <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
     <h2 class="text-center">Detail on a Member</h2>
@@ -20,7 +22,7 @@
             </tr>
             <tr>
                 <th>Dateofbirth</th>
-                <td>{% if member.dateOfBirth %}{{ member.dateOfBirth|date('Y-m-d H:i:s') }}{% endif %}</td>
+                <td>{% if member.dateOfBirth %}{{ member.dateOfBirth|date('d-m-Y') }}{% endif %}</td>
             </tr>
             <tr>
                 <th>Placeofbirth</th>
@@ -40,7 +42,7 @@
             </tr>
             <tr>
                 <th>Issuedon</th>
-                <td>{% if member.issuedOn %}{{ member.issuedOn|date('Y-m-d H:i:s') }}{% endif %}</td>
+                <td>{% if member.issuedOn %}{{ member.issuedOn|date('d-m-Y') }}{% endif %}</td>
             </tr>
             <tr>
                 <th>Issuedat</th>
@@ -68,7 +70,7 @@
             </tr>
             <tr>
                 <th>Membershipdatecreation</th>
-                <td>{% if member.membershipDateCreation %}{{ member.membershipDateCreation|date('Y-m-d H:i:s') }}{% endif %}</td>
+                <td>{% if member.membershipDateCreation %}{{ member.membershipDateCreation|date('d-m-Y') }}{% endif %}</td>
             </tr>
             <tr>
                 <th>Witnessname</th>
@@ -91,7 +93,7 @@
             <td>
                 <a class="btn btn-default" href="{{ path('member_edit', { 'id': member.id }) }}">Edit</a>
             </td>
-            <td>
+{#             <td>
                 &nbsp;&nbsp;
             </td>
             <td>
@@ -99,7 +101,7 @@
                     <input class="btn btn-danger" type="submit" value="Delete">
                 {{ form_end(delete_form) }}
                 
-            </td>
+            </td> #}
         </tr>
     </table>
         </div>
@@ -107,20 +109,26 @@
             <h2 class="text-center">List of the beneficiaries</h2>
             <table class="table table-striped table-bordered">
                 <tr>
+                    <th>Actions</th>
                     <th>Name</th>
                     <th>Relation</th>
-                    <th>Ratio *</th>
+                    <th>Ratio <span style="color:red">*</span></th>
                 </tr>
+                {% set totalRatio = 0 %}
                 {% for beneficiary in beneficiaries %}
                     <tr>
+                        <td><a class="btn btn-success" href="#">Edit</a></td>
                         <td>{{beneficiary.name}}</td>
                         <td>{{beneficiary.relation}}</td>
                         <td>{{beneficiary.ratio}}</td>
                     </tr>
+                        {% set totalRatio = totalRatio + beneficiary.ratio %}
                 {% endfor %}
             </table>
+            {% if totalRatio < 100 %}
+            <a class="btn btn-default" href="{{path('beneficiary_new')}}">New Beneciary</a>
+            {% endif %}
         </div>
 </div>
-{#     {% include './member/extras.css.html.twig' %}
-    {% include './member/extras.js.html.twig' %} #}
+</div>
 {% endblock %}

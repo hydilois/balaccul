@@ -54,20 +54,20 @@
                     <td style="text-align:center">{{operation.typeOperation}}</td>
                     <td style="text-align:center">
                         {% if operation.typeOperation == "CASH OUT" %}
-                            {{operation.amount |number_format(0, '.', ' ')}}}}
+                            {{operation.amount |number_format(0, '.', ' ')}}
                         {% else %}
                             //
                         {% endif %}
                     </td>
                     <td style="text-align:center">
                         {% if operation.typeOperation == "CASH IN" %}
-                            {{operation.amount |number_format(0, '.', ' ')}}}}
+                            {{operation.amount |number_format(0, '.', ' ')}}
                         {% else %}
                             //
                         {% endif %}
                     </td>
                     <td style="text-align:center">
-                            {{operation.balance |number_format(0, '.', ' ')}}}}
+                            {{operation.balance |number_format(0, '.', ' ')}}
                     </td>
                 </tr>
         {% endfor %}

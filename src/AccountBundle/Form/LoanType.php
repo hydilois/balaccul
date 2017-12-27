@@ -18,6 +18,7 @@ class LoanType extends AbstractType
             [
                 'widget' => 'single_text',
                 'label' => "Deadline",
+                // 'widget' => 'choice',
                 'required' => false,
                 'attr' => [
                     'data-type' => 'date'

@@ -45,6 +45,10 @@
                             <th>DEPOSITS</th>
                             <td><input class="form-control purpose" min="0" required="required" name="deposits" type="number" value="0"/></td>
                         </tr>
+                        <tr>
+                            <th>SAVINGS CHARGES</th>
+                            <td><input class="form-control purpose" min="0" required="required" name="savings-charges" type="number" value="0"/></td>
+                        </tr>
                     </table>
                     <table class="table table-bordered table-striped">
                         <tr>
@@ -52,12 +56,17 @@
                             <td><input class="form-control total" required data-parsley-min="1" data-parsley-equalto="#analytic-amount" id="purpose-amount" min="1" name="totalPurposes" readonly="readonly" type="number" value="0"/></td>
                         </tr>
                     </table>
+                    <input id="checkbox3" type="checkbox" name="payment-option" class="choice text-center">
+                    <label style="color:purple; font-size:17px;" for="checkbox3">
+                        <b>Savings charges paid directly</b>
+                    </label><br>
                     <input id="checkbox2" type="checkbox" name="balance-display" class="choice text-center">
-                    <label style="color:purple; font-size:17px;" for="checkbox2">
+                    <label style="color:blue; font-size:17px;" for="checkbox2">
                         <b>Display the member balance</b>
                     </label><br><br>
                     <div class="form-group">
                         <input class="btn btn-default" type="submit" value="Save">
+                        <a class="btn btn-info" href="{{path('homepage')}}">Back to the homepage</a>
                     </div>
             </fieldset>
         </section>
@@ -68,7 +77,7 @@
                 <div class="row">
                     <div class="col-md-offset-3 col-lg-offset-3 col-md-6 col-lg-6">
                         <span class="btn btn-app" style="font-size: 20px;">
-                            <span class="badge bg-navy">Amount Received</span>
+                            <span class="badge bg-blue">Amount Received</span>
                                        <input type="number" value="0" readonly data-parsley-equalto="#purpose-amount" required data-parsley-min="1" min="1"  class="form-control text-center amount">
                         </span>
                     </div>

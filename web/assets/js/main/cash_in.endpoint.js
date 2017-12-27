@@ -41,6 +41,9 @@ $(function() {
             $('.choice').iCheck({
                             checkboxClass: 'icheckbox_square-purple'
                         });
+            // $('.paymentOp').iCheck({
+            //                 checkboxClass: 'icheckbox_square-blue'
+            //             });
         }
 
         /**

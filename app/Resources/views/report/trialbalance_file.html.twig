@@ -1,7 +1,7 @@
-<page backtop="10mm" backleft="10mm" backright="10mm" backbottom="10mm" footer="page;">
+<page footer="page;">
     <page_footer>
         <hr />
-        <span>{{agency.abreviation}}</span> <span style="margin-left:50px;">Printed By <b>{{currentUser}}</b></span><span style="margin-left:100px;">GreenSoft-Team</span>
+        <span>{{agency.abreviation}}</span> <span style="margin-left:50px;">Printed By <b>{{currentUser}}</b></span><span style="margin-left:150px;">GreenSoft-Team</span>
     </page_footer>
     <table>
         <tr>
@@ -52,8 +52,16 @@
                 </tr>
                 {% set totalCredit = totalCredit + account.credit %}
                 {% set totalDebit = totalDebit + account.debit %}
-                {% set totalBeginBalance = totalBeginBalance + 0  %}
-                {% set totalEndBalance = totalEndBalance + 0 %}
+                    {% if account.beginBalanceCode == 'D' %}
+                        {% set totalBeginBalance = totalBeginBalance + account.beginingBalance  %}
+                    {% else %}
+                        {% set totalBeginBalance = totalBeginBalance - account.beginingBalance  %}
+                    {% endif %}
+                    {% if account.endingBalanceCode == 'D' %}
+                        {% set totalEndBalance = totalEndBalance + account.endingBalance %}
+                    {% else %}
+                        {% set totalEndBalance = totalEndBalance - account.endingBalance %}
+                    {% endif %}
             {% endfor %}
             <tr>
                 <td class="10p"></td>

@@ -4,7 +4,7 @@ namespace AccountBundle\Controller;
 
 use AccountBundle\Entity\Operation;
 use AccountBundle\Entity\Loan;
-use ConfigBundle\Entity\TransactionIncome;
+use ReportBundle\Entity\GeneralLedgerBalance;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -108,6 +108,21 @@ class LoanController extends Controller{
                 $operation->setBalance($account->getEndingBalance());
                 $em->persist($operation);
 
+                    /**Update the cash in  hand  third step fourth step**/ 
+                $cashOnHandAccount  = $entityManager->getRepository('ClassBundle:InternalAccount')->find(87);
+                $cashOnHandAccount->setCredit($cashOnHandAccount->getCredit() + $loan->getLoanAmount());
+                $cashOnHandAccount->setEndingBalance(abs($cashOnHandAccount->getCredit() - $cashOnHandAccount->getDebit() + $cashOnHandAccount->getBeginingBalance()));
+
+                // first Step
+                $ledgerBalanceOther = new GeneralLedgerBalance();
+                $ledgerBalanceOther->setCredit($amount);
+                $ledgerBalanceOther->setCurrentUser($currentUser);
+                $ledgerBalanceOther->setBalance($amount);
+                $ledgerBalanceOther->setTypeOperation(Operation::TYPE_CASH_OUT);
+                $ledgerBalanceOther->setAccount($account);
+                $ledgerBalanceOther->setRepresentative($account->getAccountName());
+
+
                 $operationProcessing = new Operation();
                 $accountProcessing = $em->getRepository('ClassBundle:InternalAccount')->find(140);//Processing Fees
                 $operationProcessing->setCurrentUser($currentUser);
@@ -121,6 +136,22 @@ class LoanController extends Controller{
                 $accountProcessing->setEndingBalance($accountProcessing->getCredit() - $accountProcessing->getDebit() + $accountProcessing->getBeginingBalance());
 
                 $operationProcessing->setBalance($accountProcessing->getEndingBalance());
+
+                    /**Update the cash in  hand  third step**/ 
+                $cashOnHandAccountProc  = $entityManager->getRepository('ClassBundle:InternalAccount')->find(87);
+                $cashOnHandAccountProc->setDebit($cashOnHandAccountProc->getDebit() + $amount);
+                $cashOnHandAccountProc->setEndingBalance(abs($cashOnHandAccountProc->getCredit() - $cashOnHandAccountProc->getDebit() + $cashOnHandAccountProc->getBeginingBalance()));
+                // first Step
+                $ledgerBalanceOther = new GeneralLedgerBalance();
+                $ledgerBalanceOther->setCredit($amount);
+                $ledgerBalanceOther->setCurrentUser($currentUser);
+                $ledgerBalanceOther->setBalance($amount);
+                $ledgerBalanceOther->setTypeOperation(Operation::TYPE_CASH_IN);
+                $ledgerBalanceOther->setAccount($accountProcessing);
+                $ledgerBalanceOther->setRepresentative($accountProcessing->getAccountName());
+                /*Make record*/
+                $entityManager->persist($ledgerBalanceOther);
+
 
                 $em->persist($operationProcessing);
                 $em->persist($loan);

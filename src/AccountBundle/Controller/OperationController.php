@@ -510,7 +510,7 @@ class OperationController extends Controller{
 
                     if ($mainLoan != 0) {
                         $ledgerBalanceLoan = new GeneralLedgerBalance();
-                        $ledgerBalanceLoan->setCredit($mainLoan);
+                        $ledgerBalanceLoan->setDebit($mainLoan);
                         $ledgerBalanceLoan->setCurrentUser($currentUser);
                         $ledgerBalanceLoan->setBalance($mainLoan);
                         $ledgerBalanceLoan->setAccount($normalLoan);
@@ -680,7 +680,7 @@ class OperationController extends Controller{
                 $cashOnHandAccountCharges->setEndingBalance(abs($cashOnHandAccountCharges->getCredit() - $cashOnHandAccountCharges->getDebit() + $cashOnHandAccountCharges->getBeginingBalance()));
 
                 $ledgerBalanceCharges = new GeneralLedgerBalance();
-                $ledgerBalanceCharges->setCredit($charges);
+                $ledgerBalanceCharges->setDebit($charges);
                 $ledgerBalanceCharges->setCurrentUser($currentUser);
                 $ledgerBalanceCharges->setBalance($charges);
                 $ledgerBalanceCharges->setTypeOperation(Operation::TYPE_CASH_IN);
@@ -722,7 +722,7 @@ class OperationController extends Controller{
 
                 /*Update the ledger card first step*/ 
                 $ledgerBalanceBuildingFees = new GeneralLedgerBalance();
-                $ledgerBalanceBuildingFees->setCredit($buildingFees);
+                $ledgerBalanceBuildingFees->setDebit($buildingFees);
                 $ledgerBalanceBuildingFees->setCurrentUser($currentUser);
                 $ledgerBalanceBuildingFees->setBalance($buildingFees);
                 $ledgerBalanceBuildingFees->setAccount($feesAccount);
@@ -763,7 +763,7 @@ class OperationController extends Controller{
                 $cashOnHandAccount->setEndingBalance(abs($cashOnHandAccount->getCredit() - $cashOnHandAccount->getDebit() + $cashOnHandAccount->getBeginingBalance()));
                 // first Step
                 $ledgerBalanceRegistration = new GeneralLedgerBalance();
-                $ledgerBalanceRegistration->setCredit($registration);
+                $ledgerBalanceRegistration->setDebit($registration);
                 $ledgerBalanceRegistration->setCurrentUser($currentUser);
                 $ledgerBalanceRegistration->setBalance($registration);
                 $ledgerBalanceRegistration->setTypeOperation(Operation::TYPE_CASH_IN);
@@ -865,7 +865,7 @@ class OperationController extends Controller{
             $cashOnHandAccount->setEndingBalance(abs($cashOnHandAccount->getCredit() - $cashOnHandAccount->getDebit() + $cashOnHandAccount->getBeginingBalance()));
             // first Step
             $ledgerBalanceOther = new GeneralLedgerBalance();
-            $ledgerBalanceOther->setCredit($amount);
+            $ledgerBalanceOther->setDebit($amount);
             $ledgerBalanceOther->setCurrentUser($currentUser);
             $ledgerBalanceOther->setBalance($amount);
             $ledgerBalanceOther->setTypeOperation(Operation::TYPE_CASH_IN);
@@ -1046,12 +1046,14 @@ class OperationController extends Controller{
         $currentUser    = $entityManager->getRepository('UserBundle:Utilisateur')->find($currentUserId);
 
         if ($request->getMethod() == 'POST') {
-
             if ($request->get('totalPurposes') != $request->get('totalAnalytics')) {
                 $this->addFlash('warning', 'The total value of the purpose is not equal to the value of the cash Analytics');
                 return $this->redirectToRoute('cash_out_operations');
             }
             $balanceStatus = $request->get('balance-display');
+            $optionCharges = $request->get('payment-option');
+            $savingsCharges = $request->get('savings-charges');
+            // die("fdjkkfg    ".$optionCharges);
             $accountMemberId = $request->get('accountNumber');
             $representative = $request->get('representative');
             $savings = $request->get('savings');
@@ -1060,6 +1062,10 @@ class OperationController extends Controller{
             $operations = [];
             $totalTransaction = 0;
             $operation = new Operation();
+            if ($savingsCharges != 0) {
+                die("Enfin");
+
+            }else{
 
             $member = $entityManager->getRepository('MemberBundle:Member')->find($accountMemberId);
             if($representative == ""){
@@ -1145,8 +1151,8 @@ class OperationController extends Controller{
                     $operationSha->setAmount($shares);
                     $operationSha->setMember($member);
                     $operationSha->setRepresentative($representative);
-                    $operationSha->setAccount($memberShares);
-                    $operationSha->setBalance($memberShares->getEndingBalance());
+                    $operationSha->setAccount($memberSharesAccount);
+                    $operationSha->setBalance($memberSharesAccount->getEndingBalance());
                     $operationSha->setIsConfirmed(true);
 
                     // first Step
@@ -1204,9 +1210,8 @@ class OperationController extends Controller{
                     $ledgerBalanceDeposit->setCurrentUser($currentUser);
                     $ledgerBalanceDeposit->setBalance($deposits);
                     $ledgerBalanceDeposit->setTypeOperation(Operation::TYPE_CASH_OUT);
-                    $ledgerBalanceDeposit->setAccount($memberSharesAccount);
+                    $ledgerBalanceDeposit->setAccount($memberDeposits);
                     $ledgerBalanceDeposit->setRepresentative("DEPOSITS WITHDRAWAL ".$member->getMemberNumber());
-
 
                     $entityManager->persist($ledgerBalanceDeposit);
                     $entityManager->persist($operationDeposit);
@@ -1340,6 +1345,7 @@ class OperationController extends Controller{
             }
             $others = [];
         }
+        }
 
         $entityManager->flush();
         $html =  $this->renderView('operation/cash_out_receipt_file.html.twig', array(
@@ -1419,7 +1425,7 @@ class OperationController extends Controller{
 
                 /**Update the cash in  hand  third step fourth step**/ 
             $cashOnHandAccount  = $entityManager->getRepository('ClassBundle:InternalAccount')->find(87);
-            $cashOnHandAccount->setCredit($cashOnHandAccount->getCredit() + $deposits);
+            $cashOnHandAccount->setCredit($cashOnHandAccount->getCredit() + $amount);
             $cashOnHandAccount->setEndingBalance(abs($cashOnHandAccount->getCredit() - $cashOnHandAccount->getDebit() + $cashOnHandAccount->getBeginingBalance()));
 
             // first Step
