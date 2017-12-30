@@ -22,9 +22,6 @@
                         <th style="width: 100px;">Actions</th>
                         <th>Account Number</th>
                         <th>Account Name</th>
-                        <th>Begining Balance</th>
-                        <th>Debit</th>
-                        <th>Credit</th>
                         <th>Ending Balance</th>
                     </tr>
                 </thead>
@@ -44,10 +41,7 @@
                     </td>
                     <td>{{ internalAccount.accountNumber }}</td>
                     <td>{{ internalAccount.accountName }}</td>
-                    <td>{{ internalAccount.beginingBalance |number_format(0, '.', ' ') }} <b>{{internalAccount.beginBalanceCode}}</b></td>
-                    <td>{{ internalAccount.debit |number_format(0, '.', ' ') }}</td>
-                    <td>{{ internalAccount.credit |number_format(0, '.', ' ')}}</td>
-                    <td>{{ internalAccount.endingBalance |number_format(0, '.', ' ')}} <b>{{internalAccount.endingBalanceCode}}</b></td>
+                    <td>{{ internalAccount.balance |number_format(0, '.', ' ') }}</td>
                 </tr>
         {% endfor %}
         </tbody>

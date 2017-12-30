@@ -1,34 +1,32 @@
 {% extends 'base.html.twig' %}
 
-{% block body %}
-    <h1>Internalaccount</h1>
+{% block contenu %}
+    <div class="card-box">
+    <div class="row">
+    <h1 class="text-center">Internal Account Details</h1>
 
-    <table>
+    <table class="table table-bordered table-striped">
         <tbody>
             <tr>
                 <th>Id</th>
                 <td>{{ internalAccount.id }}</td>
             </tr>
             <tr>
-                <th>Name</th>
-                <td>{{ internalAccount.name }}</td>
+                <th>Account Name</th>
+                <td>{{ internalAccount.accountName }}</td>
             </tr>
             <tr>
-                <th>Accountnumber</th>
+                <th>Account Number</th>
                 <td>{{ internalAccount.accountNumber }}</td>
             </tr>
             <tr>
-                <th>Description</th>
-                <td>{{ internalAccount.description }}</td>
-            </tr>
-            <tr>
-                <th>Amount</th>
-                <td>{{ internalAccount.amount }}</td>
+                <th>Begining Balance</th>
+                <td>{{ internalAccount.beginingBalance }}</td>
             </tr>
         </tbody>
     </table>
 
-    <ul>
+{#     <ul>
         <li>
             <a href="{{ path('internalaccount_index') }}">Back to the list</a>
         </li>
@@ -40,5 +38,9 @@
                 <input type="submit" value="Delete">
             {{ form_end(delete_form) }}
         </li>
-    </ul>
+    </ul> #}
+
+    </div>
+        
+    </div>
 {% endblock %}

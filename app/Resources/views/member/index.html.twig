@@ -49,7 +49,12 @@
                               </ul>
                             </div>
                     </td>
-                    <td>{{ member.memberNumber }}</td>
+                    {% if member.isAproved %}
+                        <td>{{ member.memberNumber }}</td>
+                    {% else %}
+                        <td class="lable label-warning">{{ member.memberNumber }}</td>
+                    {% endif %}
+                    
                     <td>{{ member.name }}</td>
                     <td>{{ member.share |number_format(0, '.', ' ') }}</td>
                     <td>{{ member.registrationFees |number_format(0, '.', ' ') }}</td>

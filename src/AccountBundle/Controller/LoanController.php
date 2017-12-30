@@ -86,73 +86,84 @@ class LoanController extends Controller{
             $currentUser    = $em->getRepository('UserBundle:Utilisateur')->find($currentUserId);
 
             $loanParameter = $em->getRepository('ConfigBundle:LoanParameter')->find(1)->getParameter();
-
             $member = $loan->getPhysicalMember();
-
             $target = $loan->getLoanAmount()/$loanParameter;
+            
             if ($target >= ($member->getShare() + $member->getSaving())) {
                 $this->addFlash('warning', 'The loan cannot be done!!!! check the amount of your share and savings accounts');
             }else{
-                $operation = new Operation();
                 $account = $em->getRepository('ClassBundle:InternalAccount')->find(32);//Normal Loan Identification
-                $operation->setCurrentUser($currentUser);
+                $account->setBalance($account->getBalance() - $loan->getLoanAmount());
+
+                $classeLoan = $entityManager->getRepository('ClassBundle:Classe')->find($account->getClasse()->getId());
+                $classeLoan->setBalance($classeLoan->getBalance() - $loan->getLoanAmount());
+                
+                $operation = new Operation();
                 $operation->setTypeOperation(Operation::TYPE_CASH_OUT);
+                $operation->setCurrentUser($currentUser);
                 $operation->setAmount($loan->getLoanAmount());
-                $operation->setMember($loan->getPhysicalMember());
-                $operation->setAccount($account);
-                $operation->setIsConfirmed(true);
-
-                $account->setDebit($account->getDebit() + $loan->getLoanAmount());
-                $account->setEndingBalance($account->getCredit() - $account->getDebit() + $account->getBeginingBalance());
-
-                $operation->setBalance($account->getEndingBalance());
+                $operation->setMember($member);
+                $operation->setBalance($account->getBalance());
+                $operation->setRepresentative($member->getName());
                 $em->persist($operation);
 
-                    /**Update the cash in  hand  third step fourth step**/ 
-                $cashOnHandAccount  = $entityManager->getRepository('ClassBundle:InternalAccount')->find(87);
-                $cashOnHandAccount->setCredit($cashOnHandAccount->getCredit() + $loan->getLoanAmount());
-                $cashOnHandAccount->setEndingBalance(abs($cashOnHandAccount->getCredit() - $cashOnHandAccount->getDebit() + $cashOnHandAccount->getBeginingBalance()));
-
                 // first Step
                 $ledgerBalanceOther = new GeneralLedgerBalance();
-                $ledgerBalanceOther->setCredit($amount);
-                $ledgerBalanceOther->setCurrentUser($currentUser);
-                $ledgerBalanceOther->setBalance($amount);
                 $ledgerBalanceOther->setTypeOperation(Operation::TYPE_CASH_OUT);
+                $ledgerBalanceOther->setCredit($loan->getLoanAmount());
+                $ledgerBalanceOther->setCurrentUser($currentUser);
+                $latestEntryGBL = $em->getRepository('ReportBundle:GeneralLedgerBalance')->findOneBy(
+                    [],
+                    ['id' => 'DESC']);
+                if ($latestEntryGBL) {
+                    $ledgerBalanceOther->setBalance($latestEntryGBL->getBalance() - $loan->getLoanAmount());
+                }else{
+                    $ledgerBalanceOther->setBalance($loan->getLoanAmount());
+                }
                 $ledgerBalanceOther->setAccount($account);
-                $ledgerBalanceOther->setRepresentative($account->getAccountName());
+                $ledgerBalanceOther->setRepresentative($member->getName());
+                $ledgerBalanceOther->setAccountBalance($account->getBalance());
+                $ledgerBalanceOther->setAccountTitle($account->getAccountName()." A/C_".$member->getMemberNumber());
+                $ledgerBalanceOther->setMember($loan->getPhysicalMember());
+                $em->persist($ledgerBalanceOther);
+                $em->flush();
 
 
-                $operationProcessing = new Operation();
                 $accountProcessing = $em->getRepository('ClassBundle:InternalAccount')->find(140);//Processing Fees
-                $operationProcessing->setCurrentUser($currentUser);
+                $accountProcessing->setBalance($accountProcessing->getBalance() + $loan->getLoanProcessingFees());
+
+                $classeProcessing = $entityManager->getRepository('ClassBundle:Classe')->find($accountProcessing->getClasse()->getId());
+                $classeProcessing->setBalance($classeProcessing->getBalance() + $loan->getLoanProcessingFees());
+                
+                $operationProcessing = new Operation();
                 $operationProcessing->setTypeOperation(Operation::TYPE_CASH_IN);
+                $operationProcessing->setCurrentUser($currentUser);
                 $operationProcessing->setAmount($loan->getLoanProcessingFees());
                 $operationProcessing->setMember($loan->getPhysicalMember());
-                $operationProcessing->setAccount($accountProcessing);
-                $operationProcessing->setIsConfirmed(true);
+                $operationProcessing->setRepresentative($member->getName());
+                $operationProcessing->setBalance($accountProcessing->getBalance());
 
-                $accountProcessing->setCredit($accountProcessing->getCredit() + $loan->getLoanProcessingFees());
-                $accountProcessing->setEndingBalance($accountProcessing->getCredit() - $accountProcessing->getDebit() + $accountProcessing->getBeginingBalance());
-
-                $operationProcessing->setBalance($accountProcessing->getEndingBalance());
-
-                    /**Update the cash in  hand  third step**/ 
-                $cashOnHandAccountProc  = $entityManager->getRepository('ClassBundle:InternalAccount')->find(87);
-                $cashOnHandAccountProc->setDebit($cashOnHandAccountProc->getDebit() + $amount);
-                $cashOnHandAccountProc->setEndingBalance(abs($cashOnHandAccountProc->getCredit() - $cashOnHandAccountProc->getDebit() + $cashOnHandAccountProc->getBeginingBalance()));
                 // first Step
-                $ledgerBalanceOther = new GeneralLedgerBalance();
-                $ledgerBalanceOther->setCredit($amount);
-                $ledgerBalanceOther->setCurrentUser($currentUser);
-                $ledgerBalanceOther->setBalance($amount);
-                $ledgerBalanceOther->setTypeOperation(Operation::TYPE_CASH_IN);
-                $ledgerBalanceOther->setAccount($accountProcessing);
-                $ledgerBalanceOther->setRepresentative($accountProcessing->getAccountName());
+                $ledgerBalanceProc = new GeneralLedgerBalance();
+                $ledgerBalanceProc->setTypeOperation(Operation::TYPE_CASH_IN);
+                $ledgerBalanceProc->setDebit($loan->getLoanProcessingFees());
+                $ledgerBalanceProc->setCurrentUser($currentUser);
+                $latestEntryGBL = $em->getRepository('ReportBundle:GeneralLedgerBalance')->findOneBy(
+                    [],
+                    ['id' => 'DESC']);
+                if ($latestEntryGBL) {
+                    $ledgerBalanceProc->setBalance($latestEntryGBL->getBalance() + $loan->getLoanProcessingFees());
+                }else{
+                    $ledgerBalanceProc->setBalance($loan->getLoanProcessingFees());
+                }
+                $ledgerBalanceProc->setAccount($accountProcessing);
+                $ledgerBalanceProc->setRepresentative($member->getName());
+                $ledgerBalanceProc->setAccountBalance($accountProcessing->getBalance());
+                $ledgerBalanceProc->setAccountTitle($accountProcessing->getAccountName()." A/C_".$member->getMemberNumber());
+                $ledgerBalanceProc->setMember($loan->getPhysicalMember());
+                $em->persist($ledgerBalanceProc);
+                
                 /*Make record*/
-                $entityManager->persist($ledgerBalanceOther);
-
-
                 $em->persist($operationProcessing);
                 $em->persist($loan);
                 $em->flush();

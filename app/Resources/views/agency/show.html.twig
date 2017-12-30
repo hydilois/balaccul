@@ -1,9 +1,12 @@
 {% extends 'base.html.twig' %}
 
-{% block body %}
-    <h1>Agency</h1>
+{% block contenu %}
+    <div class="card-box">
+    <div class="row">
+        
+    <h1 class="text-center">Agency Details</h1>
 
-    <table>
+    <table class="table table-bordered table-striped">
         <tbody>
             <tr>
                 <th>Id</th>
@@ -14,8 +17,16 @@
                 <td>{{ agency.name }}</td>
             </tr>
             <tr>
+                <th>Abreviation</th>
+                <td>{{ agency.abreviation }}</td>
+            </tr>
+            <tr>
                 <th>Code</th>
                 <td>{{ agency.code }}</td>
+            </tr>
+            <tr>
+                <th>Registration Number</th>
+                <td>{{ agency.registrationNumber }}</td>
             </tr>
             <tr>
                 <th>Address</th>
@@ -31,6 +42,7 @@
             </tr>
         </tbody>
     </table>
+{# 
 
     <ul>
         <li>
@@ -44,5 +56,7 @@
                 <input type="submit" value="Delete">
             {{ form_end(delete_form) }}
         </li>
-    </ul>
+    </ul> #}
+    </div>
+    </div>
 {% endblock %}

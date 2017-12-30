@@ -142,7 +142,6 @@
                     </div>
                     <!-- Top Bar End -->
 
-
                     <!-- ========== Left Sidebar Start ========== -->
 
                     <div class="left side-menu">
@@ -153,7 +152,7 @@
                                     <li>
                                         <a href="{{path('homepage')}}" class="waves-effect"><i class="ti-home"></i> <span> Home </span></a>
                                     </li>
-
+{# 
                                     {% if is_granted("ROLE_COLLECTOR") or is_granted("ROLE_MANAGER") or is_granted("ROLE_ADMINISTRATOR") or is_granted("ROLE_CASHER") %}
                                          <li class="has_sub">
                                             <a href="javascript:void(0)" class="waves-effect"><i class="ti-calendar"></i> <span> Daily Service</span> <span class="menu-arrow"></span></a>
@@ -163,7 +162,7 @@
                                                 <li><a href="{{path('client_charges')}}">Charges</a></li>
                                             </ul>
                                          </li>
-                                    {% endif %}
+                                    {% endif %} #}
                                     {% if is_granted("ROLE_MANAGER") or is_granted("ROLE_ADMINISTRATOR") or is_granted("ROLE_CASHER") or is_granted("ROLE_BOARD")   %}
                                     <li class="has_sub">
                                         <a href="javascript:void(0)" class="waves-effect"><i class="ti-angle-double-right"></i> <span> Cash IN</span> <span class="menu-arrow"></span></a>
@@ -187,18 +186,20 @@
                                              <li><a href="{{path('report_member_situation')}}">Member Situation</a></li>
                                              <li><a href="{{path('report_trial_balance')}}">Trial Balance</a></li>
                                              {# <li><a href="{{path('operation_index')}}">All Situations</a></li> #}
-                                             <li><a {# target="_blank" #} href="{{path('report_general_ledger')}}">General Ledger</a></li>
+                                             <li><a href="{{path('report_general_ledger')}}">General Ledger Balance</a></li>
+                                             <li><a href="{{path('report_month')}}">Monthly Report</a></li>
                                          </ul>
                                      </li>
                                      <li><a href="{{path('loanhistory_new_payement')}}"><i class="md-timer"></i><span> Loans Situation</span></a></li>
 
                                      <li><a href="{{path('member_index')}}"><i class="ti-view-list-alt"></i><span> Members</span></a></li>
                                   {% endif %}
+
                                   {% if is_granted("ROLE_ADMINISTRATOR") or is_granted("ROLE_BOARD")  %}
-                                     <li><a href="{{path('utilisateur_index')}}"><i class="ti-user"></i><span> Users</span></a></li>
                                         <li class="has_sub">
                                             <a href="javascript:void(0)" class="waves-effect"><i class="ti-settings"></i> <span> Settings </span> <span class="menu-arrow"></span> </a>
                                             <ul class="list-unstyled">
+                                                <li><a href="{{path('utilisateur_index')}}"> Users</a></li>
                                                 <li><a href="{{path('classe_index')}}">Classes</a></li>
                                                 <li><a href="{{path('internalaccount_index')}}"> Accounts</a></li>
                                                 <li><a href="{{path('agency_index')}}">Agency</a></li>
@@ -295,11 +296,11 @@
     <script src="{{asset('assets/js/jquery.app.js')}}"></script>
 
     <!--icheck -->
-<script src="{{asset('assets/js/iCheck/jquery.icheck.js')}}"></script>
-<script src="{{asset('assets/js/icheck-init.js')}}"></script>
+    <script src="{{asset('assets/js/iCheck/jquery.icheck.js')}}"></script>
+    <script src="{{asset('assets/js/icheck-init.js')}}"></script>
+    <script src="{{asset('assets/plugins/chart.js/chart.min.js')}}"></script>
 
-
-<script type="text/javascript" src="{{asset('assets/js/main/base.endpoint.js')}}"></script>
+    <script type="text/javascript" src="{{asset('assets/js/main/base.endpoint.js')}}"></script>
 
     <script type="text/javascript">
         jQuery(document).ready(function($) {
@@ -314,7 +315,7 @@
     </script>
 
     <script>
-        $("div#flashbag-alert").show("slow").delay(5000).hide("slow");
+        $("div#flashbag-alert").show("slow").delay(50000).hide("slow");
     </script>
 
 {% endblock %}

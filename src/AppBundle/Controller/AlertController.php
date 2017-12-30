@@ -85,4 +85,30 @@ class AlertController extends Controller{
                 );
         }
     }
+
+
+    /**
+     * 
+     * @param  \Symfony\Component\HttpFoundation\Request  $request  The request
+     * @return JSON
+     * 
+     * @Route("/chart")
+     * @Method("POST")
+     */
+    public function getChart(Request $request){
+
+        $em = $this->getDoctrine()->getManager();
+        $subQueryBuilder = $em->createQueryBuilder();
+        $classes = $subQueryBuilder
+            ->select('cl')
+            ->from('ClassBundle:Classe', 'cl')
+            ->getQuery()
+            ->getScalarResult();
+        return json_encode(
+                [
+                    "status"    => "success",
+                    "message"   => "everything went well",
+                    "data"      => $classes,
+                ]);
+    }
 }

@@ -67,6 +67,9 @@ $(function() {
             this.setAddBeneficiaryListener();
             this.setRemoveBeneficiaryListener();
             this.validatRegisterMemberListener();
+            this.setCreateFormModalShow();
+            this.setEditFormModalShow();
+            this.validateCloseAccountListener();
         }
 
 
@@ -139,6 +142,76 @@ $(function() {
                         }
                     });
 
+        }
+
+
+        MemberEndpoint.prototype.setCreateFormModalShow = function() {
+            $('body').on('click','a[name="add-beneficiary"]', function() {
+                id = $(this).data('value');
+                $('#beneficiary-form').load(URL_ROOT+'/member/beneficiary/'+id+'/new', function(){
+                    $('.modal-add-beneficiary').modal('show');
+                });
+            })
+        }
+
+        MemberEndpoint.prototype.validateCloseAccountListener = function(){
+            $('body').on('click', 'a[name="account-status"]', function(){
+
+                var feedbackMessage = JSON.parse(JSON.stringify({
+                    'title' : 'Validation of the operation',
+                    'message' : 'Confirm, You agree that you want to close the account ?',
+                    'type' : 'warning',
+                    'confirmeButtonText' : 'Yes I confirm',
+                    'callback' : memberEndpoint.setCloseAccount
+                }));
+
+                memberEndpoint.feedbackHelper.showLoaderMessage(feedbackMessage.title, feedbackMessage.message, feedbackMessage.type, feedbackMessage.confirmeButtonText, memberEndpoint.setCloseAccount);
+            });
+
+        }
+
+        MemberEndpoint.prototype.setCloseAccount = function() {
+            // $('body').on('click','a[name="close-account"]', function() {
+                var data = JSON.parse(JSON.stringify({
+                        "idMember" : $('a.edit-btn').data('member'),
+                        "choice" : $('a.member').data('choice')
+                    }));
+                console.log(data);
+
+                // $.ajax({
+                //     method      : "POST", 
+                //     data        : {data : data},
+                //     url         : URL_ROOT+"/member/close", 
+                //     dataType    : "JSON", 
+                //     success     : function(returnedData){
+                //         returnedData = JSON.parse(returnedData);
+                //         console.log(returnedData);
+                //         if(returnedData.status == "success"){
+                //             memberEndpoint.feedbackHelper.showAutoCloseMessage("Member Registred", "The member is registred successfully", "success", 3000);
+                //             window.location.href = URL_ROOT + "/member";
+                //         }else{
+                //             memberEndpoint.feedbackHelper.showMessageWithPrompt("Sorry", returnedData.message, "error")
+                //         }
+                //     }, 
+                //     error : function(returnedData){
+                //         console.error(returnedData);
+                //         memberEndpoint.feedbackHelper.showMessageWithPrompt("Sorry", "A problem occur during the request, please contact the administrator", "error");
+                //     }
+                // });
+            // });
+        }
+
+
+
+        MemberEndpoint.prototype.setEditFormModalShow = function() {
+            $('body').on('click','a[name="beneficiary-edit"]', function() {
+                console.log("Je sui déja la");
+                val = $(this).data('beneficiary');
+
+                $('#beneficiary-editform').load(URL_ROOT+'/beneficiary/'+val+'/edit', function(){
+                    $('.modal-edit-beneficiary').modal('show');
+                });
+            })
         }
 
         //this should be at the end

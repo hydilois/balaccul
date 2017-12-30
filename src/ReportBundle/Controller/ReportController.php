@@ -32,13 +32,101 @@ class ReportController extends Controller{
     }
 
 
+
+    /**
+     * @Route("/month", name="report_month")
+     */
+    public function reportMonthAction(Request $request){
+        $em = $this->getDoctrine()->getManager();
+
+        if ($request->getMethod() == "POST") {
+
+            $agency = $em->getRepository('ConfigBundle:Agency')->find(1);
+            $currentDate = new \DateTime('now');
+
+            $currentUserId  = $this->get('security.token_storage')->getToken()->getUser()->getId();
+            $currentUser    = $em->getRepository('UserBundle:Utilisateur')->find($currentUserId);
+
+            $dateDebut = $request->get('start');
+            $dateFin = $request->get('end');
+
+            $newDateStart = explode( "/" , substr($dateDebut,strrpos($dateDebut," ")));
+            $newDateEnd = explode( "/" , substr($dateFin,strrpos($dateFin," ")));
+
+            $dateStart  = new \DateTime($newDateStart[2]."-".$newDateStart[1]."-".$newDateStart[0]);
+            $dateEnd  = new \DateTime($newDateEnd[2]."-".$newDateEnd[1]."-".$newDateEnd[0]);
+
+            $incomeOperations = $em->createQueryBuilder()
+                ->select('op, SUM(op.debit) as amount, SUM(op.credit) as credit, ia')
+                ->from('ReportBundle:GeneralLedgerBalance', 'op')
+                ->innerJoin('ClassBundle:InternalAccount', 'ia','WITH','ia.id = op.account')
+                ->innerJoin('ClassBundle:Classe', 'cl','WITH','cl.id = ia.classe')
+                ->where('op.dateOperation BETWEEN :date1 AND :date2')
+                ->andWhere('cl.id =:income')
+                ->groupBy('op.account')
+                ->setParameters(
+                    [
+                    'date1' => $dateStart->format('Y-m-d'),
+                    'date2' => $dateEnd->format('Y-m-d'),
+                    'income' => 7,
+                    ]
+                )
+                ->getQuery()->getScalarResult();
+
+            $expenditureOperations = $em->createQueryBuilder()
+                    ->select('op, SUM(op.debit) as amount, SUM(op.credit) as credit, ia')
+                    ->from('ReportBundle:GeneralLedgerBalance', 'op')
+                    ->innerJoin('ClassBundle:InternalAccount', 'ia','WITH','ia.id = op.account')
+                    ->innerJoin('ClassBundle:Classe', 'cl','WITH','cl.id = ia.classe')
+                    ->where('op.dateOperation BETWEEN :date1 AND :date2')
+                    ->andWhere('cl.id = :expenditure')
+                    ->groupBy('op.account')
+                    ->setParameters(
+                        [
+                        'date1' => $dateStart->format('Y-m-d'),
+                        'date2' => $dateEnd->format('Y-m-d'),
+                        'expenditure' => 6,
+                        ]
+                    )
+                    ->getQuery()->getScalarResult();
+
+            $html =  $this->renderView('pdf_files/monthly_report_file.html.twig', [
+                'displayDateStart' => $dateDebut,
+                'displayDateEnd' => $dateFin,
+                'currentUser' => $currentUser,
+                'date' => $currentDate,
+                'agency' => $agency,
+                'expenditureOp' => $expenditureOperations,
+                'incomeOp' => $incomeOperations,
+            ]);
+
+            $html2pdf = $this->get('html2pdf_factory')->create('P', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 15));
+            $html2pdf->pdf->SetAuthor('GreenSoft-Team');
+            $html2pdf->pdf->SetDisplayMode('real');
+            $html2pdf->pdf->SetTitle('Trial Balance');
+            $response = new Response();
+            $html2pdf->pdf->SetTitle('Trial Balance');
+            $html2pdf->writeHTML($html);
+            $content = $html2pdf->Output('', true);
+            $response->setContent($content);
+            $response->headers->set('Content-Type', 'application/pdf');
+            $response->headers->set('Content-disposition', 'filename=Trial_Balance.pdf');
+            return $response;
+
+        }
+        return $this->render('report/report_month.html.twig', [
+
+        ]);
+    }
+
+
     /**
      * @Route("/general_ledger", name="report_general_ledger")
      */
     public function generalLedgerBalanceAction(Request $request){
         
+        $em = $this->getDoctrine()->getManager();
         if ($request->getMethod() =="POST") {
-            $em = $this->getDoctrine()->getManager();
             $agency = $em->getRepository('ConfigBundle:Agency')->find(1);
             $currentDate = new \DateTime('now');
 
@@ -47,17 +135,39 @@ class ReportController extends Controller{
             $date  = $request->get('currentDate');
             $date = explode( "/" , substr($date,strrpos($date," ")));
 
+            $today_stardatetime = \DateTime::createFromFormat("Y-m-d H:i:s", date($date[2]."-".$date[1]."-".$date[0]." 00:00:00"));
             $today_enddatetime = \DateTime::createFromFormat("Y-m-d H:i:s", date($date[2]."-".$date[1]."-".$date[0]." 23:59:59"));
+
             $date  = new \DateTime($date[2]."-".$date[1]."-".$date[0]);
+            $day_before = date( 'Y-m-d', strtotime( $date->format('Y-m-d') . ' -1 day' ) );
+            $dayBefore_endDatetime = \DateTime::createFromFormat("Y-m-d H:i:s", $day_before." 23:59:59");
+
+                /*Get the balance brod*ad foward for the new day*/ 
+            $totaGLBDayBefore = $em->createQueryBuilder()
+                ->select('glb')
+                ->from('ReportBundle:GeneralLedgerBalance', 'glb')
+                ->where('glb.dateOperation <= :date')
+                ->setParameters(['date' => $dayBefore_endDatetime])
+                ->getQuery()
+                 ->getResult();
+                 $lastElement = end($totaGLBDayBefore);
+                 if ($lastElement) {
+                     $lastElement = $lastElement->getBalance();
+                 }else{
+                    $lastElement = 0;
+                 }
 
             $operations = $em->createQueryBuilder()
                 ->select('glb')
                 ->from('ReportBundle:GeneralLedgerBalance', 'glb')
-                ->where('glb.dateOperation <= :date')
-                ->setParameters(
-                    ['date' => $today_enddatetime]
-                )->getQuery()
-                 ->getResult();
+                ->where('glb.dateOperation >= :date')
+                ->andWhere('glb.dateOperation <= :dateend')
+                ->setParameters([
+                    'date' => $today_stardatetime,
+                    'dateend' => $today_enddatetime
+                    ])
+                ->getQuery()
+                ->getResult();
 
             $html = $this->renderView('situation/general_ledger_pdf.html.twig', [
                 'operations' => $operations,
@@ -65,6 +175,8 @@ class ReportController extends Controller{
                 'currentUser' => $currentUser,
                 'date' => $currentDate,
                 'endDate' => $date,
+                'balanceBF' => $lastElement,
+                'dayBefore' => $dayBefore_endDatetime,
             ]);
 
             $html2pdf = $this->get('html2pdf_factory')->create('P', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 10));
@@ -81,8 +193,104 @@ class ReportController extends Controller{
             return $response;
         }
 
+        $accounts = $em->getRepository('ClassBundle:InternalAccount')->findAll();
         // replace this example code with whatever you need
         return $this->render('report/general_ledger.html.twig', [
+            'accounts' => $accounts,
+        ]);
+    }
+
+    /**
+     * @Route("/individual_ledger", name="report_individual_ledger")
+     */
+    public function individualLedgerBalanceAction(Request $request){
+        
+        $em = $this->getDoctrine()->getManager();
+        if ($request->getMethod() =="POST") {
+            $agency = $em->getRepository('ConfigBundle:Agency')->find(1);
+            $currentDate = new \DateTime('now');
+
+            $currentUserId  = $this->get('security.token_storage')->getToken()->getUser()->getId();
+            $currentUser    = $em->getRepository('UserBundle:Utilisateur')->find($currentUserId);
+
+            $date  = $request->get('currentDate');
+            $accountId  = $request->get('accountNumber');
+            $date = explode( "/" , substr($date,strrpos($date," ")));
+
+            $today_stardatetime = \DateTime::createFromFormat("Y-m-d H:i:s", date($date[2]."-".$date[1]."-".$date[0]." 00:00:00"));
+            $today_enddatetime = \DateTime::createFromFormat("Y-m-d H:i:s", date($date[2]."-".$date[1]."-".$date[0]." 23:59:59"));
+
+            $date  = new \DateTime($date[2]."-".$date[1]."-".$date[0]);
+            $day_before = date( 'Y-m-d', strtotime( $date->format('Y-m-d') . ' -1 day' ) );
+            $dayBefore_endDatetime = \DateTime::createFromFormat("Y-m-d H:i:s", $day_before." 23:59:59");
+
+                /*Get the balance brod*ad foward for the new day*/ 
+            $totaGLBDayBefore = $em->createQueryBuilder()
+                ->select('glb')
+                ->from('ReportBundle:GeneralLedgerBalance', 'glb')
+                ->innerJoin('ClassBundle:InternalAccount', 'ia', 'WITH', 'ia.id = glb.account')
+                ->where('glb.dateOperation <= :date')
+                ->andWhere('ia.id = :idAccount')
+                ->setParameters([
+                    'date' => $dayBefore_endDatetime,
+                    'idAccount' => $accountId
+                    ])
+                ->getQuery()
+                 ->getResult();
+
+                 $lastElement = end($totaGLBDayBefore);
+                 if ($lastElement) {
+                     $lastElement = $lastElement->getAccountBalance();
+                 }else{
+                    $lastElement = 0;
+                 }
+
+
+            $operations = $em->createQueryBuilder()
+                ->select('glb')
+                ->from('ReportBundle:GeneralLedgerBalance', 'glb')
+                ->innerJoin('ClassBundle:InternalAccount', 'ia', 'WITH', 'ia.id = glb.account')
+                ->where('glb.dateOperation >= :date')
+                ->andWhere('glb.dateOperation <= :dateend')
+                ->andWhere('ia.id = :idAccount')
+                ->setParameters([
+                    'date' => $today_stardatetime,
+                    'dateend' => $today_enddatetime,
+                    'idAccount' => $accountId
+                    ])
+                ->getQuery()
+                ->getResult();
+
+            $account = $em->getRepository('ClassBundle:InternalAccount')->find($accountId);
+            $html = $this->renderView('situation/individual_ledger_pdf.html.twig', [
+                'operations' => $operations,
+                'agency' => $agency,
+                'account' => $account,
+                'currentUser' => $currentUser,
+                'date' => $currentDate,
+                'endDate' => $date,
+                'balanceBF' => $lastElement,
+                'dayBefore' => $dayBefore_endDatetime,
+            ]);
+
+            $html2pdf = $this->get('html2pdf_factory')->create('P', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 10));
+            $html2pdf->pdf->SetAuthor('GreenSoft-Team');
+            $html2pdf->pdf->SetDisplayMode('real');
+            $html2pdf->pdf->SetTitle('Individual Ledger Balance');
+            $response = new Response();
+            $html2pdf->pdf->SetTitle('Individual Ledger Balance');
+            $html2pdf->writeHTML($html);
+            $content = $html2pdf->Output('', true);
+            $response->setContent($content);
+            $response->headers->set('Content-Type', 'application/pdf');
+            $response->headers->set('Content-disposition', 'filename=IndividualLedger.pdf');
+            return $response;
+        }
+
+        $accounts = $em->getRepository('ClassBundle:InternalAccount')->findAll();
+        // replace this example code with whatever you need
+        return $this->render('report/general_ledger.html.twig', [
+            'accounts' => $accounts,
         ]);
     }
 
@@ -123,17 +331,24 @@ class ReportController extends Controller{
             'isSaving' => true
             ]);
 
+        $firstOp = $entityManager->getRepository('AccountBundle:Operation')->findOneBy([
+            'member' => $member,
+            'isSaving' => true],
+            ['id' => 'ASC',]
+            );
+
         $nomMember = str_replace(' ', '_', $member->getName());
         $type = "Savings";
         $html =  $this->renderView('situation/saving_situation_file.html.twig', array(
             'agency' => $agency,
             'member' => $member,
+            'firstOp' => $firstOp,
             'type' => $type,
             'currentDate' => $currentDate,
             'operations' => $operations,
         ));
 
-        $html2pdf = $this->get('html2pdf_factory')->create('P', 'A4', 'en', true, 'UTF-8', array(5, 10, 5, 10));
+        $html2pdf = $this->get('html2pdf_factory')->create('P', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 10));
         $html2pdf->pdf->SetAuthor('GreenSoft-Team');
         $html2pdf->pdf->SetDisplayMode('real');
         $html2pdf->pdf->SetTitle('Situation_'.$type.'_'.$nomMember);
@@ -166,17 +381,24 @@ class ReportController extends Controller{
             'isShare' => true
             ]);
 
+        $firstOp = $entityManager->getRepository('AccountBundle:Operation')->findOneBy([
+            'member' => $member,
+            'isShare' => true],
+            ['id' => 'ASC',]
+            );
+
         $nomMember = str_replace(' ', '_', $member->getName());
         $type = "Shares";
         $html =  $this->renderView('situation/saving_situation_file.html.twig', array(
             'agency' => $agency,
             'member' => $member,
             'type' => $type,
+            'firstOp' => $firstOp,
             'currentDate' => $currentDate,
             'operations' => $operations,
         ));
 
-        $html2pdf = $this->get('html2pdf_factory')->create('P', 'A4', 'en', true, 'UTF-8', array(5, 10, 5, 10));
+        $html2pdf = $this->get('html2pdf_factory')->create('P', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 10));
         $html2pdf->pdf->SetAuthor('GreenSoft-Team');
         $html2pdf->pdf->SetDisplayMode('real');
         $html2pdf->pdf->SetTitle('Situation_'.$type.'_'.$nomMember);
@@ -207,18 +429,25 @@ class ReportController extends Controller{
             'member' => $member,
             'isDeposit' => true
             ]);
+        $firstOp = $entityManager->getRepository('AccountBundle:Operation')->findOneBy([
+            'member' => $member,
+            'isShare' => true],
+            ['id' => 'ASC',]
+            );
+
 
         $nomMember = str_replace(' ', '_', $member->getName());
         $type = "Deposits";
         $html =  $this->renderView('situation/saving_situation_file.html.twig', array(
             'agency' => $agency,
             'member' => $member,
+             'firstOp' => $firstOp,
             'type' => $type,
             'currentDate' => $currentDate,
             'operations' => $operations,
         ));
 
-        $html2pdf = $this->get('html2pdf_factory')->create('P', 'A4', 'en', true, 'UTF-8', array(5, 10, 5, 10));
+        $html2pdf = $this->get('html2pdf_factory')->create('P', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 10));
         $html2pdf->pdf->SetAuthor('GreenSoft-Team');
         $html2pdf->pdf->SetDisplayMode('real');
         $html2pdf->pdf->SetTitle('Situation_'.$type.'_'.$nomMember);
@@ -294,23 +523,18 @@ class ReportController extends Controller{
             $date = new \DateTime('now');
             $agency = $em->getRepository('ConfigBundle:Agency')->find(1);
 
-            $internalAccounts = $em->getRepository('ClassBundle:InternalAccount')->findBy([], ['accountNumber' => 'ASC']);
+            // $internalAccounts = $em->getRepository('ClassBundle:InternalAccount')->findBy([], ['accountNumber' => 'ASC']);
 
-            // $internalAccounts = $em->createQueryBuilder()
-            //     ->select('ia')
-            //     ->from('ClassBundle:InternalAccount', 'ia')
-            //     ->where('ia.beginingBalance != :begining')
-            //     ->orWhere('ia.endingBalance != :ending')
-            //     ->orWhere('ia.debit != :debit')
-            //     ->orWhere('ia.credit != :credit')
-            //     ->setParameters(
-            //         [
-            //             'begining' => 0,
-            //             'ending' => 0,
-            //             'debit' => 0,
-            //             'credit' => 0,
-            //         ]
-            //     )->getQuery()->getResult();
+            $internalAccounts = $em->createQueryBuilder()
+                ->select('ia')
+                ->from('ClassBundle:InternalAccount', 'ia')
+                ->where('ia.balance != :balance')
+                ->orderBy('ia.accountNumber', 'ASC')
+                ->setParameters(
+                    [
+                        'balance' => 0,
+                    ]
+                )->getQuery()->getResult();
 
             $dateDebut = $request->get('start');
             $dateFin = $request->get('end');

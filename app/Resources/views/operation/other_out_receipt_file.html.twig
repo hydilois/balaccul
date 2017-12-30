@@ -1,14 +1,14 @@
 <page backtop="10mm" backleft="10mm" backright="10mm" backbottom="10mm" footer="page;">
     <page_footer>
         <hr />
-        <span>{{agency.abreviation}}</span><span style="margin-left:550px;">GreenSoft-Team</span>
+        <span>{{agency.abreviation}}</span><span style="margin-left:500px;">GreenSoft-Team</span>
     </page_footer>
      <table class="head">
          <tr>
              <td class="60p">
                   <b>{{agency.name}}</b><br>
                   <b>HEAD OFFICE {{agency.abreviation}}</b><br/>
-                  <b>Tel: {{agency.phoneNumber}}</b>
+                  <b>TEL: {{agency.phoneNumber}}</b>
              </td>
              <td  style="text-align: right;" class="40p">
                  <img style="height:60px;" src="./assets/images/users/logo_cu1.jpg"  alt="logo">
@@ -57,9 +57,9 @@
                                             <td class="75p">
                                                      {{operation.account}}
                                             </td>
-                                            <td class="25p">{{operation.amount |number_format(0, '.', ' ')}}</td>
+                                            <td class="25p">{{operation.credit |number_format(0, '.', ' ')}}</td>
                                         </tr>
-                                        {% set totalAcccountOperation = totalAcccountOperation + operation.amount %}
+                                        {% set totalAcccountOperation = totalAcccountOperation + operation.credit %}
                                     {% endfor %}
                                 {% endif %}
                              <tr>
@@ -141,7 +141,7 @@
             <td class="60p">
                  <b>{{agency.name}}</b><br>
                  <b>HEAD OFFICE {{agency.abreviation}}</b><br/>
-                 <b>Tel: {{agency.phoneNumber}}</b>
+                 <b>TEL: {{agency.phoneNumber}}</b>
             </td>
             <td  style="text-align: right;" class="40p">
                 <img style="height:60px;" src="./assets/images/users/logo_cu1.jpg"  alt="logo">
@@ -190,9 +190,9 @@
                                            <td class="75p">
                                                     {{operation.account}}
                                            </td>
-                                           <td class="25p">{{operation.amount |number_format(0, '.', ' ')}}</td>
+                                           <td class="25p">{{operation.credit |number_format(0, '.', ' ')}}</td>
                                        </tr>
-                                       {% set totalAcccountOperation = totalAcccountOperation + operation.amount %}
+                                       {% set totalAcccountOperation = totalAcccountOperation + operation.credit %}
                                    {% endfor %}
                                {% endif %}
                             <tr>

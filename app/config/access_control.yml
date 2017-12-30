@@ -13,6 +13,24 @@ security:
                 - ROLE_MANAGER
                 - ROLE_BOARD
         -
+            path: ^/internalaccount/[0-9]+/show
+            roles:
+                - ROLE_ADMINISTRATOR
+                - ROLE_MANAGER
+                - ROLE_BOARD
+        -
+            path: ^/agency/list
+            roles:
+                - ROLE_ADMINISTRATOR
+                - ROLE_MANAGER
+                - ROLE_BOARD
+        -
+            path: ^/agency/new
+            roles:
+                - ROLE_ADMINISTRATOR
+                - ROLE_MANAGER
+                - ROLE_BOARD
+        -
             path: ^/classe/list
             roles:
                 - ROLE_ADMINISTRATOR
@@ -37,9 +55,17 @@ security:
                 - ROLE_MANAGER
                 - ROLE_BOARD
         -
-            path: ^/eleve/[0-9]+/show
+            path: ^/loanparameter/[0-9]+/show
             roles:
-                - ROLE_USER
+                - ROLE_ADMINISTRATOR
+                - ROLE_MANAGER
+                - ROLE_BOARD
+        -
+            path: ^/agency/[0-9]+/show
+            roles:
+                - ROLE_ADMINISTRATOR
+                - ROLE_MANAGER
+                - ROLE_BOARD
         -
             path: ^/login$
             roles:

@@ -101,7 +101,7 @@ class InternalAccountController extends Controller
     /**
      * Finds and displays a internalAccount entity.
      *
-     * @Route("/{id}", name="internalaccount_show")
+     * @Route("/{id}/show", name="internalaccount_show")
      * @Method("GET")
      */
     public function showAction(InternalAccount $internalAccount)

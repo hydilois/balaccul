@@ -88,20 +88,19 @@
                 <a class="btn btn-primary" href="{{ path('member_index') }}">Back to the list</a>
             </td>
             <td>
-                &nbsp; &nbsp;
+                &nbsp;
             </td>
             <td>
-                <a class="btn btn-default" href="{{ path('member_edit', { 'id': member.id }) }}">Edit</a>
+                <a data-member={{member.id}} class="btn btn-default edit-btn" href="{{ path('member_edit', { 'id': member.id }) }}">Edit</a>
             </td>
-{#             <td>
-                &nbsp;&nbsp;
-            </td>
+            <td>&nbsp;</td>
             <td>
-                {{ form_start(delete_form) }}
-                    <input class="btn btn-danger" type="submit" value="Delete">
-                {{ form_end(delete_form) }}
-                
-            </td> #}
+                {% if member.isAproved %}
+                    <a class="btn btn-warning member" data-choice="1" name="account-status" href="#">Close Account</a>
+                {% else %}
+                    <a class="btn btn-success member" data-choice="2" name="account-status" href="#">Reopen Account</a>
+                {% endif %}
+            </td>
         </tr>
     </table>
         </div>
@@ -126,9 +125,43 @@
                 {% endfor %}
             </table>
             {% if totalRatio < 100 %}
-            <a class="btn btn-default" href="{{path('beneficiary_new')}}">New Beneciary</a>
+            <a name="add-beneficiary" data-value = {{member.id}} class="btn btn-default" href="#">New Beneficiary</a>
             {% endif %}
         </div>
 </div>
 </div>
+
+<!-- modal window to add a new paiement -->
+<div class="modal fade modal-add-beneficiary" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog modal-lg" role="document">
+<div class="col-md-offset-2 col-md-8">
+    <div class="modal-content">
+      <div class="modal-header">
+            <h3 class="text-center">New Beneficiciary or Representant</h3>
+      </div>
+      <div class="modal-body" id="beneficiary-form">
+
+      </div>
+    </div>
+  </div>
+    </div>
+</div>
+
+<!-- modal window to add a new paiement -->
+<div class="modal fade modal-edit-beneficiary" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog modal-lg" role="document">
+<div class="col-md-offset-2 col-md-8">
+    <div class="modal-content">
+      <div class="modal-header">
+            <h3 class="text-center">Edit Beneficiciary or Representant</h3>
+      </div>
+      <div class="modal-body" id="beneficiary-editform">
+
+      </div>
+    </div>
+  </div>
+    </div>
+</div>
+
+{% include './member/extras.js.html.twig' %}
 {% endblock %}

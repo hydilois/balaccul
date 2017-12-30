@@ -1,9 +1,10 @@
 {% extends 'base.html.twig' %}
+{% block contenu %}
+<div class="card-box">
+    <div class="row">
+    <h1 class="text-center">Classe Details</h1>
 
-{% block body %}
-    <h1>Classe</h1>
-
-    <table>
+    <table class="table table-striped">
         <tbody>
             <tr>
                 <th>Id</th>
@@ -17,24 +18,22 @@
                 <th>Description</th>
                 <td>{{ classe.description }}</td>
             </tr>
-            <tr>
-                <th>Totalamount</th>
-                <td>{{ classe.totalAmount }}</td>
-            </tr>
         </tbody>
     </table>
-
-    <ul>
-        <li>
-            <a href="{{ path('classe_index') }}">Back to the list</a>
-        </li>
-        <li>
-            <a href="{{ path('classe_edit', { 'id': classe.id }) }}">Edit</a>
-        </li>
-        <li>
-            {{ form_start(delete_form) }}
+    <table>
+        <tr>
+            <td>
+                <a class="btn btn-success" href="{{ path('classe_index') }}">Back to the list</a>
+            </td>
+            <td>&nbsp;&nbsp;</td>
+            <td>
+            <a class="btn btn-default" href="{{ path('classe_edit', { 'id': classe.id }) }}">Edit</a>    
+            </td>
+        </tr>
+    </table>
+{#             {{ form_start(delete_form) }}
                 <input type="submit" value="Delete">
-            {{ form_end(delete_form) }}
-        </li>
-    </ul>
+            {{ form_end(delete_form) }} #}
+    </div>
+</div>
 {% endblock %}

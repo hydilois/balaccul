@@ -1,6 +1,9 @@
 {% extends 'base.html.twig' %}
 {% block title %}{{parent()}} Agency informattions{% endblock %}
-{% block contenu %}
+
+    {% block contenu %}
+    <div class="card-box">
+        <div class="row">        
     <h1 class="text-center">Agency Informations</h1>
             
                 <a class="btn btn-default"
@@ -36,4 +39,6 @@
         {% endfor %}
         </tbody>
     </table>
+    </div>
+     </div>
 {% endblock %}

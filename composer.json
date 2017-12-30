@@ -20,7 +20,6 @@
         "friendsofsymfony/user-bundle": "~2.0",
         "incenteev/composer-parameter-handler": "^2.0",
         "jms/serializer-bundle": "^2.0",
-        "knw/number-to-words": "1.2.2",
         "liuggio/excelbundle": "^2.1",
         "psliwa/pdf-bundle": "1.0",
         "sensio/distribution-bundle": "^5.0.19",

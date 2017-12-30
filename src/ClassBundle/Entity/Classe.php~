@@ -29,10 +29,11 @@ class Classe{
     private $name;
 
     /**
-     * @ORM\ManyToOne(targetEntity="ClassBundle\Entity\Classe")
-     * @ORM\JoinColumn(name="id_classe")
+     * @var decimal
+     *
+     * @ORM\Column(name="balance", type="decimal")
      */
-    private $classCategory;
+    private $balance;
 
 
     /**
@@ -41,13 +42,6 @@ class Classe{
      * @ORM\Column(name="description", type="text")
      */
     private $description;
-
-    /**
-     * @var decimal
-     *
-     * @ORM\Column(name="totalAmount", type="decimal")
-     */
-    private $totalAmount;
 
 
     public function __toString(){
@@ -71,10 +65,8 @@ class Classe{
      *
      * @return Classe
      */
-    public function setName($name)
-    {
+    public function setName($name){
         $this->name = $name;
-
         return $this;
     }
 
@@ -83,56 +75,31 @@ class Classe{
      *
      * @return string
      */
-    public function getName()
-    {
+    public function getName(){
         return $this->name;
     }
 
     /**
-     * Set totalAmount
+     * Set description
      *
-     * @param string $totalAmount
+     * @param string $description
      *
      * @return Classe
      */
-    public function setTotalAmount($totalAmount)
+    public function setDescription($description)
     {
-        $this->totalAmount = $totalAmount;
+        $this->description = $description;
 
         return $this;
     }
 
     /**
-     * Get totalAmount
+     * Get description
      *
      * @return string
      */
-    public function getTotalAmount()
+    public function getDescription()
     {
-        return $this->totalAmount;
-    }
-
-    /**
-     * Set classCategory
-     *
-     * @param \ClassBundle\Entity\Classe $classCategory
-     *
-     * @return Classe
-     */
-    public function setClassCategory(\ClassBundle\Entity\Classe $classCategory = null)
-    {
-        $this->classCategory = $classCategory;
-
-        return $this;
-    }
-
-    /**
-     * Get classCategory
-     *
-     * @return \ClassBundle\Entity\Classe
-     */
-    public function getClassCategory()
-    {
-        return $this->classCategory;
+        return $this->description;
     }
 }

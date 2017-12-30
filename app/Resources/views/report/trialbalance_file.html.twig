@@ -1,7 +1,7 @@
 <page footer="page;">
     <page_footer>
         <hr />
-        <span>{{agency.abreviation}}</span> <span style="margin-left:50px;">Printed By <b>{{currentUser}}</b></span><span style="margin-left:150px;">GreenSoft-Team</span>
+        <span>{{agency.abreviation}}</span> <span style="margin-left:150px;">Printed By <b>{{currentUser}}</b></span><span style="margin-left:100px;">GreenSoft-Team</span>
     </page_footer>
     <table>
         <tr>
@@ -30,46 +30,26 @@
     </table> <br>
     <table class="trialbalance">
         <tr>
-            <th style="background: gray; text-align:center" class="10p">A/C N°</th>
-            <th style="background: gray; text-align:center" class="30p">ACCOUNT NAME</th>
-            <th style="background: gray; text-align:center" class="15p">START BALANCE</th>
-            <th style="background: gray; text-align:center" class="15p">DEBIT</th>
-            <th style="background: gray; text-align:center" class="15p">CREDIT</th>
-            <th style="background: gray; text-align:center" class="15p">FINAL BALANCE</th>
+            <th style="background: gray; text-align:center" class="20p">A/C N°</th>
+            <th style="background: gray; text-align:center" class="60p">ACCOUNT NAME</th>
+            <th style="background: gray; text-align:center" class="20p">BALANCE</th>
+            {# <th style="background: gray; text-align:center" class="15p">DEBIT</th> #}
+            {# <th style="background: gray; text-align:center" class="15p">CREDIT</th> #}
+            {# <th style="background: gray; text-align:center" class="15p">FINAL BALANCE</th> #}
         </tr>
-            {% set totalCredit = 0 %}
-            {% set totalDebit = 0 %}
-            {% set totalBeginBalance = 0 %}
-            {% set totalEndBalance = 0 %}
+            {% set totalBalance = 0 %}
             {% for account in internalAccounts %} 
                 <tr>
                     <td style="text-align:center">{{account.accountNumber }}</td>
                     <td style="text-align:center">{{account.accountName[:30]}}</td>
-                    <td style="text-align:center">{{account.beginingBalance |number_format(0, '.', ' ')}}</td>
-                    <td style="text-align:center">{{account.debit |number_format(0, '.', ' ')}}</td>
-                    <td style="text-align:center">{{account.credit |number_format(0, '.', ' ')}}</td>
-                    <td style="text-align:center">{{account.endingBalance |number_format(0, '.', ' ')}}</td>
+                    <td style="text-align:center">{{account.balance |number_format(0, '.', ' ')}}</td>
                 </tr>
-                {% set totalCredit = totalCredit + account.credit %}
-                {% set totalDebit = totalDebit + account.debit %}
-                    {% if account.beginBalanceCode == 'D' %}
-                        {% set totalBeginBalance = totalBeginBalance + account.beginingBalance  %}
-                    {% else %}
-                        {% set totalBeginBalance = totalBeginBalance - account.beginingBalance  %}
-                    {% endif %}
-                    {% if account.endingBalanceCode == 'D' %}
-                        {% set totalEndBalance = totalEndBalance + account.endingBalance %}
-                    {% else %}
-                        {% set totalEndBalance = totalEndBalance - account.endingBalance %}
-                    {% endif %}
+                {% set totalBalance = totalBalance + account.balance %}
             {% endfor %}
             <tr>
-                <td class="10p"></td>
-                <td class="30p" style="text-align:center"><b>TOTAL</b></td>
-                <td class="15p" style="text-align:center"><b>{{totalBeginBalance |number_format(0, '.', ' ')}}</b></td>
-                <td class="15p" style="text-align:center"><b>{{totalDebit |number_format(0, '.', ' ')}}</b></td>
-                <td class="15p" style="text-align:center"><b>{{totalCredit |number_format(0, '.', ' ')}}</b></td>
-                <td class="15p" style="text-align:center"><b>{{totalEndBalance |number_format(0, '.', ' ')}}</b></td>
+                <td class="30p" style="text-align:center" colspan="2"><b>TOTAL</b></td>
+                <td class="20p" style="text-align:center"><b>{{totalBalance |number_format(0, '.', ' ')}}</b></td>
+                {# <td class="15p" style="text-align:center"><b>{{totalEndBalance |number_format(0, '.', ' ')}}</b></td> #}
             </tr>
     </table>
 </page>

@@ -28,9 +28,30 @@ class Classe{
      */
     private $name;
 
+    /**
+     * @var decimal
+     *
+     * @ORM\Column(name="balance", type="decimal")
+     */
+    private $balance;
+
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="description", type="text")
+     */
+    private $description;
+
 
     public function __toString(){
         return $this->name;
+    }
+
+    public function __construct(){
+        // The default amount is 0
+        $this->balance = 0;
+        $this->name = "Class";
     }
 
     /**
@@ -62,5 +83,53 @@ class Classe{
      */
     public function getName(){
         return $this->name;
+    }
+
+    /**
+     * Set description
+     *
+     * @param string $description
+     *
+     * @return Classe
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    /**
+     * Get description
+     *
+     * @return string
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    /**
+     * Set balance
+     *
+     * @param string $balance
+     *
+     * @return Classe
+     */
+    public function setBalance($balance)
+    {
+        $this->balance = $balance;
+
+        return $this;
+    }
+
+    /**
+     * Get balance
+     *
+     * @return string
+     */
+    public function getBalance()
+    {
+        return $this->balance;
     }
 }

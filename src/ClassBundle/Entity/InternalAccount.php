@@ -43,57 +43,24 @@ class InternalAccount{
     /**
      * @var decimal
      *
-     * @ORM\Column(name="beginingBalance", type="decimal")
+     * @ORM\Column(name="balance", type="decimal")
      */
-    private $beginingBalance;
-
-    /**
-     * @var decimal
-     *
-     * @ORM\Column(name="endingBalance", type="decimal")
-     */
-    private $endingBalance;
-
-    /**
-     * @var decimal
-     *
-     * @ORM\Column(name="debit", type="decimal")
-     */
-    private $debit;
-
-    /**
-     * @var decimal
-     *
-     * @ORM\Column(name="credit", type="decimal")
-     */
-    private $credit;
+    private $balance;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="beginBalanceCode", type="string", length=1, options={"default":"D"})
+     * @ORM\Column(name="balanceCode", type="string", length=1, options={"default":"D"})
      */
-    private $beginBalanceCode;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="endingBalanceCode", type="string", length=1, options={"default":"C"})
-     */
-    private $endingBalanceCode;
-
+    private $balanceCode;
 
 
 
 
     public function __construct(){
         // The default amount is 0
-        $this->beginingBalance = 0;
-        $this->debit = 0;
-        $this->credit = 0;
-        $this->endingBalance = 0;
-        $this->beginBalanceCode = 'D';
-        $this->beginBalanceCode = 'C';
+        $this->balance = 0;
+        $this->balanceCode = 'C';
     }
 
     public function __toString(){
@@ -160,99 +127,51 @@ class InternalAccount{
     }
 
     /**
-     * Set beginingBalance
+     * Set balance
      *
-     * @param string $beginingBalance
+     * @param string $balance
      *
      * @return InternalAccount
      */
-    public function setBeginingBalance($beginingBalance)
+    public function setBalance($balance)
     {
-        $this->beginingBalance = $beginingBalance;
+        $this->balance = $balance;
 
         return $this;
     }
 
     /**
-     * Get beginingBalance
+     * Get balance
      *
      * @return string
      */
-    public function getBeginingBalance()
+    public function getBalance()
     {
-        return $this->beginingBalance;
+        return $this->balance;
     }
 
     /**
-     * Set endingBalance
+     * Set balanceCode
      *
-     * @param string $endingBalance
+     * @param string $balanceCode
      *
      * @return InternalAccount
      */
-    public function setEndingBalance($endingBalance)
+    public function setBalanceCode($balanceCode)
     {
-        $this->endingBalance = $endingBalance;
+        $this->balanceCode = $balanceCode;
 
         return $this;
     }
 
     /**
-     * Get endingBalance
+     * Get balanceCode
      *
      * @return string
      */
-    public function getEndingBalance()
+    public function getBalanceCode()
     {
-        return $this->endingBalance;
-    }
-
-    /**
-     * Set debit
-     *
-     * @param string $debit
-     *
-     * @return InternalAccount
-     */
-    public function setDebit($debit)
-    {
-        $this->debit = $debit;
-
-        return $this;
-    }
-
-    /**
-     * Get debit
-     *
-     * @return string
-     */
-    public function getDebit()
-    {
-        return $this->debit;
-    }
-
-    /**
-     * Set credit
-     *
-     * @param string $credit
-     *
-     * @return InternalAccount
-     */
-    public function setCredit($credit)
-    {
-        $this->credit = $credit;
-
-        return $this;
-    }
-
-    /**
-     * Get credit
-     *
-     * @return string
-     */
-    public function getCredit()
-    {
-        return $this->credit;
+        return $this->balanceCode;
     }
 
     /**
@@ -277,53 +196,5 @@ class InternalAccount{
     public function getClasse()
     {
         return $this->classe;
-    }
-
-    /**
-     * Set beginBalanceCode
-     *
-     * @param string $beginBalanceCode
-     *
-     * @return InternalAccount
-     */
-    public function setBeginBalanceCode($beginBalanceCode)
-    {
-        $this->beginBalanceCode = $beginBalanceCode;
-
-        return $this;
-    }
-
-    /**
-     * Get beginBalanceCode
-     *
-     * @return string
-     */
-    public function getBeginBalanceCode()
-    {
-        return $this->beginBalanceCode;
-    }
-
-    /**
-     * Set endingBalanceCode
-     *
-     * @param string $endingBalanceCode
-     *
-     * @return InternalAccount
-     */
-    public function setEndingBalanceCode($endingBalanceCode)
-    {
-        $this->endingBalanceCode = $endingBalanceCode;
-
-        return $this;
-    }
-
-    /**
-     * Get endingBalanceCode
-     *
-     * @return string
-     */
-    public function getEndingBalanceCode()
-    {
-        return $this->endingBalanceCode;
     }
 }

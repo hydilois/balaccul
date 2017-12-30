@@ -60,12 +60,6 @@ class Operation{
     private $currentUser;
 
     /**
-     * @ORM\ManyToOne(targetEntity="ClassBundle\Entity\InternalAccount")
-     * @ORM\JoinColumn(name="id_internalAccount", referencedColumnName="id")
-     */
-    private $account;
-
-    /**
      * @ORM\ManyToOne(targetEntity="MemberBundle\Entity\Member")
      * @ORM\JoinColumn(name="member")
      */
@@ -103,16 +97,9 @@ class Operation{
     /**
      * @var string
      *
-     * @ORM\Column(name="representative", type="string", length=50)
+     * @ORM\Column(name="representative", type="string", length=50, nullable=true)
      */
     private $representative;
-
-
-    /**
-     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\Utilisateur")
-     * @ORM\JoinColumn(name="id_user_confirmed", referencedColumnName="id")
-     */
-    private $userConfirmed;
 
 
     public function __construct(){
@@ -375,51 +362,28 @@ class Operation{
         return $this->member;
     }
 
+
     /**
-     * Set userConfirmed
+     * Set representative
      *
-     * @param \UserBundle\Entity\Utilisateur $userConfirmed
+     * @param string $representative
      *
      * @return Operation
      */
-    public function setUserConfirmed(\UserBundle\Entity\Utilisateur $userConfirmed = null)
+    public function setRepresentative($representative)
     {
-        $this->userConfirmed = $userConfirmed;
+        $this->representative = $representative;
 
         return $this;
     }
 
     /**
-     * Get userConfirmed
+     * Get representative
      *
-     * @return \UserBundle\Entity\Utilisateur
+     * @return string
      */
-    public function getUserConfirmed()
+    public function getRepresentative()
     {
-        return $this->userConfirmed;
-    }
-
-    /**
-     * Set account
-     *
-     * @param \ClassBundle\Entity\InternalAccount $account
-     *
-     * @return Operation
-     */
-    public function setAccount(\ClassBundle\Entity\InternalAccount $account = null)
-    {
-        $this->account = $account;
-
-        return $this;
-    }
-
-    /**
-     * Get account
-     *
-     * @return \ClassBundle\Entity\InternalAccount
-     */
-    public function getAccount()
-    {
-        return $this->account;
+        return $this->representative;
     }
 }

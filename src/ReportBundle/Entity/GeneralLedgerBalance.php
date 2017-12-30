@@ -31,11 +31,26 @@ class GeneralLedgerBalance{
     private $balance;
 
     /**
+     * @var int
+     *
+     * @ORM\Column(name="account_balance", type="bigint")
+     */
+    private $accountBalance;
+
+    /**
      * @var string
      *
      * @ORM\Column(name="type_operation", type="string", length=50)
      */
     private $typeOperation;
+
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="account_title", type="string", length=255)
+     */
+    private $accountTitle;
 
     /**
      * @var \DateTime
@@ -77,6 +92,12 @@ class GeneralLedgerBalance{
      * @ORM\Column(name="is_confirmed", type="boolean")
      */
     private $isConfirmed;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="MemberBundle\Entity\Member")
+     * @ORM\JoinColumn(name="member")
+     */
+    private $member;
 
     /**
      * @var string
@@ -318,5 +339,77 @@ class GeneralLedgerBalance{
     public function getAccount()
     {
         return $this->account;
+    }
+
+    /**
+     * Set accountTitle
+     *
+     * @param string $accountTitle
+     *
+     * @return GeneralLedgerBalance
+     */
+    public function setAccountTitle($accountTitle)
+    {
+        $this->accountTitle = $accountTitle;
+
+        return $this;
+    }
+
+    /**
+     * Get accountTitle
+     *
+     * @return string
+     */
+    public function getAccountTitle()
+    {
+        return $this->accountTitle;
+    }
+
+    /**
+     * Set member
+     *
+     * @param \MemberBundle\Entity\Member $member
+     *
+     * @return GeneralLedgerBalance
+     */
+    public function setMember(\MemberBundle\Entity\Member $member = null)
+    {
+        $this->member = $member;
+
+        return $this;
+    }
+
+    /**
+     * Get member
+     *
+     * @return \MemberBundle\Entity\Member
+     */
+    public function getMember()
+    {
+        return $this->member;
+    }
+
+    /**
+     * Set accountBalance
+     *
+     * @param integer $accountBalance
+     *
+     * @return GeneralLedgerBalance
+     */
+    public function setAccountBalance($accountBalance)
+    {
+        $this->accountBalance = $accountBalance;
+
+        return $this;
+    }
+
+    /**
+     * Get accountBalance
+     *
+     * @return integer
+     */
+    public function getAccountBalance()
+    {
+        return $this->accountBalance;
     }
 }

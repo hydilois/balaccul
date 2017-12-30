@@ -60,7 +60,7 @@ class AgencyController extends Controller
     /**
      * Finds and displays a agency entity.
      *
-     * @Route("/{id}", name="agency_show")
+     * @Route("/{id}/show", name="agency_show")
      * @Method("GET")
      */
     public function showAction(Agency $agency)

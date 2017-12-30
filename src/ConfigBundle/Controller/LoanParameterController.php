@@ -59,7 +59,7 @@ class LoanParameterController extends Controller{
     /**
      * Finds and displays a loanParameter entity.
      *
-     * @Route("/{id}", name="loanparameter_show")
+     * @Route("/{id}/show", name="loanparameter_show")
      * @Method("GET")
      */
     public function showAction(LoanParameter $loanParameter)

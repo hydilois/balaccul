@@ -29,19 +29,16 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="">Representative or beneficiary</label>
+                    <label for="">Representative or beneficiary or Motif</label>
                     <input required="required" name="representative" type="text" class="form-control" />
                 </div>
                 <div class="form-group">
                     <label for="">Amount</label>
                     <input name="amount" type="number" required data-parsley-min="1" data-parsley-equalto="#analytic-amount" id="purpose-amount" min="1" class="form-control" value="0" />
                 </div>
-               {#  <input id="checkbox2" type="checkbox" name="balance-display" class="choice text-center">
-                <label style="color:purple; font-size:17px;" for="checkbox2">
-                    <b>Display the member balance</b>
-                </label><br><br> #}
                     <div class="form-group">
                         <input class="btn btn-default" type="submit" value="Save">
+                        <a class="btn btn-primary" href="{{path('homepage')}}">Back to the homepage</a>
                     </div>
             </fieldset>
         </section>

@@ -31,11 +31,26 @@ class GeneralLedgerBalance{
     private $balance;
 
     /**
+     * @var int
+     *
+     * @ORM\Column(name="account_balance", type="bigint")
+     */
+    private $accountBalance;
+
+    /**
      * @var string
      *
      * @ORM\Column(name="type_operation", type="string", length=50)
      */
     private $typeOperation;
+
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="account_title", type="string", length=255)
+     */
+    private $accountTitle;
 
     /**
      * @var \DateTime
@@ -79,6 +94,12 @@ class GeneralLedgerBalance{
     private $isConfirmed;
 
     /**
+     * @ORM\ManyToOne(targetEntity="MemberBundle\Entity\Member")
+     * @ORM\JoinColumn(name="member")
+     */
+    private $member;
+
+    /**
      * @var string
      *
      * @ORM\Column(name="representative", type="string", length=50, nullable=true)
@@ -103,5 +124,268 @@ class GeneralLedgerBalance{
     {
         return $this->id;
     }
-}
 
+    /**
+     * Set balance
+     *
+     * @param integer $balance
+     *
+     * @return GeneralLedgerBalance
+     */
+    public function setBalance($balance)
+    {
+        $this->balance = $balance;
+
+        return $this;
+    }
+
+    /**
+     * Get balance
+     *
+     * @return integer
+     */
+    public function getBalance()
+    {
+        return $this->balance;
+    }
+
+    /**
+     * Set typeOperation
+     *
+     * @param string $typeOperation
+     *
+     * @return GeneralLedgerBalance
+     */
+    public function setTypeOperation($typeOperation)
+    {
+        $this->typeOperation = $typeOperation;
+
+        return $this;
+    }
+
+    /**
+     * Get typeOperation
+     *
+     * @return string
+     */
+    public function getTypeOperation()
+    {
+        return $this->typeOperation;
+    }
+
+    /**
+     * Set dateOperation
+     *
+     * @param \DateTime $dateOperation
+     *
+     * @return GeneralLedgerBalance
+     */
+    public function setDateOperation($dateOperation)
+    {
+        $this->dateOperation = $dateOperation;
+
+        return $this;
+    }
+
+    /**
+     * Get dateOperation
+     *
+     * @return \DateTime
+     */
+    public function getDateOperation()
+    {
+        return $this->dateOperation;
+    }
+
+    /**
+     * Set debit
+     *
+     * @param string $debit
+     *
+     * @return GeneralLedgerBalance
+     */
+    public function setDebit($debit)
+    {
+        $this->debit = $debit;
+
+        return $this;
+    }
+
+    /**
+     * Get debit
+     *
+     * @return string
+     */
+    public function getDebit()
+    {
+        return $this->debit;
+    }
+
+    /**
+     * Set credit
+     *
+     * @param string $credit
+     *
+     * @return GeneralLedgerBalance
+     */
+    public function setCredit($credit)
+    {
+        $this->credit = $credit;
+
+        return $this;
+    }
+
+    /**
+     * Get credit
+     *
+     * @return string
+     */
+    public function getCredit()
+    {
+        return $this->credit;
+    }
+
+    /**
+     * Set isConfirmed
+     *
+     * @param boolean $isConfirmed
+     *
+     * @return GeneralLedgerBalance
+     */
+    public function setIsConfirmed($isConfirmed)
+    {
+        $this->isConfirmed = $isConfirmed;
+
+        return $this;
+    }
+
+    /**
+     * Get isConfirmed
+     *
+     * @return boolean
+     */
+    public function getIsConfirmed()
+    {
+        return $this->isConfirmed;
+    }
+
+    /**
+     * Set representative
+     *
+     * @param string $representative
+     *
+     * @return GeneralLedgerBalance
+     */
+    public function setRepresentative($representative)
+    {
+        $this->representative = $representative;
+
+        return $this;
+    }
+
+    /**
+     * Get representative
+     *
+     * @return string
+     */
+    public function getRepresentative()
+    {
+        return $this->representative;
+    }
+
+    /**
+     * Set currentUser
+     *
+     * @param \UserBundle\Entity\Utilisateur $currentUser
+     *
+     * @return GeneralLedgerBalance
+     */
+    public function setCurrentUser(\UserBundle\Entity\Utilisateur $currentUser = null)
+    {
+        $this->currentUser = $currentUser;
+
+        return $this;
+    }
+
+    /**
+     * Get currentUser
+     *
+     * @return \UserBundle\Entity\Utilisateur
+     */
+    public function getCurrentUser()
+    {
+        return $this->currentUser;
+    }
+
+    /**
+     * Set account
+     *
+     * @param \ClassBundle\Entity\InternalAccount $account
+     *
+     * @return GeneralLedgerBalance
+     */
+    public function setAccount(\ClassBundle\Entity\InternalAccount $account = null)
+    {
+        $this->account = $account;
+
+        return $this;
+    }
+
+    /**
+     * Get account
+     *
+     * @return \ClassBundle\Entity\InternalAccount
+     */
+    public function getAccount()
+    {
+        return $this->account;
+    }
+
+    /**
+     * Set accountTitle
+     *
+     * @param string $accountTitle
+     *
+     * @return GeneralLedgerBalance
+     */
+    public function setAccountTitle($accountTitle)
+    {
+        $this->accountTitle = $accountTitle;
+
+        return $this;
+    }
+
+    /**
+     * Get accountTitle
+     *
+     * @return string
+     */
+    public function getAccountTitle()
+    {
+        return $this->accountTitle;
+    }
+
+    /**
+     * Set member
+     *
+     * @param \MemberBundle\Entity\Member $member
+     *
+     * @return GeneralLedgerBalance
+     */
+    public function setMember(\MemberBundle\Entity\Member $member = null)
+    {
+        $this->member = $member;
+
+        return $this;
+    }
+
+    /**
+     * Get member
+     *
+     * @return \MemberBundle\Entity\Member
+     */
+    public function getMember()
+    {
+        return $this->member;
+    }
+}

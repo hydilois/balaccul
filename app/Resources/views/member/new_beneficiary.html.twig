@@ -1,0 +1,26 @@
+{{ form_start(bForm, {'method': 'POST', 'action': path('beneficiary_new', {id:member.id})}) }}
+    <div class="col-md-4">
+        <div class="form-group">
+            {{form_label(bForm.name)}}
+            {{form_errors(bForm.name)}}
+            {{form_widget(bForm.name, {'attr':{'class':'form-control'}})}}
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="form-group">
+            {{form_label(bForm.relation, 'Relation or Post')}}
+            {{form_errors(bForm.relation)}}
+            {{form_widget(bForm.relation, {'attr':{'class':'form-control'}})}}
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="form-group">
+            {{form_label(bForm.ratio, 'Ratio')}}
+            {{form_errors(bForm.ratio)}}
+            {{form_widget(bForm.ratio, {'attr':{'class':'form-control'}})}}
+        </div>
+    </div>
+    <div class="form-group">
+        <input class="btn btn-primary" type="submit" value="Save" />
+    </div>
+{{ form_end(bForm) }}

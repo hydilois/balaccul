@@ -60,12 +60,6 @@ class Operation{
     private $currentUser;
 
     /**
-     * @ORM\ManyToOne(targetEntity="ClassBundle\Entity\InternalAccount")
-     * @ORM\JoinColumn(name="id_internalAccount", referencedColumnName="id")
-     */
-    private $account;
-
-    /**
      * @ORM\ManyToOne(targetEntity="MemberBundle\Entity\Member")
      * @ORM\JoinColumn(name="member")
      */
@@ -106,13 +100,6 @@ class Operation{
      * @ORM\Column(name="representative", type="string", length=50, nullable=true)
      */
     private $representative;
-
-
-    /**
-     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\Utilisateur")
-     * @ORM\JoinColumn(name="id_user_confirmed", referencedColumnName="id")
-     */
-    private $userConfirmed;
 
 
     public function __construct(){
@@ -375,53 +362,6 @@ class Operation{
         return $this->member;
     }
 
-    /**
-     * Set userConfirmed
-     *
-     * @param \UserBundle\Entity\Utilisateur $userConfirmed
-     *
-     * @return Operation
-     */
-    public function setUserConfirmed(\UserBundle\Entity\Utilisateur $userConfirmed = null)
-    {
-        $this->userConfirmed = $userConfirmed;
-
-        return $this;
-    }
-
-    /**
-     * Get userConfirmed
-     *
-     * @return \UserBundle\Entity\Utilisateur
-     */
-    public function getUserConfirmed()
-    {
-        return $this->userConfirmed;
-    }
-
-    /**
-     * Set account
-     *
-     * @param \ClassBundle\Entity\InternalAccount $account
-     *
-     * @return Operation
-     */
-    public function setAccount(\ClassBundle\Entity\InternalAccount $account = null)
-    {
-        $this->account = $account;
-
-        return $this;
-    }
-
-    /**
-     * Get account
-     *
-     * @return \ClassBundle\Entity\InternalAccount
-     */
-    public function getAccount()
-    {
-        return $this->account;
-    }
 
     /**
      * Set representative
