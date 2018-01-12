@@ -59,7 +59,6 @@ class ClientController extends Controller{
                                 ORDER BY dso2.dateOperation DESC
                                 )'
                         )
-                    
                     ->setParameter('type', DailyServiceOperation::TYPE_DEPOSIT)
                     ->orderBy('c.name')
                     ->getQuery();

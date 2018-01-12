@@ -76,6 +76,7 @@ class DefaultController extends Controller{
         $unpaidInterest = 0;
         $loanUnpaid = 0;
         $loanContracted = 0;
+        $count = 0;
         foreach ($loans as $loan) {
             //get the last element in loan history
             $lowest_remain_amount_LoanHistory = $em->createQueryBuilder()
@@ -83,10 +84,10 @@ class DefaultController extends Controller{
                 ->from('AccountBundle:LoanHistory', 'lh')
                 ->innerJoin('AccountBundle:Loan', 'l', 'WITH','lh.loan = l.id')
                 ->where('l.id = :loan')
-                ->andWhere('l.status =:status')
+                // ->andWhere('l.status =:status')
                 ->orderBy('lh.id', 'DESC')
                 ->setParameter('loan', $loan)
-                ->setParameter('status', true)
+                // ->setParameter('status', true)
                 ->getQuery()
                 ->getSingleScalarResult();
 
@@ -96,21 +97,18 @@ class DefaultController extends Controller{
                         'remainAmount' => $lowest_remain_amount_LoanHistory,
                         'loan' => $loan
                     ],
-                    [
-                        'id' => 'DESC'
-                    ]
+                    ['id' => 'DESC']
                 );
                 $unpaidInterest += $latestLoanHistory->getUnpaidInterest();    
                 $loanUnpaid += $latestLoanHistory->getRemainAmount();    
-
+                $count +=1;
             }else{
                 $loanUnpaid += $loan->getLoanAmount();
             }
-
             $loanContracted += $loan->getLoanAmount();
-
         }
 
+        // die("Number of loans   ".$count);
 
         // replace this example code with whatever you need
         return $this->render('default/index.html.twig', [
@@ -118,14 +116,9 @@ class DefaultController extends Controller{
             'numberNumber' => count($members),
             'agency' => $agency,
             'members' => $members,
-            // 'clients' => $clients,
             'totalShares' => $totalShares,
             'totalSaving' => $totalSavings,
             'totalDeposit' => $totalDeposits,
-            // 'totalDailyCollections' => $totalDailyCollections,
-            // 'totalIncome' => $totalIncome,
-            // 'reserves' => $reserves,
-            // 'cashInHand' => $cashInhand,
             'buildingFees' => $totalBuildingFees,
             'totalRegistration' => $totalRegistrationFeesPM,
             'unpaidInterest' => $unpaidInterest,

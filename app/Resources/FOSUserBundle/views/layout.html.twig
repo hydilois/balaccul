@@ -8,9 +8,9 @@
 
         <link rel="shortcut icon" href="{{asset('assets/images/favicon_1.ico')}}">
 
-        <title>BALLACUL</title>
+        <title>{% block title %} BALACCUL |  {% endblock %}</title>
     </head>
-    <body>
+    <body {# style="background-image: url('{{asset('assets/images/Credit-Union-logo.jpg')}}')" #}>
         {# <div>
             {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
                 {{ 'layout.logged_in_as'|trans({'%username%': app.user.username}, 'FOSUserBundle') }} |

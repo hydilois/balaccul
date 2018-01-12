@@ -1,5 +1,5 @@
 {% trans_default_domain 'FOSUserBundle' %}
-
+{% block title %}{{parent()}} Register{% endblock %}
 <body>
 
 		<div class="account-pages"></div>
@@ -31,7 +31,10 @@
 								{{ form_widget(form.plainPassword.second, {'attr':{'class':'form-control'}}) }}<br>
 
 								{{ form_label(form.numeroTelephone, "Phone number") }}
-								{{ form_widget(form.numeroTelephone, {'attr':{'class':'form-control'}}) }}
+								{{ form_widget(form.numeroTelephone, {'attr':{'class':'form-control'}}) }} <br>
+
+								{{ form_label(form.groupe, "User Group") }}
+								{{ form_widget(form.groupe, {'attr':{'class':'form-control'}}) }}
 							</div>
 						</div>
 

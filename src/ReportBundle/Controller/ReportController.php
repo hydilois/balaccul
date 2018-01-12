@@ -71,7 +71,7 @@ class ReportController extends Controller{
                     'income' => 7,
                     ]
                 )
-                ->getQuery()->getScalarResult();
+                ->getQuery()->getScalarResult(); 
 
             $expenditureOperations = $em->createQueryBuilder()
                     ->select('op, SUM(op.debit) as amount, SUM(op.credit) as credit, ia')
@@ -312,6 +312,111 @@ class ReportController extends Controller{
         ));
     }
 
+    /**
+     * member situation.
+     *
+     * @Route("/{status}/{type}/list", name="report_generate_document")
+     * @Method("GET")
+     */
+    public function generateDocumentAction($status, $type){
+
+        $entityManager = $this->getDoctrine()->getManager();
+        $agency = $entityManager->getRepository('ConfigBundle:Agency')->find(1);
+
+        switch ($status) {
+            case "allMembers":
+                $lists  = $entityManager->getRepository('MemberBundle:Member')->findBy([], ['memberNumber' => 'ASC']);
+                $listLoanWithOutHistory = [];
+                break;
+            case "activeMembers":
+                # code...
+                break;
+            case "inactiveMembers":
+                # code...
+                break;
+            case "allLoans":
+                $subQuery  = $entityManager->createQueryBuilder()
+                    ->select('(lh.loan)')
+                    ->from('AccountBundle:LoanHistory', 'lh')
+                    ->innerJoin('AccountBundle:Loan', 'l', 'WITH', 'l.id = lh.loan')
+                    ->getQuery()
+                    ->getArrayResult();
+
+
+                    $queryBuilder = $entityManager->createQueryBuilder();
+                    $listLoanWithOutHistory = $entityManager->createQueryBuilder()
+                        ->select('l')
+                        ->from('AccountBundle:Loan', 'l')
+                        ->where($queryBuilder->expr()->notIn('l.id', ':subQuery'))
+                        ->setParameter('subQuery', $subQuery)
+                        ->getQuery()
+                        ->getResult();
+                        // die("qfdsqdf     ".count($listLoanWithOutHistory));
+
+                $lists  = $entityManager->createQueryBuilder()
+                        ->select('l', 'lh')
+                        ->from('AccountBundle:Loan', 'l')
+                        ->innerJoin('AccountBundle:LoanHistory', 'lh', 'WITH', 'l.id = lh.loan')
+                        ->where('lh.dateOperation IN
+                                    (SELECT MAX(lh2.dateOperation)
+                                    FROM AccountBundle:LoanHistory lh2
+                                    WHERE lh2.loan = l.id
+                                    ORDER BY lh2.id DESC
+                                    )'
+                            )
+                        ->groupBy('lh.loan')
+                        ->getQuery()
+                        ->getScalarResult();
+                break;
+            case "activeLoans":
+                # code...
+                break;
+            case "inactiveLoans":
+                # code...
+                break;
+            default:
+                die("NOoooooo");
+                break;
+        }
+
+        $html =  $this->renderView('pdf_files/generate_document_file.html.twig', [
+            'agency' => $agency,
+            'lists' => $lists,
+            'type' => $type,
+            'listLoanWithOutHistory' => $listLoanWithOutHistory,
+        ]);
+
+        $html2pdf = $this->get('html2pdf_factory')->create('P', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 10));
+        $response = new Response();
+    
+        switch ($type) {
+            case "Members":
+                $html2pdf->pdf->SetTitle('List_Members');
+                $html2pdf->pdf->SetTitle('List_Members');
+                $response->headers->set('Content-disposition', 'filename=List_Members.pdf');
+                break;
+            case "Loans":
+                $html2pdf->pdf->SetTitle('List_Loans');
+                $html2pdf->pdf->SetTitle('List Loans');
+                $response->headers->set('Content-disposition', 'filename=List_Loans.pdf');
+                break;
+            default:
+                # code...
+                break;
+        }
+
+        $html2pdf->pdf->SetAuthor('GreenSoft-Team');
+        $html2pdf->pdf->SetDisplayMode('real');
+        $html2pdf->writeHTML($html);
+        $content = $html2pdf->Output('', true);
+        $response->setContent($content);
+        $response->headers->set('Content-Type', 'application/pdf');
+        
+        return $response;
+    }
+
+
+
 
     /**
      * member situation on saving.
@@ -431,7 +536,7 @@ class ReportController extends Controller{
             ]);
         $firstOp = $entityManager->getRepository('AccountBundle:Operation')->findOneBy([
             'member' => $member,
-            'isShare' => true],
+            'isDeposit' => true],
             ['id' => 'ASC',]
             );
 
@@ -553,7 +658,7 @@ class ReportController extends Controller{
                     'agency' => $agency,
                     'internalAccounts' => $internalAccounts,
                 ));
-
+                
                 $html2pdf = $this->get('html2pdf_factory')->create('P', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 15));
                 $html2pdf->pdf->SetAuthor('GreenSoft-Team');
                 $html2pdf->pdf->SetDisplayMode('real');

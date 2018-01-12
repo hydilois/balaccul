@@ -73,52 +73,25 @@
                 </div>
             </div>
         </div>
-        
-{#         <a class="btn btn-app document-request">
-                        <span class="badge bg-navy">A préciser</span>
-                        <i class="fa fa-folder-open-o"></i> Demande de Documents
-                    </a> 
-                        <ul class="timeline">
-                                <!-- timeline time label -->
-                                <li class="time-label">
-                                    <span class="bg-red">
-                                        25-02-2017
-                                    </span>
-                                </li>
-                                <!-- /.timeline-label -->
-
-                                <!-- timeline item -->
-                                <li>
-                                    <!-- timeline icon -->
-                                    <i class="fa fa-bookmark-o bg-blue"></i>
-                                    <div class="timeline-item">
-                                        <span class="time"><i class="fa fa-clock-o"></i> 15:02:25</span>
-
-                                        <h3 class="timeline-header"><a href="#">test </a></h3>
-
-                                        <div class="timeline-body">
-                                            <table class="table">
-                                                <tr>
-                                                    <th>Loan Repaid</th>
-                                                    <th>Interest Paid</th>
-                                                    <th>Unpaid Interest</th>
-                                                    <th>Balance</th>
-                                                </tr>
-                                                <tr>
-                                                    <td>test</td>
-                                                    <td>dsfds</td>
-                                                    <td>fsdfd</td>
-                                                    <td>ezee</td>
-                                                </tr>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </li>
-                                <!-- END timeline item -->
-
-                        </ul> #}
     </div>
     
+
+                          <!--   <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="card-box">
+                                        <canvas id="pie" height="300"></canvas> 
+                                </div>
+                                    </div>
+                                
+                                <div class="col-lg-6">
+                                    <div class="card-box">
+                                        <canvas id="doughnut" height="300"></canvas>
+                                    </div>
+                                </div>
+                            </div> -->
+            <script src="{{asset('assets/plugins/chart.js/chart.min.js')}}"></script>
+            <script src="{{asset('assets/pages/customChart.js')}}"></script>
+
 {% include './default/extras.css.html.twig' %}
 {% include './default/extras.js.html.twig' %}
 {% endblock %}
