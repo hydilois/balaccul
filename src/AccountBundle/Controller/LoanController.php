@@ -95,7 +95,7 @@ class LoanController extends Controller{
                 $account = $em->getRepository('ClassBundle:InternalAccount')->find(32);//Normal Loan Identification
                 $account->setBalance($account->getBalance() - $loan->getLoanAmount());
 
-                $classeLoan = $entityManager->getRepository('ClassBundle:Classe')->find($account->getClasse()->getId());
+                $classeLoan = $em->getRepository('ClassBundle:Classe')->find($account->getClasse()->getId());
                 $classeLoan->setBalance($classeLoan->getBalance() - $loan->getLoanAmount());
                 
                 $operation = new Operation();
@@ -132,7 +132,7 @@ class LoanController extends Controller{
                 $accountProcessing = $em->getRepository('ClassBundle:InternalAccount')->find(140);//Processing Fees
                 $accountProcessing->setBalance($accountProcessing->getBalance() + $loan->getLoanProcessingFees());
 
-                $classeProcessing = $entityManager->getRepository('ClassBundle:Classe')->find($accountProcessing->getClasse()->getId());
+                $classeProcessing = $em->getRepository('ClassBundle:Classe')->find($accountProcessing->getClasse()->getId());
                 $classeProcessing->setBalance($classeProcessing->getBalance() + $loan->getLoanProcessingFees());
                 
                 $operationProcessing = new Operation();

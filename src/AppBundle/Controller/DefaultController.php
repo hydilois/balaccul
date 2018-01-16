@@ -11,7 +11,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\Yaml\Yaml;
 
 class DefaultController extends Controller{
-
     /**
      * @Route("/", name="homepage")
      */
@@ -25,10 +24,7 @@ class DefaultController extends Controller{
         $agency = $em->getRepository('ConfigBundle:Agency')->find(1);
         $members = $em->getRepository('MemberBundle:Member')->findAll();
 
-        // $clients = $em->getRepository('MemberBundle:Client')->findAll();
-
         $loans = $em->getRepository('AccountBundle:Loan')->findByStatus(true);
-
 
         $totalShares = $em->createQueryBuilder()
             ->select('SUM(m.share)')
@@ -47,19 +43,12 @@ class DefaultController extends Controller{
             ->from('MemberBundle:Member', 's')
             ->getQuery()
             ->getSingleScalarResult();
-
-        // $totalDailyCollections = $em->createQueryBuilder()
-        //     ->select('SUM(s.balance)')
-        //     ->from('MemberBundle:Client', 's')
-        //     ->getQuery()
-        //     ->getSingleScalarResult();
-
-
-        // $totalIncome = $em->createQueryBuilder()
-        //     ->select('SUM(t.amount)')
-        //     ->from('ConfigBundle:TransactionIncome', 't')
-        //     ->getQuery()
-        //     ->getSingleScalarResult();
+            
+        $ds1 = $em->getRepository('ClassBundle:InternalAccount')->find(38);
+        $ds2 = $em->getRepository('ClassBundle:InternalAccount')->find(39);
+        $ds3 = $em->getRepository('ClassBundle:InternalAccount')->find(40);
+        $ds4 = $em->getRepository('ClassBundle:InternalAccount')->find(41);
+        $totalDailySavings = $ds1->getBalance() + $ds2->getBalance() + $ds3->getBalance() + $ds4->getBalance() ;
 
         $totalRegistrationFeesPM = $em->createQueryBuilder()
             ->select('SUM(m.registrationFees)')
@@ -67,48 +56,55 @@ class DefaultController extends Controller{
             ->getQuery()
             ->getSingleScalarResult();
 
-            $totalBuildingFees = $em->createQueryBuilder()
-                ->select('SUM(m.buildingFees)')
-                ->from('MemberBundle:Member', 'm')
-                ->getQuery()
-                ->getSingleScalarResult();
+        $totalBuildingFees = $em->createQueryBuilder()
+            ->select('SUM(m.buildingFees)')
+            ->from('MemberBundle:Member', 'm')
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        //get the number of the daily collectors
+        $totaCollectors = $em->createQueryBuilder()
+            ->select('COUNT(u)')
+            ->from('UserBundle:Utilisateur', 'u')
+            ->innerJoin('UserBundle:Groupe', 'g', 'WITH','g.id = u.groupe')
+            ->where('g.name = :name')
+            ->setParameter('name', 'COLLECTOR')
+            ->getQuery()
+            ->getSingleScalarResult();
         
         $unpaidInterest = 0;
         $loanUnpaid = 0;
-        $loanContracted = 0;
+        $loanPaid = 0;
         $count = 0;
         foreach ($loans as $loan) {
             //get the last element in loan history
-            $lowest_remain_amount_LoanHistory = $em->createQueryBuilder()
-                ->select('MIN(lh.remainAmount)')
-                ->from('AccountBundle:LoanHistory', 'lh')
-                ->innerJoin('AccountBundle:Loan', 'l', 'WITH','lh.loan = l.id')
-                ->where('l.id = :loan')
-                // ->andWhere('l.status =:status')
-                ->orderBy('lh.id', 'DESC')
-                ->setParameter('loan', $loan)
-                // ->setParameter('status', true)
-                ->getQuery()
-                ->getSingleScalarResult();
+        $lowest_remain_amount_LoanHistory = $em->createQueryBuilder()
+            ->select('MIN(lh.remainAmount)')
+            ->from('AccountBundle:LoanHistory', 'lh')
+            ->innerJoin('AccountBundle:Loan', 'l', 'WITH','lh.loan = l.id')
+            ->where('l.id = :loan')
+            ->orderBy('lh.id', 'DESC')
+            ->setParameter('loan', $loan)
+            ->getQuery()
+            ->getSingleScalarResult();
 
-            if ($lowest_remain_amount_LoanHistory) {
-                $latestLoanHistory = $em->getRepository('AccountBundle:LoanHistory')->findOneBy(
-                    [
-                        'remainAmount' => $lowest_remain_amount_LoanHistory,
-                        'loan' => $loan
-                    ],
-                    ['id' => 'DESC']
-                );
+        if ($lowest_remain_amount_LoanHistory) {
+            $latestLoanHistory = $em->getRepository('AccountBundle:LoanHistory')->findOneBy(
+                [
+                    'remainAmount' => $lowest_remain_amount_LoanHistory,
+                    'loan' => $loan
+                ],
+                ['id' => 'DESC']
+            );
                 $unpaidInterest += $latestLoanHistory->getUnpaidInterest();    
-                $loanUnpaid += $latestLoanHistory->getRemainAmount();    
-                $count +=1;
+                $loanUnpaid += $latestLoanHistory->getRemainAmount();
+
+                $loanPaid += + ($loan->getLoanAmount() - $latestLoanHistory->getRemainAmount());
+                $count = $count + 1;
             }else{
                 $loanUnpaid += $loan->getLoanAmount();
             }
-            $loanContracted += $loan->getLoanAmount();
         }
-
-        // die("Number of loans   ".$count);
 
         // replace this example code with whatever you need
         return $this->render('default/index.html.twig', [
@@ -124,7 +120,8 @@ class DefaultController extends Controller{
             'unpaidInterest' => $unpaidInterest,
             'loans' => $loans,
             'loanUnpaid' => $loanUnpaid,
-            'loanContracted' => $loanContracted,
+            'totalDailySavings' => $totalDailySavings,
+            'totaCollectors' => $totaCollectors,
         ]);
     }
 

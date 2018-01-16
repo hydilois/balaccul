@@ -329,8 +329,8 @@ class MemberController extends Controller
             $memberShares  = $entityManager->getRepository('ClassBundle:InternalAccount')->find(1);
             $memberShares->setBalance($memberShares->getBalance() + $member->getShare());
 
-            $classe = $entityManager->getRepository('ClassBundle:Classe')->find($account->getClasse()->getId());
-            $classe->setBalance($classe->getBalance() + $amount);
+            $classe = $entityManager->getRepository('ClassBundle:Classe')->find($memberShares->getClasse()->getId());
+            $classe->setBalance($classe->getBalance() + $member->getShare());
 
             $ledgerBalanceSha = new GeneralLedgerBalance();
             $ledgerBalanceSha->setDebit($member->getShare());
@@ -368,6 +368,9 @@ class MemberController extends Controller
 
             $memberSavings  = $entityManager->getRepository('ClassBundle:InternalAccount')->find(44);
             $memberSavings->setBalance($memberSavings->getBalance() + $member->getSaving());
+
+            $classeSaving = $entityManager->getRepository('ClassBundle:Classe')->find($memberSavings->getClasse()->getId());
+            $classeSaving->setBalance($classeSaving->getBalance() + $member->getSaving());
 
             /*First step*/ 
             $ledgerBalance = new GeneralLedgerBalance();
@@ -408,6 +411,9 @@ class MemberController extends Controller
             $memberDeposits  = $entityManager->getRepository('ClassBundle:InternalAccount')->find(42);
             $memberDeposits->setBalance($memberDeposits->getBalance() + $member->getDeposit());
 
+            $classeDep = $entityManager->getRepository('ClassBundle:Classe')->find($memberDeposits->getClasse()->getId());
+            $classeDep->setBalance($classeDep->getBalance() + $member->getDeposit());
+
             $ledgerBalanceDep = new GeneralLedgerBalance();
             $ledgerBalanceDep->setDebit($member->getDeposit());
             $ledgerBalanceDep->setCurrentUser($currentUser);
@@ -432,8 +438,12 @@ class MemberController extends Controller
 
         
         if ($member->getRegistrationFees() != 0) {//Member registration fees
+
             $memberEntranceFees  = $entityManager->getRepository('ClassBundle:InternalAccount')->find(151);
             $memberEntranceFees->setBalance($memberEntranceFees->getBalance() + $member->getRegistrationFees());
+
+            $classeRegis = $entityManager->getRepository('ClassBundle:Classe')->find($memberEntranceFees->getClasse()->getId());
+            $classeRegis->setBalance($classeRegis->getBalance() + $member->getRegistrationFees());
 
             $operationRegis = new Operation();
             $operationRegis->setCurrentUser($currentUser);
@@ -469,6 +479,9 @@ class MemberController extends Controller
         if ($member->getBuildingFees() != 0) {//Member building fees
             $memberBuildingFees  = $entityManager->getRepository('ClassBundle:InternalAccount')->find(6);
             $memberBuildingFees->setBalance($memberBuildingFees->getBalance() + $member->getBuildingFees());
+
+            $classeBF = $entityManager->getRepository('ClassBundle:Classe')->find($memberBuildingFees->getClasse()->getId());
+            $classeBF->setBalance($classeBF->getBalance() + $member->getBuildingFees());
 
             $operationFees = new Operation();
             $operationFees->setCurrentUser($currentUser);

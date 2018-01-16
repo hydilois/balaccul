@@ -1,13 +1,12 @@
 <page footer="page;">
     <page_footer>
-        {# <hr /> #}
         <span>{{agency.abreviation}}</span> <span style="margin-left:500px;">GreenSoft-Team</span>
     </page_footer>
     <table>
         <tr>
             <td class="60p">
                  <b>{{agency.name}}</b> <br/>
-                 <b>{{agency.abreviation}} HEAD OFFICE</b> <br/>
+                 <b>{{agency.abreviation}} HEAD OFFICE</b><br/>
                  <b>TEL: {{agency.phoneNumber}}</b><br>
                  <b>POX BOX: {{agency.poBox}}</b>
             </td>
@@ -42,7 +41,7 @@
                 {% for account in lists %}
                     <tr>
                         <td style="text-align:center">{{account.memberNumber }}</td>
-                        <td style="text-align:center">{{account.name[:25]}}</td>
+                        <td style="text-align:center">{{account.name[:20]}}</td>
                         <td style="text-align:center">{{account.registrationFees |number_format(0, '.', ' ')}}</td>
                         <td style="text-align:center">{{account.share |number_format(0, '.', ' ')}}</td>
                         <td style="text-align:center">{{account.saving |number_format(0, '.', ' ')}}</td>
@@ -110,8 +109,6 @@
                     <td style="text-align:center">{{loan.loanAmount |number_format(0, '.', ' ')}}</td>
                 </tr>
                 {% set totalLC = totalLC + loan.loanAmount %}
-                {% set totalLR = totalLR + 0 %}
-                {% set totalUI = totalUI + 0 %}
                 {% set totalBA = totalBA + loan.loanAmount %}
             {% endfor %}
         {% endif %}

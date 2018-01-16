@@ -19,30 +19,6 @@
                         {{form_errors(edit_form.accountName)}}
                         {{ form_widget(edit_form.accountName, {'attr':{'class':'form-control'}}) }}
                     </div>
-                </div>
-                <div class="col-md-4 col-sm-4">
-                    <div class="form-group">
-                        <label for="">BEGINING BALANCE</label>
-                        <input type="text" readonly="readonly" class="form-control" value="{{internalAccount.beginingBalance}}">
-                    </div>
-                </div>
-                <div class="col-md-4 col-sm-4">
-                    <div class="form-group">
-                        <label for="">DEBIT</label>
-                       <input type="text" readonly="readonly" class="form-control" value="{{internalAccount.debit}}">
-                    </div>
-                </div>
-                <div class="col-md-4 col-sm-4">
-                    <div class="form-group">
-                        <label for="">CREDIT</label>
-                        <input type="text" readonly="readonly" class="form-control" value="{{internalAccount.credit}}">
-                    </div>
-                </div>
-                <div class="col-md-4 col-sm-4">
-                    <div class="form-group">
-                        <label for="">ENDING BALANCE</label>
-                        <input type="text" readonly="readonly" class="form-control" value="{{internalAccount.endingBalance}}">
-                    </div>
                 </div><br>
                     <div class="form-group">
                         <input class="btn btn-default" type="submit" value="Save" />

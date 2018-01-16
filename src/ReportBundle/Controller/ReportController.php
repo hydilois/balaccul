@@ -100,7 +100,7 @@ class ReportController extends Controller{
                 'incomeOp' => $incomeOperations,
             ]);
 
-            $html2pdf = $this->get('html2pdf_factory')->create('P', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 15));
+            $html2pdf = $this->get('html2pdf_factory')->create('P', 'A4', 'en', true, 'UTF-8', array(15, 15, 15, 15));
             $html2pdf->pdf->SetAuthor('GreenSoft-Team');
             $html2pdf->pdf->SetDisplayMode('real');
             $html2pdf->pdf->SetTitle('Trial Balance');
@@ -152,9 +152,11 @@ class ReportController extends Controller{
                  ->getResult();
                  $lastElement = end($totaGLBDayBefore);
                  if ($lastElement) {
+                     $lastOperation = $lastElement;
                      $lastElement = $lastElement->getBalance();
-                 }else{
-                    $lastElement = 0;
+                    }else{
+                        $lastElement = 0;
+                        $lastOperation = NULL;
                  }
 
             $operations = $em->createQueryBuilder()
@@ -176,6 +178,7 @@ class ReportController extends Controller{
                 'date' => $currentDate,
                 'endDate' => $date,
                 'balanceBF' => $lastElement,
+                'lastOperation' => $lastOperation,
                 'dayBefore' => $dayBefore_endDatetime,
             ]);
 
@@ -351,7 +354,6 @@ class ReportController extends Controller{
                         ->setParameter('subQuery', $subQuery)
                         ->getQuery()
                         ->getResult();
-                        // die("qfdsqdf     ".count($listLoanWithOutHistory));
 
                 $lists  = $entityManager->createQueryBuilder()
                         ->select('l', 'lh')
@@ -364,6 +366,7 @@ class ReportController extends Controller{
                                     ORDER BY lh2.id DESC
                                     )'
                             )
+                        ->andWhere('l.status = true')
                         ->groupBy('lh.loan')
                         ->getQuery()
                         ->getScalarResult();
@@ -414,9 +417,6 @@ class ReportController extends Controller{
         
         return $response;
     }
-
-
-
 
     /**
      * member situation on saving.

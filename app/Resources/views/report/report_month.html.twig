@@ -58,9 +58,6 @@
             <fieldset>
                 <legend>OTHER DOCUMENTS</legend>
                      <div class="well">
-                        {#  <div class="btn-group dropdown">
-                                 <a class="btn btn-default pull-left" href="{{path('paiement_scolarite_new')}}">Nouveau Paiement</a>
-                         </div> #}
                              <button type="button" class="btn btn-success waves-effect waves-light">Generate
                                  <span class="btn-label btn-label-right"><i class="fa fa-arrow-right"></i>
                                  </span>
@@ -70,11 +67,11 @@
                                    <button type="button" class="btn btn-info dropdown-toggle waves-effect waves-light" data-toggle="dropdown" aria-expanded="false"><i class="caret"></i></button>
                                        <ul class="dropdown-menu" role="menu" >
                                            <li><a href="{{path('report_generate_document', {status:'allMembers', type:'Members' })}}" target="_blank">All Members</a></li>
-                                           <li><a href="{{path('report_generate_document', {status:'activeMembers', type:'Members'})}}" target="_blank">Active Members</a></li>
-                                           <li><a href="{{path('report_generate_document', {status:'inactiveMembers', type:'Members'})}}" target="_blank">Inactive Members</a></li>
+                                           {# <li><a href="{{path('report_generate_document', {status:'activeMembers', type:'Members'})}}" target="_blank">Active Members</a></li> #}
+                                           {# <li><a href="{{path('report_generate_document', {status:'inactiveMembers', type:'Members'})}}" target="_blank">Inactive Members</a></li> #}
                                        </ul>
                                </div>
-                                <div class="btn-group dropdown">
+                                {# <div class="btn-group dropdown">
                                      <button type="button" class="btn btn-info waves-effect waves-light">Loans</button>
                                      <button type="button" class="btn btn-info dropdown-toggle waves-effect waves-light" data-toggle="dropdown" aria-expanded="false"><i class="caret"></i></button>
                                          <ul class="dropdown-menu" role="menu">
@@ -82,7 +79,7 @@
                                            <li><a href="{{path('report_generate_document', {status:'activeLoans', type:'Loans'})}}" target="_blank">Active Loans</a></li>
                                            <li><a href="{{path('report_generate_document', {status:'inactiveLoans', type:'Loans'})}}" target="_blank">Inactive Loans</a></li>
                                          </ul>
-                                 </div>                                  
+                                 </div>                                   #}
                       <!--/section-->
                     </div>
             </fieldset>
