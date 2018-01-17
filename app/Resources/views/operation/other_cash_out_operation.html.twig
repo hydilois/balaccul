@@ -24,7 +24,7 @@
                         <select name="accountNumber" class="form-control select2" required="required">
                         <option value="">&lt;------ Select ------&gt;</option>
                         {% for account in internalAccounts %}
-                            <option value="{{account.id}}">{{account.accountNumber}} -- {{account.accountName}} </option>
+                            <option value="{{account.id}}">{{account.accountName}} </option>
                         {% endfor %}
                     </select>
                 </div>

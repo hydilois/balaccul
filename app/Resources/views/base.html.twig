@@ -163,7 +163,7 @@
                                             </ul>
                                          </li>
                                     {% endif %} #}
-                                    {% if is_granted("ROLE_MANAGER") or is_granted("ROLE_ADMINISTRATOR") or is_granted("ROLE_CASHER") or is_granted("ROLE_BOARD")   %}
+                                    {% if is_granted("ROLE_MANAGER") or is_granted("ROLE_ADMINISTRATOR") or is_granted("ROLE_CASHER") or is_granted("ROLE_BOARD") %}
                                     <li class="has_sub">
                                         <a href="javascript:void(0)" class="waves-effect"><i class="ti-angle-double-right"></i> <span> Cash IN</span> <span class="menu-arrow"></span></a>
                                         <ul class="list-unstyled">
@@ -195,7 +195,7 @@
                                      <li><a href="{{path('member_index')}}"><i class="ti-view-list-alt"></i><span> Members</span></a></li>
                                   {% endif %}
 
-                                  {% if is_granted("ROLE_ADMINISTRATOR") or is_granted("ROLE_BOARD")  %}
+                                  {% if is_granted("ROLE_ADMINISTRATOR") or is_granted("ROLE_BOARD") or is_granted("ROLE_MANAGER")  %}
                                         <li class="has_sub">
                                             <a href="javascript:void(0)" class="waves-effect"><i class="ti-settings"></i> <span> Settings </span> <span class="menu-arrow"></span> </a>
                                             <ul class="list-unstyled">
