@@ -34,7 +34,8 @@ class AlertController extends Controller{
         $emptyLoan = [];
 
         if(in_array("ROLE_ADMINISTRATOR", $currentUserRoles)
-            || in_array("ROLE_MANAGER", $currentUserRoles)){
+            || in_array("ROLE_MANAGER", $currentUserRoles)
+            || in_array("ROLE_CASHER", $currentUserRoles)){
             $subQueryBuilder = $em->createQueryBuilder();
             $subQuery = $subQueryBuilder
                 ->select('(lh.loan)')

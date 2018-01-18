@@ -152,17 +152,6 @@
                                     <li>
                                         <a href="{{path('homepage')}}" class="waves-effect"><i class="ti-home"></i> <span> Home </span></a>
                                     </li>
-{# 
-                                    {% if is_granted("ROLE_COLLECTOR") or is_granted("ROLE_MANAGER") or is_granted("ROLE_ADMINISTRATOR") or is_granted("ROLE_CASHER") %}
-                                         <li class="has_sub">
-                                            <a href="javascript:void(0)" class="waves-effect"><i class="ti-calendar"></i> <span> Daily Service</span> <span class="menu-arrow"></span></a>
-                                            <ul class="list-unstyled">
-                                                <li><a href="{{path('client_index')}}">Clients</a></li>
-                                                <li><a href="{{path('report_client_money')}}">New Collection</a></li>
-                                                <li><a href="{{path('client_charges')}}">Charges</a></li>
-                                            </ul>
-                                         </li>
-                                    {% endif %} #}
                                     {% if is_granted("ROLE_MANAGER") or is_granted("ROLE_ADMINISTRATOR") or is_granted("ROLE_CASHER") or is_granted("ROLE_BOARD") %}
                                     <li class="has_sub">
                                         <a href="javascript:void(0)" class="waves-effect"><i class="ti-angle-double-right"></i> <span> Cash IN</span> <span class="menu-arrow"></span></a>
