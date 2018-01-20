@@ -98,7 +98,7 @@ class LoanHistory{
 
 
     public function __construct(){
-        $this->dateOperation = new \DateTime('now');
+        // $this->dateOperation = new \DateTime('now');
         $this->monthlyPayement = 0;
         $this->interest = 0;
         $this->unpaidInterest = 0;

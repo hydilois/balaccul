@@ -9,7 +9,7 @@
       <a href="#">CASH IN</a>
     </li>
     <li class="active">
-      Other Cash IN
+      Other CASH IN
     </li>
   </ol>
   <div class="card-box">
@@ -19,6 +19,15 @@
         <section class="col-lg-6">
             <fieldset class="fadeInDown animated">
                 <legend>Purposes</legend>
+                <div class="form-group">
+                    <label class="control-label">Day of the Operation</label>
+                    <div>
+                        <div class="input-group">
+                            <input type="text" required class="form-control" placeholder="day/month/year" id="datepicker-autoclose" name="dateOperation">
+                            <span class="input-group-addon bg-custom b-0 text-white"><i class="icon-calender"></i></span>
+                        </div><!-- input-group -->
+                    </div>
+                </div>
                 <div class="form-group">
                             <label class="control-label">Choose the operation</label>
                         <select name="accountNumber" class="form-control select2" required="required">
@@ -45,10 +54,6 @@
                     <label for="">Amount</label>
                     <input name="amount" type="number" required data-parsley-min="1" data-parsley-equalto="#analytic-amount" id="purpose-amount" min="1" class="form-control" value="0" />
                 </div>
-              {#   <input id="checkbox2" type="checkbox" name="balance-display" class="choice text-center">
-                <label style="color:purple; font-size:17px;" for="checkbox2">
-                    <b>Display the member balance</b>
-                </label><br><br> #}
                     <div class="form-group">
                         <input class="btn btn-default" type="submit" value="Save">
                         <a href="{{path('homepage')}}" class="btn btn-primary">Back to the homepage</a>
@@ -165,4 +170,5 @@
     <select name="" class="selecteur-zone form-control hide" id=""></select>
         {% include './operation/extras.css.html.twig' %}
         {% include './operation/extras_cash_in.js.html.twig' %}
+        
 {% endblock %}

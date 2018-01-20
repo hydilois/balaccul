@@ -271,63 +271,70 @@ class OperationController extends Controller{
             $deposits = $request->get('deposits');
             $mainLoan = $request->get('mainLoan');
             $loanInterest = $request->get('loanInterest');
+            $dateOp = $request->get('dateOperation');
+            // Format the date of the operation to be synchronized
+            $dateOperation = $this->dateConcatenation($dateOp);
             $operations = [];
             $totalTransaction = 0;
+
 
             $member = $entityManager->getRepository('MemberBundle:Member')->find($accountMemberId);
             if($representative == ""){
                 $representative = $member->getName();
             }
             if ($savings != 0) {//Saving Operation Member
-                    /*Hisory for member situation first step */ 
-                    $operation = new Operation();
-                    $operation->setCurrentUser($currentUser);
-                    $operation->setTypeOperation(Operation::TYPE_CASH_IN);
-                    $operation->setAmount($savings);
-                    $operation->setMember($member);
-                    $operation->setRepresentative($representative);
-                    $operation->setIsSaving(true);
-                    $operation->setBalance($member->getSaving() + $savings);
+                /*Hisory for member situation first step */ 
+                $operation = new Operation();
+                $operation->setCurrentUser($currentUser);
+                $operation->setDateOperation($dateOperation);
+                $operation->setTypeOperation(Operation::TYPE_CASH_IN);
+                $operation->setAmount($savings);
+                $operation->setMember($member);
+                $operation->setRepresentative($representative);
+                $operation->setIsSaving(true);
+                $operation->setBalance($member->getSaving() + $savings);
 
-                    /**Member situation updated second step **/ 
-                    $member->setSaving($member->getSaving() + $savings);
+                /**Member situation updated second step **/ 
+                $member->setSaving($member->getSaving() + $savings);
 
-                    /*Update the member saving account third step*/
-                    $memberSavings  = $entityManager->getRepository('ClassBundle:InternalAccount')->find(44);
-                    $memberSavings->setBalance($memberSavings->getBalance() + $savings);
+                /*Update the member saving account third step*/
+                $memberSavings  = $entityManager->getRepository('ClassBundle:InternalAccount')->find(44);
+                $memberSavings->setBalance($memberSavings->getBalance() + $savings);
 
-                    $classeSav = $entityManager->getRepository('ClassBundle:Classe')->find($memberSavings->getClasse()->getId());
-                    $classeSav->setBalance($classeSav->getBalance() + $savings);
+                $classeSav = $entityManager->getRepository('ClassBundle:Classe')->find($memberSavings->getClasse()->getId());
+                $classeSav->setBalance($classeSav->getBalance() + $savings);
 
                     /*First step*/ 
-                    $ledgerBalance = new GeneralLedgerBalance();
-                    $ledgerBalance->setDebit($savings);
-                    $ledgerBalance->setCurrentUser($currentUser);
-                    $latestEntryGBL = $entityManager->getRepository('ReportBundle:GeneralLedgerBalance')->findOneBy(
+                $ledgerBalance = new GeneralLedgerBalance();
+                $ledgerBalance->setDebit($savings);
+                $ledgerBalance->setCurrentUser($currentUser);
+                $ledgerBalance->setDateOperation($dateOperation);
+                $latestEntryGBL = $entityManager->getRepository('ReportBundle:GeneralLedgerBalance')->findOneBy(
                         [],
                         ['id' => 'DESC']);
-                    if ($latestEntryGBL) {
-                        $ledgerBalance->setBalance($latestEntryGBL->getBalance() + $savings);
-                    }else{
-                        $ledgerBalance->setBalance($savings);
-                    }
-                    $ledgerBalance->setTypeOperation(Operation::TYPE_CASH_IN);
-                    $ledgerBalance->setAccount($memberSavings);
-                    $ledgerBalance->setRepresentative($representative);
-                    $ledgerBalance->setAccountBalance($memberSavings->getBalance());
-                    $ledgerBalance->setAccountTitle($memberSavings->getAccountName()." A/C ".$member->getMemberNumber());
-                    $ledgerBalance->setMember($member);
+                if ($latestEntryGBL) {
+                    $ledgerBalance->setBalance($latestEntryGBL->getBalance() + $savings);
+                }else{
+                    $ledgerBalance->setBalance($savings);
+                }
+                $ledgerBalance->setTypeOperation(Operation::TYPE_CASH_IN);
+                $ledgerBalance->setAccount($memberSavings);
+                $ledgerBalance->setRepresentative($representative);
+                $ledgerBalance->setAccountBalance($memberSavings->getBalance());
+                $ledgerBalance->setAccountTitle($memberSavings->getAccountName()." A/C ".$member->getMemberNumber());
+                $ledgerBalance->setMember($member);
                     
                     /*Make record*/ 
-                    $entityManager->persist($operation);
-                    $totalTransaction += $savings;
-                    $operations[] = $operation;
-                    $entityManager->persist($ledgerBalance);
-                    $entityManager->flush();
+                $entityManager->persist($operation);
+                $totalTransaction += $savings;
+                $operations[] = $operation;
+                $entityManager->persist($ledgerBalance);
+                $entityManager->flush();
             }
             if ($shares != 0) {//Shares operation for member          
                 $operationShare = new Operation();
                 $operationShare->setCurrentUser($currentUser);
+                $operationShare->setDateOperation($dateOperation);
                 $operationShare->setTypeOperation(Operation::TYPE_CASH_IN);
                 $operationShare->setAmount($shares);
                 $operationShare->setIsShare(true);
@@ -347,6 +354,7 @@ class OperationController extends Controller{
                 $ledgerBalanceSha = new GeneralLedgerBalance();
                 $ledgerBalanceSha->setDebit($shares);
                 $ledgerBalanceSha->setCurrentUser($currentUser);
+                $ledgerBalanceSha->setDateOperation($dateOperation);
                 $latestEntryGBL = $entityManager->getRepository('ReportBundle:GeneralLedgerBalance')->findOneBy(
                     [],
                     ['id' => 'DESC']);
@@ -374,6 +382,7 @@ class OperationController extends Controller{
                     /*Member sitution on deposit*/ 
                 $operationDeposit = new Operation();
                 $operationDeposit->setCurrentUser($currentUser);
+                $operationDeposit->setDateOperation($dateOperation);
                 $operationDeposit->setTypeOperation(Operation::TYPE_CASH_IN);
                 $operationDeposit->setAmount($deposits);
                 $operationDeposit->setIsDeposit(true);
@@ -394,6 +403,7 @@ class OperationController extends Controller{
                 $ledgerBalanceDep = new GeneralLedgerBalance();
                 $ledgerBalanceDep->setDebit($deposits);
                 $ledgerBalanceDep->setCurrentUser($currentUser);
+                $ledgerBalanceDep->setDateOperation($dateOperation);
                 $latestEntryGBL = $entityManager->getRepository('ReportBundle:GeneralLedgerBalance')->findOneBy(
                         [],
                         ['id' => 'DESC']);
@@ -423,6 +433,7 @@ class OperationController extends Controller{
                                                                                         'status' => true]);
                 if ($loan) {
                     $loanhistory->setCurrentUser($currentUser);
+                    $loanhistory->setDateOperation($dateOperation);
                     $loanhistory->setCloseLoan(false);
                     $loanhistory->setMonthlyPayement($mainLoan);
                     $loanhistory->setInterest($loanInterest);
@@ -447,8 +458,8 @@ class OperationController extends Controller{
                         $interest = ($latestLoanHistory->getRemainAmount() * $loan->getRate())/100;
                         $dailyInterestPayment = $interest/30;
                         $date = strtotime($latestLoanHistory->getDateOperation()->format('Y-m-d'));
-                        $dateNow = time();
-                        $interestToPay = $dailyInterestPayment * floor(($dateNow - $date)/(60*60*24));
+
+                        $interestToPay = $dailyInterestPayment * floor((strtotime($dateOperation->format('Y-m-d')) - $date)/(60*60*24));
                         if($interestToPay + $latestLoanHistory->getUnpaidInterest() - $loanInterest < 0){
                             $loanhistory->setUnpaidInterest(0);
                         }else{
@@ -481,6 +492,7 @@ class OperationController extends Controller{
                     /*register the loan situation*/ 
                     $operationNormalLoan = new Operation();
                     $operationNormalLoan->setCurrentUser($currentUser);
+                    $operationNormalLoan->setDateOperation($dateOperation);
                     $operationNormalLoan->setTypeOperation(Operation::TYPE_CASH_IN);
                     $operationNormalLoan->setAmount($mainLoan);
                     $operationNormalLoan->setMember($member);
@@ -497,6 +509,7 @@ class OperationController extends Controller{
 
                         $operationLoanInterest = new Operation();
                         $operationLoanInterest->setCurrentUser($currentUser);
+                        $operationLoanInterest->setDateOperation($dateOperation);
                         $operationLoanInterest->setTypeOperation(Operation::TYPE_CASH_IN);
                         $operationLoanInterest->setAmount($loanInterest);
                         $operationLoanInterest->setMember($member);
@@ -508,6 +521,7 @@ class OperationController extends Controller{
                         $ledgerBalanceInterest = new GeneralLedgerBalance();
                         $ledgerBalanceInterest->setDebit($loanInterest);
                         $ledgerBalanceInterest->setCurrentUser($currentUser);
+                        $ledgerBalanceInterest->setDateOperation($dateOperation);
                         $latestEntryGBL = $entityManager->getRepository('ReportBundle:GeneralLedgerBalance')->findOneBy(
                         [],
                         ['id' => 'DESC']);
@@ -531,6 +545,7 @@ class OperationController extends Controller{
                         $ledgerBalanceLoan = new GeneralLedgerBalance();
                         $ledgerBalanceLoan->setDebit($mainLoan);
                         $ledgerBalanceLoan->setCurrentUser($currentUser);
+                        $ledgerBalanceLoan->setDateOperation($dateOperation);
                         $latestEntryGBL = $entityManager->getRepository('ReportBundle:GeneralLedgerBalance')->findOneBy(
                             [],
                             ['id' => 'DESC']);
@@ -575,6 +590,7 @@ class OperationController extends Controller{
 
                 $operationCharges = new Operation();
                 $operationCharges->setCurrentUser($currentUser);
+                $operationCharges->setDateOperation($dateOperation);
                 $operationCharges->setTypeOperation(Operation::TYPE_CASH_IN);
                 $operationCharges->setAmount($charges);
                 $operationCharges->setMember($member);
@@ -586,6 +602,7 @@ class OperationController extends Controller{
                 $ledgerBalanceCharges = new GeneralLedgerBalance();
                 $ledgerBalanceCharges->setDebit($charges);
                 $ledgerBalanceCharges->setCurrentUser($currentUser);
+                $ledgerBalanceCharges->setDateOperation($dateOperation);
                 $latestEntryGBL = $entityManager->getRepository('ReportBundle:GeneralLedgerBalance')->findOneBy(
                     [],
                     ['id' => 'DESC']);
@@ -620,6 +637,7 @@ class OperationController extends Controller{
 
                 $operationFees = new Operation();
                 $operationFees->setCurrentUser($currentUser);
+                $operationFees->setDateOperation($dateOperation);
                 $operationFees->setTypeOperation(Operation::TYPE_CASH_IN);
                 $operationFees->setAmount($buildingFees);
                 $operationFees->setMember($member);
@@ -635,6 +653,7 @@ class OperationController extends Controller{
                 $ledgerBalanceBuildingFees = new GeneralLedgerBalance();
                 $ledgerBalanceBuildingFees->setDebit($buildingFees);
                 $ledgerBalanceBuildingFees->setCurrentUser($currentUser);
+                $ledgerBalanceBuildingFees->setDateOperation($dateOperation);
                 $latestEntryGBL = $entityManager->getRepository('ReportBundle:GeneralLedgerBalance')->findOneBy(
                     [],
                     ['id' => 'DESC']);
@@ -668,6 +687,7 @@ class OperationController extends Controller{
 
                 $operationRegis = new Operation();
                 $operationRegis->setCurrentUser($currentUser);
+                $operationRegis->setDateOperation($dateOperation);
                 $operationRegis->setTypeOperation(Operation::TYPE_CASH_IN);
                 $operationRegis->setAmount($registration);
                 $operationRegis->setMember($member);
@@ -682,7 +702,7 @@ class OperationController extends Controller{
                 $ledgerBalanceRegistration = new GeneralLedgerBalance();
                 $ledgerBalanceRegistration->setDebit($registration);
                 $ledgerBalanceRegistration->setCurrentUser($currentUser);
-                // $ledgerBalanceRegistration->setBalance($registration);
+                $ledgerBalanceRegistration->setDateOperation($dateOperation);
                 $latestEntryGBL = $entityManager->getRepository('ReportBundle:GeneralLedgerBalance')->findOneBy(
                     [],
                     ['id' => 'DESC']);
@@ -714,7 +734,7 @@ class OperationController extends Controller{
                 'balanceStatus' => $balanceStatus,
                 'totalTransaction' => $totalTransaction,
                 'representative' => $representative,
-                'currentDate' => new \DateTime(),
+                'currentDate' => $dateOperation,
                 'accountOperations' => $operations,
             ));
 
@@ -761,6 +781,10 @@ class OperationController extends Controller{
             $amount = $request->get('amount');
             $operations = [];
             $totalTransaction = 0;
+            $dateOp = $request->get('dateOperation');
+            // Format the date of the operation to be synchronized
+            $dateOperation = $this->dateConcatenation($dateOp);
+
 
             /*Get the account by ID*/ 
             $account = $entityManager->getRepository('ClassBundle:InternalAccount')->find($accountId);
@@ -775,6 +799,7 @@ class OperationController extends Controller{
             $ledgerBalanceOther = new GeneralLedgerBalance();
             $ledgerBalanceOther->setDebit($amount);
             $ledgerBalanceOther->setCurrentUser($currentUser);
+            $ledgerBalanceOther->setDateOperation($dateOperation);
             $latestEntryGBL = $entityManager->getRepository('ReportBundle:GeneralLedgerBalance')->findOneBy(
                 [],
                 ['id' => 'DESC']);
@@ -812,24 +837,25 @@ class OperationController extends Controller{
                 'numberInWord' => $this->convertNumberToWord($totalTransaction),
                 'totalTransaction' => $totalTransaction,
                 'representative' => $representative,
-                'currentDate' => $ledgerBalanceOther->getDateOperation(),
+                'currentDate' => $dateOperation,
                 'accountOperations' => $operations,
             ));
 
         $operationType = str_replace(' ', '_', $ledgerBalanceOther->getTypeOperation());
+        $accountName = str_replace(' ', '_', $account->getAccountName());
         
 
         $html2pdf = $this->get('html2pdf_factory')->create('P', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 15));
         $html2pdf->pdf->SetAuthor('GreenSoft-Team');
         $html2pdf->pdf->SetDisplayMode('real');
-        $html2pdf->pdf->SetTitle('RECEIPT_'.$account->getAccountNumber());
+        $html2pdf->pdf->SetTitle('RECEIPT_CASH_IN_'.$account->getAccountName());
         $response = new Response();
-        $html2pdf->pdf->SetTitle('RECEIPT_'.$account->getAccountNumber());
+        $html2pdf->pdf->SetTitle('RECEIPT_CASH_IN_'.$account->getAccountName());
         $html2pdf->writeHTML($html);
         $content = $html2pdf->Output('', true);
         $response->setContent($content);
         $response->headers->set('Content-Type', 'application/pdf');
-        $response->headers->set('Content-disposition', 'filename=Receipt'.$operationType.'_'.$account->getAccountNumber().'.pdf');
+        $response->headers->set('Content-disposition', 'filename=Receipt'.$operationType.'_'.$accountName.'.pdf');
         return $response;
     }
 
@@ -859,6 +885,11 @@ class OperationController extends Controller{
             $deposits = $request->get('deposits');
             $operations = [];
             $totalTransaction = 0;
+            
+            $dateOp = $request->get('dateOperation');
+            // Format the date of the operation to be synchronized
+            $dateOperation = $this->dateConcatenation($dateOp);
+
             $member = $entityManager->getRepository('MemberBundle:Member')->find($accountMemberId);
             
             if($representative == ""){
@@ -869,6 +900,7 @@ class OperationController extends Controller{
                 $operation = new Operation();
                 $operation->setTypeOperation(Operation::TYPE_CASH_OUT);
                 $operation->setCurrentUser($currentUser);
+                $operation->setDateOperation($dateOperation);
                 $operation->setAmount($savings);
                 $operation->setMember($member);
                 $operation->setRepresentative($representative);
@@ -888,6 +920,7 @@ class OperationController extends Controller{
                 $ledgerBalanceSavings = new GeneralLedgerBalance();
                 $ledgerBalanceSavings->setTypeOperation(Operation::TYPE_CASH_OUT);
                 $ledgerBalanceSavings->setCurrentUser($currentUser);
+                $ledgerBalanceSavings->setDateOperation($dateOperation);
                 $ledgerBalanceSavings->setCredit($savings);
                 $latestEntryGBL = $entityManager->getRepository('ReportBundle:GeneralLedgerBalance')->findOneBy(
                         [],
@@ -925,6 +958,7 @@ class OperationController extends Controller{
                 $ledgerBalanceOther->setTypeOperation(Operation::TYPE_CASH_IN);
                 $ledgerBalanceOther->setDebit($savingsCharges);
                 $ledgerBalanceOther->setCurrentUser($currentUser);
+                $ledgerBalanceOther->setDateOperation($dateOperation);
                 $latestEntryGBL = $entityManager->getRepository('ReportBundle:GeneralLedgerBalance')->findOneBy(
                     [],
                     ['id' => 'DESC']);
@@ -944,6 +978,7 @@ class OperationController extends Controller{
                 $operationCharges2 = new Operation();
                 $operationCharges2->setTypeOperation(Operation::TYPE_CASH_IN);
                 $operationCharges2->setCurrentUser($currentUser);
+                $operationCharges2->setDateOperation($dateOperation);
                 $operationCharges2->setAmount($savingsCharges);
                 $operationCharges2->setMember($member);
                 $operationCharges2->setRepresentative($representative);
@@ -957,6 +992,7 @@ class OperationController extends Controller{
             if ($shares != 0) {//Shares operation for member
                 $operationShare = new Operation();
                 $operationShare->setCurrentUser($currentUser);
+                $operationShare->setDateOperation($dateOperation);
                 $operationShare->setTypeOperation(Operation::TYPE_CASH_OUT);
                 $operationShare->setAmount($shares);
                 $operationShare->setIsShare(true);
@@ -978,6 +1014,7 @@ class OperationController extends Controller{
                 $ledgerBalanceShares->setTypeOperation(Operation::TYPE_CASH_OUT);
                 $ledgerBalanceShares->setCredit($shares);
                 $ledgerBalanceShares->setCurrentUser($currentUser);
+                $ledgerBalanceShares->setDateOperation($dateOperation);
                 $latestEntryGBL = $entityManager->getRepository('ReportBundle:GeneralLedgerBalance')->findOneBy(
                     [],
                     ['id' => 'DESC']);
@@ -1002,6 +1039,7 @@ class OperationController extends Controller{
             if ($deposits != 0) { //Deposit Operations for Member
                 $operationDeposit = new Operation();
                 $operationDeposit->setCurrentUser($currentUser);
+                $operationDeposit->setDateOperation($dateOperation);
                 $operationDeposit->setTypeOperation(Operation::TYPE_CASH_OUT);
                 $operationDeposit->setAmount($deposits);
                 $operationDeposit->setIsDeposit(true);
@@ -1021,6 +1059,7 @@ class OperationController extends Controller{
                 $ledgerBalanceDeposit = new GeneralLedgerBalance();
                 $ledgerBalanceDeposit->setCredit($deposits);
                 $ledgerBalanceDeposit->setCurrentUser($currentUser);
+                $ledgerBalanceDeposit->setDateOperation($dateOperation);
                 $latestEntryGBL = $entityManager->getRepository('ReportBundle:GeneralLedgerBalance')->findOneBy(
                     [],
                     ['id' => 'DESC']);
@@ -1057,8 +1096,7 @@ class OperationController extends Controller{
                 'representative' => $representative,
                 'balanceStatus' => $balanceStatus,
                 'savingsCharges' => $savingsCharges,
-                // 'optionCharges' => $optionCharges,
-                'currentDate' => new \DateTime('now'),
+                'currentDate' => $dateOperation,
                 'accountOperations' => $operations,
             ));
 
@@ -1105,6 +1143,10 @@ class OperationController extends Controller{
             $operations = [];
             $totalTransaction = 0;
 
+            $dateOp = $request->get('dateOperation');
+            // Format the date of the operation to be synchronized
+            $dateOperation = $this->dateConcatenation($dateOp);
+
             /*Get the account by ID*/ 
             $account = $entityManager->getRepository('ClassBundle:InternalAccount')->find($accountId);
             $account->setBalance($account->getBalance() - $amount);
@@ -1117,6 +1159,7 @@ class OperationController extends Controller{
             $ledgerBalanceOther = new GeneralLedgerBalance();
             $ledgerBalanceOther->setCredit($amount);
             $ledgerBalanceOther->setCurrentUser($currentUser);
+            $ledgerBalanceOther->setDateOperation($dateOperation);
             $latestEntryGBL = $entityManager->getRepository('ReportBundle:GeneralLedgerBalance')->findOneBy([],
                 ['id' => 'DESC']);
 
@@ -1150,24 +1193,25 @@ class OperationController extends Controller{
                 'totalTransaction' => $totalTransaction,
                 'representative' => $representative,
                 'balanceStatus' => $balanceStatus,
-                'currentDate' => $ledgerBalanceOther->getDateOperation(),
+                'currentDate' => $dateOperation,
                 'accountOperations' => $operations,
             ));
 
         $operationType = str_replace(' ', '_', $ledgerBalanceOther->getTypeOperation());
+        $accountName = str_replace(' ', '_', $account->getAccountName());
         
 
         $html2pdf = $this->get('html2pdf_factory')->create('P', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 15));
         $html2pdf->pdf->SetAuthor('GreenSoft-Team');
         $html2pdf->pdf->SetDisplayMode('real');
-        $html2pdf->pdf->SetTitle('RECEIPT_'.$account->getAccountNumber());
+        $html2pdf->pdf->SetTitle('RECEIPT_CASH_OUT_'.$accountName);
         $response = new Response();
-        $html2pdf->pdf->SetTitle('RECEIPT_'.$account->getAccountNumber());
+        $html2pdf->pdf->SetTitle('RECEIPT_CASH_OUT_'.$accountName);
         $html2pdf->writeHTML($html);
         $content = $html2pdf->Output('', true);
         $response->setContent($content);
         $response->headers->set('Content-Type', 'application/pdf');
-        $response->headers->set('Content-disposition', 'filename=Receipt'.$operationType.'_'.$account->getAccountNumber().'.pdf');
+        $response->headers->set('Content-disposition', 'filename=Receipt'.$operationType.'_'.$accountName.'.pdf');
         return $response;
     }
 
@@ -1330,5 +1374,16 @@ class OperationController extends Controller{
         }
 
         return $analytics;
+    }
+
+    public function dateConcatenation($date){
+        $dateExplode = explode( "/" , substr($date,strrpos($date," ")));
+        $dateStart  = new \DateTime($dateExplode[2]."-".$dateExplode[1]."-".$dateExplode[0]);
+
+        $currentDate = new \DateTime('now');
+
+        $dateConcatenate = new \DateTime($dateStart->format('Y-m-d') .' ' .$currentDate->format('H:m:s'));
+
+        return $dateConcatenate;
     }
 }

@@ -109,7 +109,7 @@ class Operation{
         $this->isShare = false;
         $this->isSaving = false;
         $this->isDeposit = false;
-        $this->dateOperation = new \DateTime('now');
+        // $this->dateOperation = new \DateTime('now');
     }
 
 

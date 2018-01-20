@@ -111,7 +111,7 @@ class GeneralLedgerBalance{
         $this->debit = 0;
         $this->balance = 0;
         $this->isConfirmed = true;
-        $this->dateOperation = new \DateTime('now');
+        // $this->dateOperation = new \DateTime('now');
     }
 
 
