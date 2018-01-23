@@ -480,6 +480,7 @@ class OperationController extends Controller{
                     }
 
                     $loanhistory->setLoan($loan);
+                    $loanhistory->setCurrentUser($currentUser);
                     $entityManager->persist($loanhistory);
                     $totalTransaction += $mainLoan + $loanInterest;
 
