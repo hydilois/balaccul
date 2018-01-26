@@ -25,6 +25,16 @@ class LoanType extends AbstractType
                 ]
             ]
         )
+        ->add('dateLoan', DateType::class, 
+            [
+                'widget' => 'single_text',
+                'label' => "Date of the loan",
+                'required' => false,
+                'attr' => [
+                    'data-type' => 'date'
+                ]
+            ]
+        )
         ->add('loanCode')
         ->add('rate')
         ->add('loanAmount')

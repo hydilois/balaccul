@@ -71,12 +71,18 @@
                                           </div>
                                           <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                                               <div class="form-group">
-                                                  {{form_label(form.deadline, 'First Installement date')}}
+                                                  {{form_label(form.dateLoan, 'Date of the loan')}}
+                                                  {{form_errors(form.dateLoan)}}
+                                                  {{form_widget(form.dateLoan, {'attr' : {'class':'form-control'}})}}
+                                              </div>
+                                          </div>
+                                          <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                              <div class="form-group">
+                                                  {{form_label(form.deadline, 'Date of the first installment')}}
                                                   {{form_errors(form.deadline)}}
                                                   {{form_widget(form.deadline, {'attr' : {'class':'form-control'}})}}
                                               </div>
                                           </div>
-
                                          <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                                               <div class="form-group">
                                                   {{form_label(form.status, "Active ?")}}

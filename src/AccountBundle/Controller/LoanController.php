@@ -101,6 +101,7 @@ class LoanController extends Controller{
                 $operation = new Operation();
                 $operation->setTypeOperation(Operation::TYPE_CASH_OUT);
                 $operation->setCurrentUser($currentUser);
+                $operation->setDateOperation($loan->getDateLoan());
                 $operation->setAmount($loan->getLoanAmount());
                 $operation->setMember($member);
                 $operation->setBalance($account->getBalance());
@@ -112,6 +113,7 @@ class LoanController extends Controller{
                 $ledgerBalanceOther->setTypeOperation(Operation::TYPE_CASH_OUT);
                 $ledgerBalanceOther->setCredit($loan->getLoanAmount());
                 $ledgerBalanceOther->setCurrentUser($currentUser);
+                $ledgerBalanceOther->setDateOperation($loan->getDateLoan());
                 $latestEntryGBL = $em->getRepository('ReportBundle:GeneralLedgerBalance')->findOneBy(
                     [],
                     ['id' => 'DESC']);
@@ -138,6 +140,7 @@ class LoanController extends Controller{
                 $operationProcessing = new Operation();
                 $operationProcessing->setTypeOperation(Operation::TYPE_CASH_IN);
                 $operationProcessing->setCurrentUser($currentUser);
+                $operationProcessing->setDateOperation($loan->getDateLoan());
                 $operationProcessing->setAmount($loan->getLoanProcessingFees());
                 $operationProcessing->setMember($loan->getPhysicalMember());
                 $operationProcessing->setRepresentative($member->getName());
@@ -148,6 +151,7 @@ class LoanController extends Controller{
                 $ledgerBalanceProc->setTypeOperation(Operation::TYPE_CASH_IN);
                 $ledgerBalanceProc->setDebit($loan->getLoanProcessingFees());
                 $ledgerBalanceProc->setCurrentUser($currentUser);
+                $ledgerBalanceProc->setDateOperation($loan->getDateLoan());
                 $latestEntryGBL = $em->getRepository('ReportBundle:GeneralLedgerBalance')->findOneBy(
                     [],
                     ['id' => 'DESC']);
