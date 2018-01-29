@@ -139,85 +139,33 @@ class DefaultController extends Controller{
         ]);
     }
 
-    /**
-     * @Route("/backup", name="database_backup")
-     * @Method({"GET", "POST"})
-     */
-    public function databaseBackupAction(Request $request){
-        $parametersYml = Yaml::parse(file_get_contents($this->container->get('kernel')->getRootDir() .'/config/parameters.yml'));
-        $dbHost = $parametersYml['parameters']['database_host'];
-        $dbUsername = $parametersYml['parameters']['database_user'];
-        $dbPassword = $parametersYml['parameters']['database_password'];
-        $dbName = $parametersYml['parameters']['database_name'];
-        $logger = $this->get('logger');
-        try{
-            // $loanJSON = json_decode(json_encode($request->request->get('data')), true);
-                $this->backupDatabaseTables($dbHost, $dbUsername, $dbPassword, $dbName);
-                return json_encode([
+
+        /**
+         * @Route("/dump", name="database_dump")
+         * @Method({"GET", "POST"})
+         */
+        public function databaseDumpAction(Request $request){
+            try{
+                $date = date("Y-m-d_H:i:s");
+                $db_user = $this->getParameter('database_user');
+                $db_pass = $this->getParameter('database_password');
+                $db_name = $this->getParameter('database_name');
+                exec('mysqldump --skip-add-locks -u '.$db_user.' -p'.$db_pass.' --databases '.$db_name.' > /var/www/html/balaccul/web/assets/database/balacculdb_'.$date.'.sql');
+
+                    return json_encode([
                     "message" => "The backup of the the system is done successfully", 
-                    // "params" => $loanJSON,
-                    "status" => "success"
+                    "status" => "success",
+                    "optionalDate" => $date
                 ]);
-           
-            }catch(Exception $ex){
-                $logger("AN ERROR OCCURED");
-                return json_encode([
-                    "status" => "failed"
-                ]);
-            }
-        }
 
-
-
-    public function backupDatabaseTables($dbHost,$dbUsername,$dbPassword,$dbName,$tables = '*'){
-        //connect & select the database
-        $db = new \mysqli($dbHost, $dbUsername, $dbPassword, $dbName); 
-
-        //get all of the tables
-        if($tables == '*'){
-            $tables = array();
-            $result = $db->query("SHOW TABLES");
-            while($row = $result->fetch_row()){
-                $tables[] = $row[0];
-            }
-        }else{
-            $tables = is_array($tables)?$tables:explode(',',$tables);
-        }
-
-        //loop through the tables
-            $return = "";
-        foreach($tables as $table){
-            $result = $db->query("SELECT * FROM $table");
-            $numColumns = $result->field_count;
-            $return .= "DROP TABLE $table;";
-
-            $result2 = $db->query("SHOW CREATE TABLE $table");
-            $row2 = $result2->fetch_row();
-
-            $return .= "\n\n".$row2[1].";\n\n";
-
-            for($i = 0; $i < $numColumns; $i++){
-                while($row = $result->fetch_row()){
-                    $return .= "INSERT INTO $table VALUES(";
-                    for($j=0; $j < $numColumns; $j++){
-                        $row[$j] = addslashes($row[$j]);
-                        $row[$j] = preg_replace("/\n/","\\n",$row[$j]);
-                        if (isset($row[$j])) { $return .= '"'.$row[$j].'"' ; } else { $return .= '""'; }
-                        if ($j < ($numColumns-1)) { $return.= ','; }
-                    }
-                    $return .= ");\n";
+                }catch(Exception $ex){
+                    $logger("AN ERROR OCCURED");
+                    return json_encode([
+                        "status" => "failed",
+                    ]);
                 }
             }
-            $return .= "\n\n\n";
-        }
 
-        $date = new \Datetime('now');
-        $path = 'assets/database/db-backup-'.$date->format('d-m-Y-H:m:s').'.sql';
 
-        //save file
-        $handle = fopen($path,'w+');
-        fwrite($handle,$return);
-        chmod($path, 0777);
-        fclose($handle);
-    }
+
 }

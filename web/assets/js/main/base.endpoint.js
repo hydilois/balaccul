@@ -37,7 +37,7 @@ $(function(){
 
 			BaseEndpoint.prototype.setListerners = function(){
 				this.setAlertListener();
-				this.validateBackupListener();
+				this.validateDatabaseDumpListener();
 			}
 
 			BaseEndpoint.prototype.postActions = function(){
@@ -105,35 +105,37 @@ $(function(){
 				});
 			}
 
-			BaseEndpoint.prototype.validateBackupListener = function(){
-				$('body').on('click', '#btn-backup', function(){
+			BaseEndpoint.prototype.validateDatabaseDumpListener = function(){
+				$('body').on('click', '#btn-dump', function(){
+					console.log("Here the dump");
 			        var feedbackMessage = JSON.parse(JSON.stringify({
-			            'title' : 'System Backup',
-			            'message' : 'You agree that you want to make a backup of the system ?',
+			            'title' : 'System dump',
+			            'message' : 'You agree that you want to make a dump of the system ?',
 			            'type' : 'warning',
 			            'confirmeButtonText' : 'Yes I confirm',
-			            'callback' : baseEndpoint.systemBackup
+			            'callback' : baseEndpoint.databaseDump
 			        }));
 
-			        baseEndpoint.feedbackHelper.showLoaderMessage(feedbackMessage.title, feedbackMessage.message, feedbackMessage.type, feedbackMessage.confirmeButtonText, baseEndpoint.systemBackup);
+			        baseEndpoint.feedbackHelper.showLoaderMessage(feedbackMessage.title, feedbackMessage.message, feedbackMessage.type, feedbackMessage.confirmeButtonText, baseEndpoint.databaseDump);
 			    });
 
 			}
 
-			BaseEndpoint.prototype.systemBackup = function(){
+			BaseEndpoint.prototype.databaseDump = function(){
 				var data = JSON.parse(JSON.stringify({
-				                "info" : "backup of the system",
+				                "info" : "dump of the database",
 				                }));
 			        $.ajax({
 			            method      : "POST", 
 			            data        : {data : data},
-			            url         : URL_ROOT + "/backup",
+			            url         : URL_ROOT + "/dump",
 			            dataType    : "JSON",
 			            beforeSend  : function(){
 			            },
 			            success     : function(data){
 			                returnedData = JSON.parse(data);
-			                    baseEndpoint.feedbackHelper.showMessageWithPrompt("System Backup", "The Backup of the system has been done succesfully", "success");
+			                console.log(returnedData);
+			                baseEndpoint.feedbackHelper.showMessageWithPrompt("System Backup", "The Backup of the system has been done succesfully", "success");
 			            }, 
 			            error : function(returnedData){
 			                baseEndpoint.feedbackHelper.showMessageWithPrompt("Sorry", "A problem occur during the request, please contact the administrator", "error");
