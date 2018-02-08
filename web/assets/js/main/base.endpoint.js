@@ -107,10 +107,9 @@ $(function(){
 
 			BaseEndpoint.prototype.validateDatabaseDumpListener = function(){
 				$('body').on('click', '#btn-dump', function(){
-					console.log("Here the dump");
 			        var feedbackMessage = JSON.parse(JSON.stringify({
-			            'title' : 'System dump',
-			            'message' : 'You agree that you want to make a dump of the system ?',
+			            'title' : 'System backup',
+			            'message' : 'You agree that you want to make a backup of the system ?',
 			            'type' : 'warning',
 			            'confirmeButtonText' : 'Yes I confirm',
 			            'callback' : baseEndpoint.databaseDump
@@ -123,7 +122,7 @@ $(function(){
 
 			BaseEndpoint.prototype.databaseDump = function(){
 				var data = JSON.parse(JSON.stringify({
-				                "info" : "dump of the database",
+				                "info" : "backup of the database",
 				                }));
 			        $.ajax({
 			            method      : "POST", 
