@@ -63,7 +63,7 @@ $(function() {
             if (loanCode) {
                 $.ajax({
                     type: "GET",
-                    url : "../../loan_api/"+loanCode,
+                    url : "../../loan_api/"+loanCode,//AccountControllerApi
                     dataType: "JSON",
                     beforeSend: function() {
                         $(that).LoadingOverlay('show');
@@ -101,15 +101,15 @@ $(function() {
                             $("#loanAmount").text(returnedData.loanhistory.remain_amount);
                             //get the amount of the interest paid
                             var totalInterest  = returnedData.interestToPay + returnedData.loanhistory.unpaid_interest;
-                            $("#unpaidInterest").text(returnedData.loanhistory.unpaid_interest.toFixed(2));
-                            $("#loanInterest").text(returnedData.interestToPay.toFixed(2));
-                            $("#totalInterest").text(totalInterest.toFixed(2));
+                            $("#unpaidInterest").text(returnedData.loanhistory.unpaid_interest);
+                            $("#loanInterest").text(returnedData.interestToPay);
+                            $("#totalInterest").text(totalInterest);
 
                         }else{
 
                             $("#loanAmount").text(returnedData.data.loan_amount);
-                            $("#loanInterest").text(returnedData.interestToPay.toFixed(2));
-                            $("#totalInterest").text(returnedData.interestToPay.toFixed(2));
+                            $("#loanInterest").text(returnedData.interestToPay);
+                            $("#totalInterest").text(returnedData.interestToPay);
 
                         }
                                 $("#pname").text(returnedData.data.physical_member.name);
@@ -215,7 +215,6 @@ $(function() {
                 success     : function(data){
                     console.log(data);
                     loanHistoryEndpoint.feedbackHelper.showAutoCloseMessage("Operation done", "Validation information", "success", 2000);
-                    // location.reload();
                     window.location.href = URL_ROOT + "/loanhistory/"+data.optionalData+"/receipt";
                 }, 
                 error : function(returnedData){

@@ -180,7 +180,7 @@ class AccountControllerApi extends FOSRestController{
                         "data" => $loan,
                         "beneficiaries" => $beneficiaries,
                         "loanhistory" => $loanHistory,
-                        "interestToPay" => $interestToPay
+                        "interestToPay" => round($interestToPay)
                     ];
     }
 

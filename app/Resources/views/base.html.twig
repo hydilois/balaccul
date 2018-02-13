@@ -152,7 +152,7 @@
                                     <li>
                                         <a href="{{path('homepage')}}" class="waves-effect"><i class="ti-home"></i> <span> Home </span></a>
                                     </li>
-                                    {% if is_granted("ROLE_MANAGER") or is_granted("ROLE_ADMINISTRATOR") or is_granted("ROLE_CASHER") or is_granted("ROLE_BOARD") %}
+                                    {% if is_granted("ROLE_MANAGER") or is_granted("ROLE_ADMINISTRATOR") or is_granted("ROLE_CASHER") %}
                                     <li class="has_sub">
                                         <a href="javascript:void(0)" class="waves-effect"><i class="ti-angle-double-right"></i> <span> Cash IN</span> <span class="menu-arrow"></span></a>
                                         <ul class="list-unstyled">
@@ -169,12 +169,13 @@
                                             <li><a href="{{path('loan_new')}}"><span>New Loan</span></a></li>
                                         </ul>
                                      </li>
+                                     {% endif %}
+                                     {% if is_granted("ROLE_MANAGER") or is_granted("ROLE_ADMINISTRATOR") or is_granted("ROLE_CASHER") or is_granted("ROLE_BOARD") %}
                                      <li class="has_sub">
                                          <a href="javascript:void(0)" class="waves-effect"><i class="ti-files"></i> <span> Reports </span> <span class="menu-arrow"></span> </a>
                                          <ul class="list-unstyled">
                                              <li><a href="{{path('report_member_situation')}}">Member Situation</a></li>
                                              <li><a href="{{path('report_trial_balance')}}">Trial Balance</a></li>
-                                             {# <li><a href="{{path('operation_index')}}">All Situations</a></li> #}
                                              <li><a href="{{path('report_general_ledger')}}">General Ledger Balance</a></li>
                                              <li><a href="{{path('report_month')}}">Generate</a></li>
                                          </ul>

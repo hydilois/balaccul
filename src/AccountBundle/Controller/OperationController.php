@@ -459,7 +459,7 @@ class OperationController extends Controller{
                         $dailyInterestPayment = $interest/30;
                         $date = strtotime($latestLoanHistory->getDateOperation()->format('Y-m-d'));
 
-                        $interestToPay = $dailyInterestPayment * floor((strtotime($dateOperation->format('Y-m-d')) - $date)/(60*60*24));
+                        $interestToPay = round($dailyInterestPayment * floor((strtotime($dateOperation->format('Y-m-d')) - $date)/(60*60*24)));
                         if($interestToPay + $latestLoanHistory->getUnpaidInterest() - $loanInterest < 0){
                             $loanhistory->setUnpaidInterest(0);
                         }else{
@@ -470,7 +470,7 @@ class OperationController extends Controller{
                         $dailyInterestPayment = $interest/30;
                         $date = strtotime($loan->getDateLoan()->format('Y-m-d'));
                         $dateNow = time();
-                        $interestToPay = $dailyInterestPayment * floor(($dateNow - $date)/(60*60*24));
+                        $interestToPay = round($dailyInterestPayment * floor(($dateNow - $date)/(60*60*24)));
                         if ($interestToPay - $loanInterest < 0 ) {
                             $loanhistory->setUnpaidInterest(0);
                         }else{
@@ -659,9 +659,9 @@ class OperationController extends Controller{
                     [],
                     ['id' => 'DESC']);
                 if ($latestEntryGBL) {
-                    $ledgerBalanceBuildingFees->setBalance($latestEntryGBL->getBalance() + $charges);
+                    $ledgerBalanceBuildingFees->setBalance($latestEntryGBL->getBalance() + $buildingFees);
                 }else{
-                    $ledgerBalanceBuildingFees->setBalance($charges);
+                    $ledgerBalanceBuildingFees->setBalance($buildingFees);
                 }
                 $ledgerBalanceBuildingFees->setAccount($feesAccount);
                 $ledgerBalanceBuildingFees->setTypeOperation(Operation::TYPE_CASH_IN);

@@ -339,6 +339,7 @@ class LoanHistoryController extends Controller
             }
             $loan = $entityManager->getRepository("AccountBundle:Loan")->find($loanJSON["loanId"]);
             $loan->setStatus(false);
+            $loan->setLoanCode(uniqid());
             $entityManager->flush();
 
             return json_encode([
