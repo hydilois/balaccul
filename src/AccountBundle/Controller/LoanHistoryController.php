@@ -36,35 +36,58 @@ class LoanHistoryController extends Controller
 
 
     /**
-     * Finds and displays a loanHistory entity.
+     * Finds and displays all loans situation.
      *
-     * @Route("/{id}/receipt", name="loan_interest_receipt")
+     * @Route("/loans/situation", name="all_loans_situation")
      * @Method("GET")
      */
-    public function loanInterestReceiptAction(LoanHistory $loanHistory){
+    public function allLoansSituationAction(){
 
         $em = $this->getDoctrine()->getManager();
         $agency = $em->getRepository('ConfigBundle:Agency')->find(1);
+        $loans = $em->getRepository('AccountBundle:Loan')->findByStatus(true);
 
-        $loanHistoryName = str_replace(' ', '_', $loanHistory->getLoan()->getLoanCode());
+        foreach ($loans as $loan) {
+                //get the last element in loan history
+            $lowest_remain_amount_LoanHistory = $em->createQueryBuilder()
+                ->select('MIN(lh.remainAmount)')
+                ->from('AccountBundle:LoanHistory', 'lh')
+                ->innerJoin('AccountBundle:Loan', 'l', 'WITH','lh.loan = l.id')
+                ->where('l.id = :loan')
+                ->orderBy('lh.id', 'DESC')
+                ->setParameter('loan', $loan)
+                ->getQuery()
+                ->getSingleScalarResult();
 
+            if ($lowest_remain_amount_LoanHistory) {
+                $latestLoanHistory = $em->getRepository('AccountBundle:LoanHistory')->findOneBy(
+                    [
+                        'remainAmount' => $lowest_remain_amount_LoanHistory,
+                        'loan' => $loan
+                    ],
+                    ['id' => 'DESC']
+                );
 
-        $html =  $this->renderView('loanhistory/interest_receipt_file.html.twig', array(
+                $loan->setLoanHistory($latestLoanHistory);
+            }
+        }
+
+        $html =  $this->renderView('loanhistory/members_loans_situation_pdf.html.twig', array(
             'agency' => $agency,
-            'loanHistory' => $loanHistory,
+            'loans' => $loans,
         ));
 
-        $html2pdf = $this->get('html2pdf_factory')->create('P', 'A4', 'en', true, 'UTF-8', array(10, 5, 10, 10));
+        $html2pdf = $this->get('html2pdf_factory')->create('L', 'A4', 'en', true, 'UTF-8', array(10, 5, 10, 10));
         $html2pdf->pdf->SetAuthor('GreenSoft-Team');
         $html2pdf->pdf->SetDisplayMode('real');
-        $html2pdf->pdf->SetTitle('Receipt_Interest_Payment_'.$loanHistoryName);
+        $html2pdf->pdf->SetTitle('Members_Loans_Situation');
         $response = new Response();
-        $html2pdf->pdf->SetTitle('Receipt_Interest_Payment'.$loanHistoryName);
+        $html2pdf->pdf->SetTitle('Members_Loans_Situation');
         $html2pdf->writeHTML($html);
         $content = $html2pdf->Output('', true);
         $response->setContent($content);
         $response->headers->set('Content-Type', 'application/pdf');
-        $response->headers->set('Content-disposition', 'filename=Receipt_Interest_Payment_'.$loanHistoryName.'.pdf');
+        $response->headers->set('Content-disposition', 'filename=Members_Loans_Situation.pdf');
         return $response;
     }
 

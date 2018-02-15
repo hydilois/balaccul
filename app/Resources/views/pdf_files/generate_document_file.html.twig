@@ -19,7 +19,7 @@
         <table>
             <tr>
                 <td class="100p">
-                    <h3 style="text-align:center"><strong>MEMBERS LIST</strong></h3>
+                    <h3 style="text-align:center"><strong>BALACCUL MEMBERS LIST</strong></h3>
                 </td>
             </tr>
         </table>
@@ -28,10 +28,11 @@
                 <th style="background: gray; text-align:center" class="10p">A/C N°</th>
                 <th style="background: gray; text-align:center" class="30p">ACCOUNT NAME</th>
                 <th style="background: gray; text-align:center" class="10p">REG</th>
-                <th style="background: gray; text-align:center" class="15p">SHARES</th>
-                <th style="background: gray; text-align:center" class="15p">SAVINGS</th>
+                <th style="background: gray; text-align:center" class="10p">SHARES</th>
+                <th style="background: gray; text-align:center" class="10p">SAVINGS</th>
                 <th style="background: gray; text-align:center" class="10p">DEPOSITS</th>
                 <th style="background: gray; text-align:center" class="10p">BF</th>
+                <th style="background: gray; text-align:center" class="10p">OBSERVATION</th>
             </tr>
                 {% set totalReg = 0 %}
                 {% set totalSh = 0 %}
@@ -47,6 +48,7 @@
                         <td style="text-align:center">{{account.saving |number_format(0, '.', ' ')}}</td>
                         <td style="text-align:center">{{account.deposit |number_format(0, '.', ' ')}}</td>
                         <td style="text-align:center">{{account.buildingFees |number_format(0, '.', ' ')}}</td>
+                        <td style="text-align:center"></td>
                     </tr>
                     {% set totalReg = totalReg + account.registrationFees %}
                     {% set totalSh = totalSh + account.share %}
@@ -61,6 +63,7 @@
                     <td style="text-align:center"><b>{{totalSa |number_format(0, '.', ' ')}}</b></td>
                     <td style="text-align:center"><b>{{totalDep |number_format(0, '.', ' ')}}</b></td>
                     <td style="text-align:center"><b>{{totalBF |number_format(0, '.', ' ')}}</b></td>
+                    <td style="text-align:center"></td>
                 </tr>
         </table>
     {% else %}

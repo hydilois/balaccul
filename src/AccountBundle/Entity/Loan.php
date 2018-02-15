@@ -92,6 +92,9 @@ class Loan{
     private $loanCode;
 
 
+    private $loanHistory;
+
+
     public function __construct(){
         //The default status of the account is true
         $this->status = true;
@@ -345,5 +348,18 @@ class Loan{
     public function getRate()
     {
         return $this->rate;
+    }
+
+
+    public function setLoanHistory($loanHistory)
+    {
+        $this->loanHistory = $loanHistory;
+
+        // return $this;
+    }
+
+    public function getLoanHistory()
+    {
+        return $this->loanHistory;
     }
 }
