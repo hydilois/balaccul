@@ -68,14 +68,17 @@ class DefaultController extends Controller{
             ->from('UserBundle:Utilisateur', 'u')
             ->innerJoin('UserBundle:Groupe', 'g', 'WITH','g.id = u.groupe')
             ->where('g.name = :name')
-            ->setParameter('name', 'COLLECTOR')
+            ->orWhere('g.name = :name2')
+            ->setParameters([
+                'name' => 'COLLECTOR',
+                'name2' => 'CASHER'
+            ])
             ->getQuery()
             ->getSingleScalarResult();
         
         $unpaidInterest = 0;
         $loanUnpaid = 0;
         $loanPaid = 0;
-        $count = 0;
         foreach ($loans as $loan) {
             //get the last element in loan history
         $lowest_remain_amount_LoanHistory = $em->createQueryBuilder()
@@ -100,11 +103,21 @@ class DefaultController extends Controller{
                 $loanUnpaid += $latestLoanHistory->getRemainAmount();
 
                 $loanPaid += + ($loan->getLoanAmount() - $latestLoanHistory->getRemainAmount());
-                $count = $count + 1;
             }else{
                 $loanUnpaid += $loan->getLoanAmount();
             }
         }
+
+        $bayelleBalance = $em->getRepository('ClassBundle:InternalAccount')->find(82)->getBalance();
+
+        $ubBalance = $em->getRepository('ClassBundle:InternalAccount')->find(76)->getBalance();
+        /*Get the total cash on hand*/
+        $cashOnHand= $em->getRepository('ReportBundle:GeneralLedgerBalance')
+                        ->findOneBy(
+                            [], ['id' => 'DESC' ]
+                        )->getBalance();
+        /*total loan Interest*/
+        $loanInterest = $em->getRepository('ClassBundle:InternalAccount')->find(136)->getBalance();
 
         // replace this example code with whatever you need
         return $this->render('default/index.html.twig', [
@@ -122,6 +135,10 @@ class DefaultController extends Controller{
             'loanUnpaid' => $loanUnpaid,
             'totalDailySavings' => $totalDailySavings,
             'totaCollectors' => $totaCollectors,
+            'bayelleBalance' => $bayelleBalance,
+            'ubBalance' => $ubBalance,
+            'cashOnHand' => $cashOnHand,
+            'loanInterest' => $loanInterest,
         ]);
     }
 

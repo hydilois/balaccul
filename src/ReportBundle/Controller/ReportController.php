@@ -19,7 +19,7 @@ class ReportController extends Controller{
     /**
      * @Route("/trialbalance", name="report_trial_balance")
      */
-    public function indexAction(Request $request){
+    public function indexAction(){
         
         // Test is the user does not have the default role
         if (!$this->container->get('security.authorization_checker')->isGranted('ROLE_USER')) {
@@ -31,10 +31,38 @@ class ReportController extends Controller{
         ]);
     }
 
+    /**
+     * @Route("/situations", name="internal_account_balance")
+     */
+    public function internalAccountSituationAction(){
+
+        // Test is the user does not have the default role
+        if (!$this->container->get('security.authorization_checker')->isGranted('ROLE_BOARD')) {
+            return new RedirectResponse($this->container->get ('router')->generate ('fos_user_security_login'));
+        }
+        $em = $this->getDoctrine()->getManager();
+        $internalAccounts = $em->createQueryBuilder()
+            ->select('ia')
+            ->from('ClassBundle:InternalAccount', 'ia')
+            ->where('ia.balance != :balance')
+            ->orderBy('ia.accountNumber', 'ASC')
+            ->setParameters(
+                [
+                    'balance' => 0,
+                ]
+            )->getQuery()->getResult();
+        // replace this example code with whatever you need
+        return $this->render('report/internal_accounts_situation.html.twig', [
+            'accounts' => $internalAccounts
+        ]);
+    }
+
 
 
     /**
      * @Route("/month", name="report_month")
+     * @param Request $request
+     * @return Response
      */
     public function reportMonthAction(Request $request){
         $em = $this->getDoctrine()->getManager();
@@ -103,14 +131,14 @@ class ReportController extends Controller{
             $html2pdf = $this->get('html2pdf_factory')->create('P', 'A4', 'en', true, 'UTF-8', array(15, 15, 15, 15));
             $html2pdf->pdf->SetAuthor('GreenSoft-Team');
             $html2pdf->pdf->SetDisplayMode('real');
-            $html2pdf->pdf->SetTitle('Trial Balance');
+            $html2pdf->pdf->SetTitle('Monthly Report');
             $response = new Response();
-            $html2pdf->pdf->SetTitle('Trial Balance');
+            $html2pdf->pdf->SetTitle('Monthly Report');
             $html2pdf->writeHTML($html);
             $content = $html2pdf->Output('', true);
             $response->setContent($content);
             $response->headers->set('Content-Type', 'application/pdf');
-            $response->headers->set('Content-disposition', 'filename=Trial_Balance.pdf');
+            $response->headers->set('Content-disposition', 'filename=Monthly_Report.pdf');
             return $response;
 
         }
@@ -627,8 +655,6 @@ class ReportController extends Controller{
             $currentUser    = $em->getRepository('UserBundle:Utilisateur')->find($currentUserId);
             $date = new \DateTime('now');
             $agency = $em->getRepository('ConfigBundle:Agency')->find(1);
-
-            // $internalAccounts = $em->getRepository('ClassBundle:InternalAccount')->findBy([], ['accountNumber' => 'ASC']);
 
             $internalAccounts = $em->createQueryBuilder()
                 ->select('ia')
@@ -1245,8 +1271,6 @@ class ReportController extends Controller{
             return new Response(json_encode($response));
        
         }catch(Exception $ex){
-
-            $logger("AN ERROR OCCURED");
             $response["success"] = false;
             return new Response(json_encode($response));
         }

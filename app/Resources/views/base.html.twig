@@ -198,10 +198,12 @@
                                             </ul>
                                         </li>
                                   {% endif %}
+                                    {% if is_granted("ROLE_BOARD")  %}
+                                        <li><a href="{{path('internal_account_balance')}}"><i class="md-timer"></i><span> Accounts Situation</span></a></li>
+                                    {% endif %}
                                 </ul>
                                 <div class="clearfix"></div>
                             </div>
-                            <div class="clearfix"></div>
                         </div>
                     </div>
                     <!-- Left Sidebar End -->

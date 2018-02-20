@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+{% block title %}{{parent()}} Report{% endblock %}
+{% block contenu %}
+    <ol class="breadcrumb">
+        <li>
+            <a href="{{ path('homepage') }}">BALACCUL</a>
+        </li>
+        <li>
+            <a href="#">Reports</a>
+        </li>
+        <li class="active">
+            INTERNAL ACCOUNTS SITUATIONS
+        </li>
+    </ol>
+    <div class="row">
+        {% for account in accounts %}
+            <div class="col-lg-3 col-sm-6">
+                <div class="widget-panel widget-style-2 bg-white">
+                    {#<i class="md md-attach-money text-primary"></i>#}
+                    <h2 class="m-0 text-dark text-center counter font-600">{{ account.balance | abs }} </h2>
+                    <div class="text-center text-muted m-t-5">{{ account.accountName }}</div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

@@ -50,7 +50,7 @@
             </div>
             <div class="col-md-6 col-sm-6 col-lg-3">
                 <div class="card-box widget-box-1 bg-white">
-                    <i class="fa fa-info-circle text-muted pull-right inform" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Last 24 Hours"></i>
+                    <i class="fa fa-info-circle text-muted pull-right inform" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Total Loan Contracted by Members  and it is not yet paid"></i>
                     <h4 class="text-dark">Loans</h4>
                     <h2 class="text-custom text-center"><span data-plugin="counterup">{{loanUnpaid}}</span> F</h2>
                     <p class="text-muted">Total loans: {{loans |length}} <span class="pull-right"></span></p>
@@ -59,38 +59,56 @@
             <div class="col-md-6 col-sm-6 col-lg-3">
                 <div class="card-box widget-box-1 bg-white">
                     <i class="fa fa-info-circle text-muted pull-right inform" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Last 24 Hours"></i>
-                    <h4 class="text-dark">Unpaid Interest</h4>
+                    <h4 class="text-dark">Unpaid interest</h4>
                     <h2 class="text-custom text-center"><span data-plugin="counterup">{{unpaidInterest}}</span> F</h2>
                     <p class="text-muted">Total Loans: {{ loans|length}} <span class="pull-right"></span></p>
                 </div>
             </div>
             <div class="col-md-6 col-sm-6 col-lg-3">
                 <div class="card-box widget-box-1 bg-white">
-                    <i class="fa fa-info-circle text-muted pull-right inform" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Last 24 Hours"></i>
-                    <h4 class="text-dark">Total Daily Savings</h4>
+                    <i class="fa fa-info-circle text-muted pull-right inform" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Total daily savings recovered in BALACCUL"></i>
+                    <h4 class="text-dark">Total daily savings</h4>
                     <h2 class="text-custom text-center"><span data-plugin="counterup">{{totalDailySavings}}</span> F</h2>
                     <p class="text-muted">Total Collector: {{totaCollectors}} <span class="pull-right"></span></p>
                 </div>
             </div>
+             {% if is_granted("ROLE_BOARD") %}
+                 <fieldset>
+                     <legend>CASH</legend>
+                     <div class="col-md-6 col-sm-6 col-lg-3">
+                         <div class="card-box widget-box-1 bg-white">
+                             <i class="fa fa-info-circle text-muted pull-right inform" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Cash on hand for differents transactions"></i>
+                             <h4 class="text-dark">CASH ON HAND</h4>
+                             <h2 class="text-custom text-center"><span data-plugin="counterup">{{cashOnHand}}</span> F</h2>
+                         </div>
+                     </div>
+                     <div class="col-md-6 col-sm-6 col-lg-3">
+                         <div class="card-box widget-box-1 bg-white">
+                             <i class="fa fa-info-circle text-muted pull-right inform" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Cash at Bayelle Credit Union Limited"></i>
+                             <h4 class="text-dark">CASH AT BAYELE CU</h4>
+                             <h2 class="text-custom text-center"><span data-plugin="counterup">{{bayelleBalance}}</span> F</h2>
+                         </div>
+                     </div>
+                     <div class="col-md-6 col-sm-6 col-lg-3">
+                         <div class="card-box widget-box-1 bg-white">
+                             <i class="fa fa-info-circle text-muted pull-right inform" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Cash at Union Bank"></i>
+                             <h4 class="text-dark">CASH AT UB</h4>
+                             <h2 class="text-custom text-center"><span data-plugin="counterup">{{ubBalance}}</span> F</h2>
+                         </div>
+                     </div>
+                     <div class="col-md-6 col-sm-6 col-lg-3">
+                         <div class="card-box widget-box-1 bg-white">
+                             <i class="fa fa-info-circle text-muted pull-right inform" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Cumulation of the loan Interest"></i>
+                             <h4 class="text-dark">LOAN INTEREST</h4>
+                             <h2 class="text-custom text-center"><span data-plugin="counterup">{{loanInterest}}</span> F</h2>
+                         </div>
+                     </div>
+                 </fieldset>
+             {% endif %}
         </div>
     </div>
-    
-
-                          <!--   <div class="row">
-                                <div class="col-lg-6">
-                                    <div class="card-box">
-                                        <canvas id="pie" height="300"></canvas> 
-                                </div>
-                                    </div>
-                                
-                                <div class="col-lg-6">
-                                    <div class="card-box">
-                                        <canvas id="doughnut" height="300"></canvas>
-                                    </div>
-                                </div>
-                            </div> -->
-            <script src="{{asset('assets/plugins/chart.js/chart.min.js')}}"></script>
-            <script src="{{asset('assets/pages/customChart.js')}}"></script>
+    <script src="{{asset('assets/plugins/chart.js/chart.min.js')}}"></script>
+    <script src="{{asset('assets/pages/customChart.js')}}"></script>
 
 {% include './default/extras.css.html.twig' %}
 {% include './default/extras.js.html.twig' %}
