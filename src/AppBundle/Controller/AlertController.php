@@ -24,9 +24,7 @@ class AlertController extends Controller{
      * @Route("/list")
      * @Method("POST")
      */
-    public function getAlerts(Request $request){
-
-        $currentUserId      = $this->get('security.token_storage')->getToken()->getUser()->getId();
+    public function getAlerts(){
         $currentUserRoles   =  $this->get('security.token_storage')->getToken()->getUser()->getRoles();
 
         $em = $this->getDoctrine()->getManager();

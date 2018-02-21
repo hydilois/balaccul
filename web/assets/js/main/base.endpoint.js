@@ -27,10 +27,6 @@ $(function(){
 				this.feedbackHelper  = new FeedbackHelper();
 			}
 
-			BaseEndpoint.prototype.alertsArray = [];
-
-			// we set up the booket listener
-
 			BaseEndpoint.prototype.initializeView = function(){
 				console.log("Here stand the base Endpoint file for the whole application");
 			}
@@ -136,7 +132,7 @@ $(function(){
 			                console.log(returnedData);
 			                baseEndpoint.feedbackHelper.showMessageWithPrompt("System Backup", "The Backup of the system has been done succesfully", "success");
 			            }, 
-			            error : function(returnedData){
+			            error : function(){
 			                baseEndpoint.feedbackHelper.showMessageWithPrompt("Sorry", "A problem occur during the request, please contact the administrator", "error");
 			            },
 			        });
