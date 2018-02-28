@@ -16,3 +16,6 @@
 /vendor/
 /web/bundles/
 /web/assets/database/
+
+/.idea/log
+/.idea/*

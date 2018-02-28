@@ -80,11 +80,7 @@
                                 {{operation.balance |number_format(0, '.', ' ')}}
                     {% endif %}
                     {% if operation.credit != 0 %}
-                                {% if operation.balance < 0 %}
-                                    {{operation.balance |abs |number_format(0, '.', ' ')}}
-                                    {% else %}
-                                        {{operation.balance |number_format(0, '.', ' ')}}
-                                {% endif %}
+                        {{operation.balance |number_format(0, '.', ' ')}}
                     {% endif %}
                 </td>
             </tr>
