@@ -4,14 +4,13 @@ namespace MemberBundle\Controller;
 
 use MemberBundle\Entity\Member;
 use AccountBundle\Entity\Operation;
-use ConfigBundle\Entity\TransactionIncome;
 use MemberBundle\Entity\Beneficiary;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use ReportBundle\Entity\GeneralLedgerBalance;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Member controller.
@@ -35,6 +34,34 @@ class MemberController extends Controller
         return $this->render('member/index.html.twig', array(
             'members' => $members,
         ));
+    }
+
+    /**
+     * Finds and displays a member entity.
+     *
+     * @Route("/{id}/receipt", name="member_registration_receipt")
+     * @Method("GET")
+     */
+    public function memberRegistrationReceiptAction(Member $member){
+        $em = $this->getDoctrine()->getManager();
+        $agency = $em->getRepository('ConfigBundle:Agency')->find(1);
+        $memberName = str_replace(' ', '_', $member->getName());
+        $html =  $this->renderView('member/registration_fees_receipt_file.html.twig', array(
+            'agency' => $agency,
+            'member' => $member,
+        ));
+        $html2pdf = $this->get('html2pdf_factory')->create('P', 'A4', 'en', true, 'UTF-8', array(10, 5, 10, 10));
+        $html2pdf->pdf->SetAuthor('GreenSoft-Team');
+        $html2pdf->pdf->SetDisplayMode('real');
+        $html2pdf->pdf->SetTitle('Receipt_registration_'.$memberName);
+        $response = new Response();
+        $html2pdf->pdf->SetTitle('Registration_Receipt_'.$memberName);
+        $html2pdf->writeHTML($html);
+        $content = $html2pdf->Output('', true);
+        $response->setContent($content);
+        $response->headers->set('Content-Type', 'application/pdf');
+        $response->headers->set('Content-disposition', 'filename=Registration_Receipt_'.$memberName.'.pdf');
+        return $response;
     }
 
     /**
@@ -108,39 +135,6 @@ class MemberController extends Controller
         ));
     }
 
-    /**
-     * Finds and displays a member entity.
-     *
-     * @Route("/{id}/receipt", name="member_registration_receipt")
-     * @Method("GET")
-     */
-    public function memberRegistrationReceiptAction(Member $member){
-
-        $em = $this->getDoctrine()->getManager();
-        $agency = $em->getRepository('ConfigBundle:Agency')->find(1);
-
-        $memberName = str_replace(' ', '_', $member->getName());
-
-
-        $html =  $this->renderView('member/registration_fees_receipt_file.html.twig', array(
-            'agency' => $agency,
-            'member' => $member,
-        ));
-
-        $html2pdf = $this->get('html2pdf_factory')->create('P', 'A4', 'en', true, 'UTF-8', array(10, 5, 10, 10));
-        $html2pdf->pdf->SetAuthor('GreenSoft-Team');
-        $html2pdf->pdf->SetDisplayMode('real');
-        $html2pdf->pdf->SetTitle('Receipt_registration_'.$memberName);
-        $response = new Response();
-        $html2pdf->pdf->SetTitle('Registration_Receipt_'.$memberName);
-        $html2pdf->writeHTML($html);
-        $content = $html2pdf->Output('', true);
-        $response->setContent($content);
-        $response->headers->set('Content-Type', 'application/pdf');
-        $response->headers->set('Content-disposition', 'filename=Registration_Receipt_'.$memberName.'.pdf');
-        return $response;
-    }
-    
     /**
      * Finds and displays a member entity.
      *
@@ -283,7 +277,6 @@ class MemberController extends Controller
 
         }catch(Exception $ex){
 
-            $logger("AN ERROR OCCURED");
             $response["success"] = false;
         }
 
@@ -310,12 +303,14 @@ class MemberController extends Controller
 
         $currentUserId  = $this->get('security.token_storage')->getToken()->getUser()->getId();
         $currentUser    = $entityManager->getRepository('UserBundle:Utilisateur')->find($currentUserId);
+        $dateOperation = new \DateTime($memberJSON["membershipDateCreation"]);
 
         /**
         * Record the member situaton at the the creation
         */
         if ($member->getShare() != 0) { //memmber shares is not null
             $operationShare = new Operation();
+            $operationShare->setDateOperation($dateOperation);
             $operationShare->setIsShare(true);
             $operationShare->setCurrentUser($currentUser);
             $operationShare->setAmount($member->getShare());
@@ -333,6 +328,7 @@ class MemberController extends Controller
             $classe->setBalance($classe->getBalance() + $member->getShare());
 
             $ledgerBalanceSha = new GeneralLedgerBalance();
+            $ledgerBalanceSha->setDateOperation($dateOperation);
             $ledgerBalanceSha->setDebit($member->getShare());
             $ledgerBalanceSha->setCurrentUser($currentUser);
             $latestEntryGBL = $entityManager->getRepository('ReportBundle:GeneralLedgerBalance')->findOneBy(
@@ -356,6 +352,7 @@ class MemberController extends Controller
 
         if ($member->getSaving() != 0) {//Member savings is not null
             $operationSaving = new Operation();
+            $operationSaving->setDateOperation($dateOperation);
             $operationSaving->setIsSaving(true);
             $operationSaving->setCurrentUser($currentUser);
             $operationSaving->setAmount($member->getSaving());
@@ -374,6 +371,7 @@ class MemberController extends Controller
 
             /*First step*/ 
             $ledgerBalance = new GeneralLedgerBalance();
+            $ledgerBalance->setDateOperation($dateOperation);
             $ledgerBalance->setDebit($member->getSaving());
             $ledgerBalance->setCurrentUser($currentUser);
             $latestEntryGBL = $entityManager->getRepository('ReportBundle:GeneralLedgerBalance')->findOneBy(
@@ -398,6 +396,7 @@ class MemberController extends Controller
 
         if ($member->getDeposit() != 0) {//member deposit is not null
             $operationDeposit = new Operation();
+            $operationDeposit->setDateOperation($dateOperation);
             $operationDeposit->setIsDeposit(true);
             $operationDeposit->setCurrentUser($currentUser);
             $operationDeposit->setAmount($member->getDeposit());
@@ -415,6 +414,7 @@ class MemberController extends Controller
             $classeDep->setBalance($classeDep->getBalance() + $member->getDeposit());
 
             $ledgerBalanceDep = new GeneralLedgerBalance();
+            $ledgerBalanceDep->setDateOperation($dateOperation);
             $ledgerBalanceDep->setDebit($member->getDeposit());
             $ledgerBalanceDep->setCurrentUser($currentUser);
             $latestEntryGBL = $entityManager->getRepository('ReportBundle:GeneralLedgerBalance')->findOneBy(
@@ -446,6 +446,7 @@ class MemberController extends Controller
             $classeRegis->setBalance($classeRegis->getBalance() + $member->getRegistrationFees());
 
             $operationRegis = new Operation();
+            $operationRegis->setDateOperation($dateOperation);
             $operationRegis->setCurrentUser($currentUser);
             $operationRegis->setTypeOperation(Operation::TYPE_CASH_IN);
             $operationRegis->setAmount($member->getRegistrationFees());
@@ -456,6 +457,7 @@ class MemberController extends Controller
 
             // first Step
             $ledgerBalanceRegistration = new GeneralLedgerBalance();
+            $ledgerBalanceRegistration->setDateOperation($dateOperation);
             $ledgerBalanceRegistration->setDebit($member->getRegistrationFees());
             $ledgerBalanceRegistration->setCurrentUser($currentUser);
             $latestEntryGBL = $entityManager->getRepository('ReportBundle:GeneralLedgerBalance')->findOneBy(
@@ -484,6 +486,7 @@ class MemberController extends Controller
             $classeBF->setBalance($classeBF->getBalance() + $member->getBuildingFees());
 
             $operationFees = new Operation();
+            $operationFees->setDateOperation($dateOperation);
             $operationFees->setCurrentUser($currentUser);
             $operationFees->setTypeOperation(Operation::TYPE_CASH_IN);
             $operationFees->setAmount($member->getBuildingFees());
@@ -495,6 +498,7 @@ class MemberController extends Controller
 
             /*Update the ledger card first step*/ 
             $ledgerBalanceBuildingFees = new GeneralLedgerBalance();
+            $ledgerBalanceBuildingFees->setDateOperation($dateOperation);
             $ledgerBalanceBuildingFees->setTypeOperation(Operation::TYPE_CASH_IN);
             $ledgerBalanceBuildingFees->setDebit($member->getBuildingFees());
             $ledgerBalanceBuildingFees->setCurrentUser($currentUser);
@@ -525,12 +529,12 @@ class MemberController extends Controller
     }
 
     /**
+     * @param Request $request
      * @Route("/close", name="member_status")
      * @Method({"GET", "POST"})
      */
-    public function databaseBackupAction(Request $request){
-        $logger = $this->get('logger');
-
+    public function databaseBackupAction(Request $request)
+    {
         try{
             $dataJSON = json_decode(json_encode($request->request->get('data')), true);
             $em = $this->getDoctrine()->getManager();
@@ -540,7 +544,7 @@ class MemberController extends Controller
                 case 1:
                     $member->setIsAproved(false);
                     return json_encode([
-                        "message" => "The account has been closed succeffully", 
+                        "message" => "The account has been closed successffully",
                         "status" => "success"
                     ]);
                     break;
@@ -557,10 +561,9 @@ class MemberController extends Controller
             }
            
             }catch(Exception $ex){
-                $logger("AN ERROR OCCURED");
                 return json_encode([
                     "status" => "failed"
                 ]);
             }
-        }
+    }
 }
