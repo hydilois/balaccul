@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use ConfigBundle\Entity\TransactionIncome;
+use UserBundle\Entity\Utilisateur;
 
 /**
  * Operation controller.
@@ -73,7 +73,7 @@ class ReportController extends Controller{
             $currentDate = new \DateTime('now');
 
             $currentUserId  = $this->get('security.token_storage')->getToken()->getUser()->getId();
-            $currentUser    = $em->getRepository('UserBundle:Utilisateur')->find($currentUserId);
+            $currentUser    = $em->getRepository(Utilisateur::class)->find($currentUserId);
 
             $dateDebut = $request->get('start');
             $dateFin = $request->get('end');
@@ -81,8 +81,8 @@ class ReportController extends Controller{
             $newDateStart = explode( "/" , substr($dateDebut,strrpos($dateDebut," ")));
             $newDateEnd = explode( "/" , substr($dateFin,strrpos($dateFin," ")));
 
-            $dateStart  = new \DateTime($newDateStart[2]."-".$newDateStart[1]."-".$newDateStart[0]);
-            $dateEnd  = new \DateTime($newDateEnd[2]."-".$newDateEnd[1]."-".$newDateEnd[0]);
+            $dateStart = \DateTime::createFromFormat("Y-m-d H:i:s", date($newDateStart[2]."-".$newDateStart[1]."-".$newDateStart[0]." 00:00:00"));
+            $dateEnd = \DateTime::createFromFormat("Y-m-d H:i:s", date($newDateEnd[2]."-".$newDateEnd[1]."-".$newDateEnd[0]." 23:59:59"));
 
             $incomeOperations = $em->createQueryBuilder()
                 ->select('op, SUM(op.debit) as amount, SUM(op.credit) as credit, ia')
@@ -94,8 +94,8 @@ class ReportController extends Controller{
                 ->groupBy('op.account')
                 ->setParameters(
                     [
-                    'date1' => $dateStart->format('Y-m-d'),
-                    'date2' => $dateEnd->format('Y-m-d'),
+                    'date1' => $dateStart,
+                    'date2' => $dateEnd,
                     'income' => 7,
                     ]
                 )
@@ -111,8 +111,8 @@ class ReportController extends Controller{
                     ->groupBy('op.account')
                     ->setParameters(
                         [
-                        'date1' => $dateStart->format('Y-m-d'),
-                        'date2' => $dateEnd->format('Y-m-d'),
+                        'date1' => $dateStart,
+                        'date2' => $dateEnd,
                         'expenditure' => 6,
                         ]
                     )
