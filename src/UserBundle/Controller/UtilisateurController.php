@@ -303,36 +303,10 @@ class UtilisateurController extends BaseController
      * 
      */
     public function userProfileAction(){
-        $entityManager = $this->getDoctrine()->getManager();
         $currentUser    = $this->get('security.token_storage')->getToken()->getUser();
-        $queryBuilderExamen = $entityManager->createQueryBuilder();
-        $queryBuilderScolarite = $entityManager->createQueryBuilder();
-        $anneeEnCour = $entityManager->getRepository('ConfigBundle:Annee')->findOneBy(
-            [
-                'isAnneeEnCour' => true
-            ])->getId();
-
-        $examensEnregistres = $queryBuilderExamen
-            ->select('p')
-            ->from('IntendanceBundle:Paiement', 'p')
-            ->where('p.examen IS NOT NULL')
-            ->andWhere('p.annee ='.$anneeEnCour)
-            ->andWhere('p.intendant ='.$currentUser->getId())
-            ->getQuery()
-            ->getResult();
-
-            $scolaritesEnregistres = $queryBuilderScolarite
-            ->select('p')
-            ->from('IntendanceBundle:Paiement', 'p')
-            ->where('p.scolarite IS NOT NULL')
-            ->andWhere('p.annee ='.$anneeEnCour)
-            ->andWhere('p.intendant ='.$currentUser->getId())
-            ->getQuery()
-            ->getResult();
 
         return $this->render('utilisateur/profile_user.html.twig', [ 
-                'examens' => $examensEnregistres,
-                'scolarites' => $scolaritesEnregistres
+                'user' => $currentUser
             ]);
     }
 }

@@ -6,64 +6,29 @@
 {% block contenu %}
 	    <!-- Page-Title -->
 <ol class="breadcrumb">
-	            <li><a href="#">GST-PAY</a></li>
+	            <li><a href="#">BALACCUL</a></li>
 	            <li><a href="#">Config</a></li>
 	            <li class="active">Profile</li>
 	        </ol>
 	    <div class="row">
 	        <div class="col-md-12 col-lg-12">
 	            <div class="profile-detail card-box">
-	                <div>
-	                    <img src="{{asset('assets/images/users/avatar-2.jpg')}}" class="img-circle" alt="profile-image">
-
-	                    <ul class="list-inline status-list m-t-20">
-	                        <li>
-	                            <h3 class="text-primary m-b-5"> {{scolarites | length }} </h3>
-	                            <p class="text-muted">Paiements Scolarité effectués</p>
-	                        </li>
-
-	                        <li>
-	                            <h3 class="text-success m-b-5"> {{examens | length}} </h3>
-	                            <p class="text-muted">Paiements Examens effectués</p>
-	                        </li>
-	                    </ul>
-
-	                    <hr>
-	                    <h4 class="text-uppercase font-600">A propos de Moi</h4>
+	                    <h4 class="text-uppercase font-600">About me </h4>
 	                    <p class="text-muted font-13 m-b-30">
-	                        Je m'appelle {{app.user.nom}}
-	                    </p>
+	                        Name: <b>{{app.user.nom}}</b>
+						</p>
 
 	                    <div class="text-left">
-	                        <p class="text-muted font-13"><strong>Nom complet :</strong> <span class="m-l-15"> {{app.user.nom}} </span></p>
+	                        <p class="text-muted font-13"><strong>Full Name :</strong> <span class="m-l-15"> {{app.user.nom}} </span></p>
 
-	                        <p class="text-muted font-13"><strong>Numéro de téléphone :</strong><span class="m-l-15"> {{app.user.numeroTelephone}} </span></p>
+	                        <p class="text-muted font-13"><strong>Phone number :</strong><span class="m-l-15"> {{app.user.numeroTelephone}} </span></p>
 
 	                        <p class="text-muted font-13"><strong>Email :</strong> <span class="m-l-15"> {{app.user.email}} </span></p>
 
-	                        <p class="text-muted font-13"><strong>Adresse :</strong> <span class="m-l-15">------</span></p>
+	                        <p class="text-muted font-13"><strong>Address :</strong> <span class="m-l-15">------</span></p>
 
 	                    </div>
 
-
-	                    <div class="button-list m-t-20">
-	                        <button type="button" class="btn btn-facebook waves-effect waves-light">
-	                           <i class="fa fa-facebook"></i>
-	                        </button>
-
-	                        <button type="button" class="btn btn-twitter waves-effect waves-light">
-	                           <i class="fa fa-twitter"></i>
-	                        </button>
-
-	                        <button type="button" class="btn btn-linkedin waves-effect waves-light">
-	                           <i class="fa fa-linkedin"></i>
-	                        </button>
-
-	                        <button type="button" class="btn btn-dribbble waves-effect waves-light">
-	                           <i class="fa fa-dribbble"></i>
-	                        </button>
-
-	                    </div>
 	                </div>
 
 	            </div>
