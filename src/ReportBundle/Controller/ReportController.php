@@ -19,7 +19,8 @@ class ReportController extends Controller{
     /**
      * @Route("/trialbalance", name="report_trial_balance")
      */
-    public function indexAction(){
+    public function indexAction()
+    {
         
         // Test is the user does not have the default role
         if (!$this->container->get('security.authorization_checker')->isGranted('ROLE_USER')) {
@@ -35,7 +36,6 @@ class ReportController extends Controller{
      * @Route("/situations", name="internal_account_balance")
      */
     public function internalAccountSituationAction(){
-
         // Test is the user does not have the default role
         if (!$this->container->get('security.authorization_checker')->isGranted('ROLE_BOARD')) {
             return new RedirectResponse($this->container->get ('router')->generate ('fos_user_security_login'));
@@ -149,7 +149,9 @@ class ReportController extends Controller{
 
 
     /**
+     * @param Request $request
      * @Route("/general_ledger", name="report_general_ledger")
+     * @return Response
      */
     public function generalLedgerBalanceAction(Request $request){
         
@@ -232,7 +234,9 @@ class ReportController extends Controller{
     }
 
     /**
+     * @param Request $request
      * @Route("/individual_ledger", name="report_individual_ledger")
+     * @return Response
      */
     public function individualLedgerBalanceAction(Request $request){
         
@@ -325,13 +329,12 @@ class ReportController extends Controller{
         ]);
     }
 
-
-
     /**
      * member situation.
      *
      * @Route("/memberSituation", name="report_member_situation")
      * @Method("GET")
+     * @return Response
      */
     public function memberSituationAction(){
 
@@ -345,9 +348,12 @@ class ReportController extends Controller{
 
     /**
      * member situation.
+     * @param $status
+     * @param $type
      *
      * @Route("/{status}/{type}/list", name="report_generate_document")
      * @Method("GET")
+     * @return Response
      */
     public function generateDocumentAction($status, $type){
 
@@ -547,9 +553,11 @@ class ReportController extends Controller{
 
     /**
      * member situation on saving.
+     * @param $id
      *
      * @Route("/deposit/{id}", name="member_situation_deposit")
      * @Method("GET")
+     * @return Response
      */
     public function depositSituationAction($id){
 
