@@ -1,7 +1,7 @@
 <page footer="page;">
     <page_footer>
         <hr />
-        <span>{{agency.abreviation}}</span> <span style="margin-left:150px;">Printed By <b>{{currentUser}}</b></span><span style="margin-left:150px;">GreenSoft-Team</span>
+        <span>{{agency.abreviation}}</span> <span style="margin-left:100px;">Printed By <b>{{currentUser}}</b></span><span style="margin-left:150px;">GreenSoft-Consulting</span>
     </page_footer>
     <table>
         <tr>
@@ -25,7 +25,7 @@
     </table>
     <table>
         <tr>
-            <td class="50p">Printed On Date: <strong>{{date |date('d-m-Y H:m:s')}}</strong></td>
+            <td class="50p">Printed on: <strong>{{date |date('d-m-Y H:i')}}</strong></td>
             <td style="text-align:right" class="50p">Period From: <b>{{ displayDateStart}}</b> to <b>{{displayDateEnd}}</b></td>
         </tr>
     </table> <br>
@@ -70,6 +70,13 @@
                 {% set benefit = totalIncome - totalExpenditure %}
                 <td class="15p" style="text-align:center"><b>{{benefit |number_format(0, '.', ' ')}}</b></td>
             </tr>
+    </table>
+    <br><br>
+    <table>
+        <tr>
+            <td class="50p" style="text-align: center; font-size: 15px; font-weight: bold;">MANAGER</td>
+            <td class="50p" style="text-align: center; font-size: 15px; font-weight: bold;">PRESIDENT</td>
+        </tr>
     </table>
 </page>
 

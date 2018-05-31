@@ -128,7 +128,7 @@ class ReportController extends Controller{
                 'incomeOp' => $incomeOperations,
             ]);
 
-            $html2pdf = $this->get('html2pdf_factory')->create('P', 'A4', 'en', true, 'UTF-8', array(15, 15, 15, 15));
+            $html2pdf = $this->get('html2pdf_factory')->create('P', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 8));
             $html2pdf->pdf->SetAuthor('GreenSoft-Team');
             $html2pdf->pdf->SetDisplayMode('real');
             $html2pdf->pdf->SetTitle('Monthly Report');
