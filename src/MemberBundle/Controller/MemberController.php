@@ -308,7 +308,7 @@ class MemberController extends Controller
         /**
         * Record the member situaton at the the creation
         */
-        if ($member->getShare() != 0) { //memmber shares is not null
+        if ($member->getShare() != 0) { //member shares is not null
             $operationShare = new Operation();
             $operationShare->setDateOperation($dateOperation);
             $operationShare->setIsShare(true);
@@ -476,6 +476,7 @@ class MemberController extends Controller
             $ledgerBalanceRegistration->setMember($member);
             /*Make record*/ 
             $entityManager->persist($ledgerBalanceRegistration);
+            $entityManager->flush();
         }
 
         if ($member->getBuildingFees() != 0) {//Member building fees
