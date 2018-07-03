@@ -792,12 +792,12 @@ class OperationController extends Controller{
             $account = $entityManager->getRepository(InternalAccount::class)->find($accountId);
             $class = $entityManager->getRepository(Classe::class)->find($account->getClasse()->getId());
 
-            if ($accountId == 82 || $accountId == 76){
+            if ($accountId == 82 || $accountId == 76) {
                 $account->setBalance($account->getBalance() - $amount);
                 $class->setBalance($class->getBalance() - $amount);
             }else{
-                $account->setBalance($account->getBalance() - $amount);
-                $class->setBalance($class->getBalance() - $amount);
+                $account->setBalance($account->getBalance() + $amount);
+                $class->setBalance($class->getBalance() + $amount);
             }
             /*Function from repository*/
             $ledgerBalance = $entityManager->getRepository(GeneralLedgerBalance::class)->registerGBLCashIn($amount ,$currentUser, $dateOperation, $account, $representative, $member);
