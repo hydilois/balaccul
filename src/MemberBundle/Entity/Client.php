@@ -46,28 +46,28 @@ class Client{
     /**
      * @var int
      *
-     * @ORM\Column(name="balance", type="bigint")
+     * @ORM\Column(name="balance", type="integer")
      */
     private $balance;
 
     /**
      * @var int
      *
-     * @ORM\Column(name="balanceBF", type="bigint")
+     * @ORM\Column(name="balanceBF", type="integer")
      */
     private $balanceBF;
 
     /**
      * @var int
      *
-     * @ORM\Column(name="withdrawal1", type="bigint")
+     * @ORM\Column(name="withdrawal1", type="integer")
      */
     private $withdrawal1;
 
     /**
      * @var int
      *
-     * @ORM\Column(name="withdrawal2", type="bigint")
+     * @ORM\Column(name="withdrawal2", type="integer")
      */
     private $withdrawal2;
 

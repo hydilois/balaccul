@@ -72,7 +72,7 @@
                     <p class="text-muted">Total Collector: {{totaCollectors}} <span class="pull-right"></span></p>
                 </div>
             </div>
-             {% if is_granted("ROLE_BOARD") %}
+             {% if is_granted("ROLE_BOARD") or is_granted("ROLE_ADMINISTRATOR") %}
                  <fieldset>
                      <legend>CASH</legend>
                      <div class="col-md-6 col-sm-6 col-lg-3">

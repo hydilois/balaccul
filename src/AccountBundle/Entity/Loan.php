@@ -3,12 +3,15 @@
 namespace AccountBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * Loan
  *
  * @ORM\Table(name="loan")
  * @ORM\Entity(repositoryClass="AccountBundle\Repository\LoanRepository")
+ * @UniqueEntity(fields="loanCode", message="A loan with this code already exist.")
  */
 class Loan{
     /**
@@ -24,6 +27,7 @@ class Loan{
      * @var \DateTime
      *
      * @ORM\Column(name="deadline", type="date")
+     * @Assert\NotBlank(message="This field cannot be nul")
      */
     private $deadline;
 
@@ -32,6 +36,7 @@ class Loan{
      * @var \DateTime
      *
      * @ORM\Column(name="dateLoan", type="date")
+     * @Assert\NotBlank(message="This field cannot be nul")
      */
     private $dateLoan;
 
@@ -40,6 +45,13 @@ class Loan{
      * @var float
      *
      * @ORM\Column(name="rate", type="float")
+     * @Assert\NotBlank(message="This field cannot be nul")
+     * @Assert\Range(
+     *      min = 1,
+     *      max = 100,
+     *      minMessage = "The min value should be  {{ limit }}",
+     *      maxMessage = "The max value should be {{ limit }}"
+     * )
      */
     private $rate;
 
@@ -48,6 +60,13 @@ class Loan{
      * @var int
      *
      * @ORM\Column(name="loanAmount", type="bigint")
+     * @Assert\NotBlank(message="This field cannot be nul")
+     * @Assert\Range(
+     *      min = 1,
+     *      max = 15000000,
+     *      minMessage = "The min value should be  {{ limit }}",
+     *      maxMessage = "The max value should be {{ limit }}"
+     * )
      */
     private $loanAmount;
 
@@ -56,13 +75,27 @@ class Loan{
      * @var int
      *
      * @ORM\Column(name="monthly_payment", type="bigint")
+     * @Assert\NotBlank(message="This field cannot be nul")
+     * @Assert\Range(
+     *      min = 1,
+     *      max = 1000000,
+     *      minMessage = "The min value should be  {{ limit }}",
+     *      maxMessage = "The max value should be {{ limit }}"
+     * )
      */
     private $monthlyPayment;
 
     /**
      * @var int
      *
-     * @ORM\Column(name="loanprocessingfees", type="bigint")
+     * @ORM\Column(name="loan_processing_fees", type="bigint")
+     * @Assert\NotBlank(message="This field cannot be nul")
+     * @Assert\Range(
+     *      min = 1,
+     *      max = 500000,
+     *      minMessage = "The min value should be  {{ limit }}",
+     *      maxMessage = "The max value should be {{ limit }}"
+     * )
      */
     private $loanProcessingFees;
 
@@ -87,7 +120,8 @@ class Loan{
     /**
      * @var string
      *
-     * @ORM\Column(name="loancode", type="string", length=255, unique=true)
+     * @ORM\Column(name="loan_code", type="string", length=255, unique=true)
+     * @Assert\NotBlank(message="This field cannot be nul")
      */
     private $loanCode;
 
@@ -120,8 +154,6 @@ class Loan{
     public function __toString(){
         return $this->loanCode;
     }
-
-    
 
     /**
      * Get id

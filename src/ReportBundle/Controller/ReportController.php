@@ -2,6 +2,10 @@
 
 namespace ReportBundle\Controller;
 
+use AccountBundle\Entity\Loan;
+use AccountBundle\Entity\LoanHistory;
+use ConfigBundle\Entity\Agency;
+use MemberBundle\Entity\Member;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
@@ -153,34 +157,34 @@ class ReportController extends Controller{
      * @Route("/general_ledger", name="report_general_ledger")
      * @return Response
      */
-    public function generalLedgerBalanceAction(Request $request){
-        
+    public function generalLedgerBalanceAction(Request $request)
+    {
         $em = $this->getDoctrine()->getManager();
         if ($request->getMethod() =="POST") {
-            $agency = $em->getRepository('ConfigBundle:Agency')->find(1);
+            $agency = $em->getRepository(Agency::class)->findOneBy([], ['id' => 'ASC']);
             $currentDate = new \DateTime('now');
 
             $currentUserId  = $this->get('security.token_storage')->getToken()->getUser()->getId();
-            $currentUser    = $em->getRepository('UserBundle:Utilisateur')->find($currentUserId);
+            $currentUser    = $em->getRepository(Utilisateur::class)->find($currentUserId);
             $date  = $request->get('currentDate');
             $date = explode( "/" , substr($date,strrpos($date," ")));
 
-            $today_stardatetime = \DateTime::createFromFormat("Y-m-d H:i:s", date($date[2]."-".$date[1]."-".$date[0]." 00:00:00"));
-            $today_enddatetime = \DateTime::createFromFormat("Y-m-d H:i:s", date($date[2]."-".$date[1]."-".$date[0]." 23:59:59"));
+            $today_start_datetime = \DateTime::createFromFormat("Y-m-d H:i:s", date($date[2]."-".$date[1]."-".$date[0]." 00:00:00"));
+            $today_end_datetime = \DateTime::createFromFormat("Y-m-d H:i:s", date($date[2]."-".$date[1]."-".$date[0]." 23:59:59"));
 
             $date  = new \DateTime($date[2]."-".$date[1]."-".$date[0]);
             $day_before = date( 'Y-m-d', strtotime( $date->format('Y-m-d') . ' -1 day' ) );
             $dayBefore_endDatetime = \DateTime::createFromFormat("Y-m-d H:i:s", $day_before." 23:59:59");
 
-                /*Get the balance brod*ad foward for the new day*/ 
-            $totaGLBDayBefore = $em->createQueryBuilder()
+                /*Get the balance brod*ad forward for the new day*/
+            $totalGLBDayBefore = $em->createQueryBuilder()
                 ->select('glb')
                 ->from('ReportBundle:GeneralLedgerBalance', 'glb')
                 ->where('glb.dateOperation <= :date')
                 ->setParameters(['date' => $dayBefore_endDatetime])
                 ->getQuery()
                  ->getResult();
-                 $lastElement = end($totaGLBDayBefore);
+                 $lastElement = end($totalGLBDayBefore);
                  if ($lastElement) {
                      $lastOperation = $lastElement;
                      $lastElement = $lastElement->getBalance();
@@ -193,10 +197,10 @@ class ReportController extends Controller{
                 ->select('glb')
                 ->from('ReportBundle:GeneralLedgerBalance', 'glb')
                 ->where('glb.dateOperation >= :date')
-                ->andWhere('glb.dateOperation <= :dateend')
+                ->andWhere('glb.dateOperation <= :date_end')
                 ->setParameters([
-                    'date' => $today_stardatetime,
-                    'dateend' => $today_enddatetime
+                    'date' => $today_start_datetime,
+                    'date_end' => $today_end_datetime
                     ])
                 ->getQuery()
                 ->getResult();
@@ -213,7 +217,7 @@ class ReportController extends Controller{
             ]);
 
             $html2pdf = $this->get('html2pdf_factory')->create('P', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 10));
-            $html2pdf->pdf->SetAuthor('GreenSoft-Team');
+            $html2pdf->pdf->SetAuthor('GreenSoft-Group');
             $html2pdf->pdf->SetDisplayMode('real');
             $html2pdf->pdf->SetTitle('General Ledger Balance');
             $response = new Response();
@@ -252,15 +256,15 @@ class ReportController extends Controller{
             $accountId  = $request->get('accountNumber');
             $date = explode( "/" , substr($date,strrpos($date," ")));
 
-            $today_stardatetime = \DateTime::createFromFormat("Y-m-d H:i:s", date($date[2]."-".$date[1]."-".$date[0]." 00:00:00"));
-            $today_enddatetime = \DateTime::createFromFormat("Y-m-d H:i:s", date($date[2]."-".$date[1]."-".$date[0]." 23:59:59"));
+            $today_start_datetime = \DateTime::createFromFormat("Y-m-d H:i:s", date($date[2]."-".$date[1]."-".$date[0]." 00:00:00"));
+            $today_end_datetime = \DateTime::createFromFormat("Y-m-d H:i:s", date($date[2]."-".$date[1]."-".$date[0]." 23:59:59"));
 
             $date  = new \DateTime($date[2]."-".$date[1]."-".$date[0]);
             $day_before = date( 'Y-m-d', strtotime( $date->format('Y-m-d') . ' -1 day' ) );
             $dayBefore_endDatetime = \DateTime::createFromFormat("Y-m-d H:i:s", $day_before." 23:59:59");
 
                 /*Get the balance brod*ad foward for the new day*/ 
-            $totaGLBDayBefore = $em->createQueryBuilder()
+            $totalGLBDayBefore = $em->createQueryBuilder()
                 ->select('glb')
                 ->from('ReportBundle:GeneralLedgerBalance', 'glb')
                 ->innerJoin('ClassBundle:InternalAccount', 'ia', 'WITH', 'ia.id = glb.account')
@@ -273,7 +277,7 @@ class ReportController extends Controller{
                 ->getQuery()
                  ->getResult();
 
-                 $lastElement = end($totaGLBDayBefore);
+                 $lastElement = end($totalGLBDayBefore);
                  if ($lastElement) {
                      $lastElement = $lastElement->getAccountBalance();
                  }else{
@@ -289,8 +293,8 @@ class ReportController extends Controller{
                 ->andWhere('glb.dateOperation <= :dateend')
                 ->andWhere('ia.id = :idAccount')
                 ->setParameters([
-                    'date' => $today_stardatetime,
-                    'dateend' => $today_enddatetime,
+                    'date' => $today_start_datetime,
+                    'dateend' => $today_end_datetime,
                     'idAccount' => $accountId
                     ])
                 ->getQuery()
@@ -606,38 +610,36 @@ class ReportController extends Controller{
     /**
      * member situation on saving.
      *
-     * @Route("/loans/{id}", name="member_situation_loan")
+     * @Route("/loans/{id}/generate", name="member_situation_loan")
      * @Method("GET")
+     * @param $id
+     * @return Response
      */
-    public function loanSituationAction($id){
+    public function loanSituationAction($id)
+    {
 
         $entityManager = $this->getDoctrine()->getManager();
-        $member  = $entityManager->getRepository('MemberBundle:Member')->find($id);
-        $agency = $entityManager->getRepository('ConfigBundle:Agency')->find(1);
+        $member  = $entityManager->getRepository(Member::class)->find($id);
+        $agency = $entityManager->getRepository(Agency::class)->findOneBy([], ['id' => 'ASC']);
         $currentDate = new \DateTime('now');
 
-        $loan = $entityManager->getRepository('AccountBundle:Loan')->findOneBy([
-            'physicalMember' => $member,
-            'status' => true
-            ]);
+        $loan = $entityManager->getRepository(Loan::class)->findOneBy(['physicalMember' => $member, 'status' => true]);
 
-        $loanSituations = $entityManager->getRepository('AccountBundle:LoanHistory')->findBy([
-            'loan' => $loan,
-            ]);
+        $loanSituations = $entityManager->getRepository(LoanHistory::class)->findBy(['loan' => $loan]);
 
         $nomMember = str_replace(' ', '_', $member->getName());
         $type = "Loans";
-        $html =  $this->renderView('situation/loan_situation_file.html.twig', array(
+        $html =  $this->renderView('situation/loan_situation_file.html.twig', [
             'agency' => $agency,
             'member' => $member,
             'loan' => $loan,
             'type' => $type,
             'currentDate' => $currentDate,
             'loanSituations' => $loanSituations,
-        ));
+        ]);
 
-        $html2pdf = $this->get('html2pdf_factory')->create('P', 'A4', 'en', true, 'UTF-8', array(5, 10, 5, 10));
-        $html2pdf->pdf->SetAuthor('GreenSoft-Team');
+        $html2pdf = $this->get('html2pdf_factory')->create('P', 'A4', 'en', true, 'UTF-8', [5, 10, 5, 10]);
+        $html2pdf->pdf->SetAuthor('GreenSoft-Group');
         $html2pdf->pdf->SetDisplayMode('real');
         $html2pdf->pdf->SetTitle('Situation_'.$type.'_'.$nomMember);
         $response = new Response();
@@ -654,6 +656,8 @@ class ReportController extends Controller{
     /**
      * @Route("/generate/trialbalance", name="trialbalance_report")
      * @Method({"GET", "POST"})
+     * @param Request $request
+     * @return Response
      */
     public function trialBalanceAction(Request $request){
 
@@ -709,10 +713,12 @@ class ReportController extends Controller{
         }
 
 
-        /**
-         * @Route("/account/history", name="accounthistoryreport")
-         * @Method({"GET", "POST"})
-         */
+    /**
+     * @Route("/account/history", name="accounthistoryreport")
+     * @Method({"GET", "POST"})
+     * @param Request $request
+     * @return Response
+     */
         public function accountHistoryAction(Request $request){
             $em = $this->getDoctrine()->getManager();
             $qb = $em->createQueryBuilder();
@@ -835,7 +841,7 @@ class ReportController extends Controller{
             $newDateStart = explode( "/" , substr($dateDebut,strrpos($dateDebut," ")));
 
             $today_startdatetime = \DateTime::createFromFormat("Y-m-d H:i:s", date($newDateStart[2]."-".$newDateStart[1]."-".$newDateStart[0]." 00:00:00"));
-            $today_enddatetime = \DateTime::createFromFormat("Y-m-d H:i:s", date($newDateStart[2]."-".$newDateStart[1]."-".$newDateStart[0]." 23:59:59"));
+            $today_end_datetime = \DateTime::createFromFormat("Y-m-d H:i:s", date($newDateStart[2]."-".$newDateStart[1]."-".$newDateStart[0]." 23:59:59"));
 
             $operations = $em->createQueryBuilder()
                 ->select('op')
@@ -845,7 +851,7 @@ class ReportController extends Controller{
                 ->setParameters(
                     [
                         'start' => $today_startdatetime,
-                        'end' => $today_enddatetime,
+                        'end' => $today_end_datetime,
                     ]
                 )->getQuery()->getResult();
 
@@ -858,7 +864,7 @@ class ReportController extends Controller{
                 ->setParameters(
                     [
                         'start' => $today_startdatetime,
-                        'end' => $today_enddatetime,
+                        'end' => $today_end_datetime,
                     ]
                 )->getQuery()->getResult();
 
@@ -870,7 +876,7 @@ class ReportController extends Controller{
                 ->setParameters(
                     [
                         'start' => $today_startdatetime,
-                        'end' => $today_enddatetime,
+                        'end' => $today_end_datetime,
                     ]
                 )->getQuery()->getResult();
 
@@ -882,7 +888,7 @@ class ReportController extends Controller{
                 ->setParameters(
                     [
                         'start' => $today_startdatetime,
-                        'end' => $today_enddatetime,
+                        'end' => $today_end_datetime,
                     ]
                 )->getQuery()->getResult();
 
@@ -895,7 +901,7 @@ class ReportController extends Controller{
                 ->setParameters(
                     [
                         'start' => $today_startdatetime,
-                        'end' => $today_enddatetime,
+                        'end' => $today_end_datetime,
                         'fees' => 0,
                     ]
                 )->getQuery()->getResult();
@@ -908,7 +914,7 @@ class ReportController extends Controller{
                     ->setParameters(
                         [
                             'start' => $today_startdatetime,
-                            'end' => $today_enddatetime,
+                            'end' => $today_end_datetime,
                         ]
                     )->getQuery()->getResult();
 
@@ -920,7 +926,7 @@ class ReportController extends Controller{
                     ->setParameters(
                         [
                             'start' => $today_startdatetime,
-                            'end' => $today_enddatetime,
+                            'end' => $today_end_datetime,
                         ]
                     )->getQuery()->getResult();
 
@@ -971,7 +977,7 @@ class ReportController extends Controller{
             $newDateStart = explode( "/" , substr($dateDebut,strrpos($dateDebut," ")));
 
             $today_startdatetime = \DateTime::createFromFormat("Y-m-d H:i:s", date($newDateStart[2]."-".$newDateStart[1]."-".$newDateStart[0]." 00:00:00"));
-            $today_enddatetime = \DateTime::createFromFormat("Y-m-d H:i:s", date($newDateStart[2]."-".$newDateStart[1]."-".$newDateStart[0]." 23:59:59"));
+            $today_end_datetime = \DateTime::createFromFormat("Y-m-d H:i:s", date($newDateStart[2]."-".$newDateStart[1]."-".$newDateStart[0]." 23:59:59"));
 
             $operations = $em->createQueryBuilder()
                 ->select('op')
@@ -982,7 +988,7 @@ class ReportController extends Controller{
                 ->setParameters(
                     [
                         'start' => $today_startdatetime,
-                        'end' => $today_enddatetime,
+                        'end' => $today_end_datetime,
                     ]
                 )->getQuery()->getResult();
 
@@ -995,7 +1001,7 @@ class ReportController extends Controller{
                 ->setParameters(
                     [
                         'start' => $today_startdatetime,
-                        'end' => $today_enddatetime,
+                        'end' => $today_end_datetime,
                     ]
                 )->getQuery()->getResult();
 
@@ -1007,7 +1013,7 @@ class ReportController extends Controller{
                 ->setParameters(
                     [
                         'start' => $today_startdatetime,
-                        'end' => $today_enddatetime,
+                        'end' => $today_end_datetime,
                     ]
                 )->getQuery()->getResult();
 
@@ -1019,7 +1025,7 @@ class ReportController extends Controller{
                 ->setParameters(
                     [
                         'start' => $today_startdatetime,
-                        'end' => $today_enddatetime,
+                        'end' => $today_end_datetime,
                     ]
                 )->getQuery()->getResult();
 
@@ -1032,7 +1038,7 @@ class ReportController extends Controller{
                 ->setParameters(
                     [
                         'start' => $today_startdatetime,
-                        'end' => $today_enddatetime,
+                        'end' => $today_end_datetime,
                         'fees' => 0,
                     ]
                 )->getQuery()->getResult();
@@ -1045,7 +1051,7 @@ class ReportController extends Controller{
                     ->setParameters(
                         [
                             'start' => $today_startdatetime,
-                            'end' => $today_enddatetime,
+                            'end' => $today_end_datetime,
                         ]
                     )->getQuery()->getResult();
 
@@ -1057,7 +1063,7 @@ class ReportController extends Controller{
                     ->setParameters(
                         [
                             'start' => $today_startdatetime,
-                            'end' => $today_enddatetime,
+                            'end' => $today_end_datetime,
                         ]
                     )->getQuery()->getResult();
 
@@ -1084,8 +1090,10 @@ class ReportController extends Controller{
      * 
      * @Route("/validate/operation", name="operation_validation")
      * @Method({"GET", "POST"})
+     * @return Response
      */
-    function saveOperationFromJSON(Request $request){
+    function saveOperationFromJSON(Request $request)
+    {
 
         $entityManager = $this->getDoctrine()->getManager();
 

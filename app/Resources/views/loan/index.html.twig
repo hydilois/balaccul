@@ -8,7 +8,7 @@
           <a href="#">BALACCUL</a>
         </li>
         <li>
-          <a href="#">Loan List</a>
+          <a href="#">Loans List</a>
         </li>
         <li class="active">
           Consult
@@ -17,7 +17,7 @@
         <div class="row">
             <div class="col-sm-12">
                 <div class="card-box table-responsive">
-                <h4 class="m-t-0 header-title text-center"><b>Loans list</b></h4>
+                <h4 class="m-t-0 header-title text-center"><b>LIST OF ALL LOANS CONTRACTED</b></h4>
                 <table id="datatable-buttons" class="table table-striped table-bordered">
                     <thead>
                         <tr>
@@ -40,7 +40,6 @@
                                     <span class="fa fa-caret-down"></span></button>
                                   <ul class="dropdown-menu fadeInDown animated">
                                     <li><a target="_blank" href="{{path('loan_fees_receipt', {id:loan.id})}}"><i class="fa fa-file-pdf-o"></i> Receipt</a></li>
-                                    <li><a href="#" data-loan="{{loan.id}}" name="accounttype-edit"><i class="fa fa-edit"></i> Edit</a></li>
                                     <li><a href="{{path('loan_show', {id:loan.id})}}" data-loan="{{loan.id}}"><i class="fa fa-eye"></i> Detail</a></li>
                                   </ul>
                                 </div>

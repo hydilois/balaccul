@@ -20,37 +20,37 @@
         <div class="col-sm-12">
             <div class="card-box">
                 <div class="row">
-                    <div class="col-md-offset-2 col-md-8">
+                    <div class="col-md-offset-1 col-md-10">
                     <fieldset>
                       <legend>Add a new loan</legend>
                                       {{ form_start(form) }}
                                           <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                                               <div class="form-group">
                                                   {{form_label(form.loanCode)}}
-                                                  {{form_errors(form.loanCode)}}
                                                   {{form_widget(form.loanCode, {'attr' : {'class':'form-control', 'required':'required'}})}}
+                                                  {{form_errors(form.loanCode)}}
                                               </div>
                                           </div>
                                           <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                                               <div class="form-group">
                                                   {{form_label(form.loanAmount, 'Loan Contracted')}}
-                                                  {{form_errors(form.loanAmount)}}
                                                   {{form_widget(form.loanAmount, {'attr' : {'class':'form-control'}})}}
+                                                  {{form_errors(form.loanAmount)}}
                                               </div>
                                           </div>
                                           <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                                               <div class="form-group">
                                                   {{form_label(form.physicalMember, 'Member')}}
-                                                  {{form_errors(form.physicalMember)}}
                                                   {{form_widget(form.physicalMember, {'attr' : {'class':'form-control select2'}})}}
+                                                  {{form_errors(form.physicalMember)}}
                                               </div>
                                           </div>
 
                                           <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                                               <div class="form-group">
                                                   {{form_label(form.rate)}}
-                                                  {{form_errors(form.rate)}}
                                                   {{form_widget(form.rate, {'attr' : {'class':'form-control'}})}}
+                                                  {{form_errors(form.rate)}}
                                               </div>
                                           </div>
 
@@ -58,36 +58,36 @@
                                           <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                                               <div class="form-group">
                                                   {{form_label(form.monthlyPayment, 'Installment Amount')}}
-                                                  {{form_errors(form.monthlyPayment)}}
                                                   {{form_widget(form.monthlyPayment, {'attr' : {'class':'form-control'}})}}
+                                                  {{form_errors(form.monthlyPayment)}}
                                               </div>
                                           </div>
                                           <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                                               <div class="form-group">
                                                   {{form_label(form.loanProcessingFees)}}
-                                                  {{form_errors(form.loanProcessingFees)}}
                                                   {{form_widget(form.loanProcessingFees, {'attr' : {'class':'form-control'}})}}
+                                                  {{form_errors(form.loanProcessingFees)}}
                                               </div>
                                           </div>
                                           <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                                               <div class="form-group">
                                                   {{form_label(form.dateLoan, 'Date of the loan')}}
-                                                  {{form_errors(form.dateLoan)}}
                                                   {{form_widget(form.dateLoan, {'attr' : {'class':'form-control'}})}}
+                                                  {{form_errors(form.dateLoan)}}
                                               </div>
                                           </div>
                                           <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                                               <div class="form-group">
                                                   {{form_label(form.deadline, 'Date of the first installment')}}
-                                                  {{form_errors(form.deadline)}}
                                                   {{form_widget(form.deadline, {'attr' : {'class':'form-control'}})}}
+                                                  {{form_errors(form.deadline)}}
                                               </div>
                                           </div>
                                          <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                                               <div class="form-group">
                                                   {{form_label(form.status, "Active ?")}}
-                                                  {{form_errors(form.status)}}
                                                   {{form_widget(form.status, {'attr' : {'class':'form-control'}})}}
+                                                  {{form_errors(form.status)}}
                                               </div>
                                           </div>
                                   {# </div> #}

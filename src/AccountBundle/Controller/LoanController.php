@@ -4,19 +4,26 @@ namespace AccountBundle\Controller;
 
 use AccountBundle\Entity\Operation;
 use AccountBundle\Entity\Loan;
+use ClassBundle\Entity\Classe;
+use ClassBundle\Entity\InternalAccount;
+use ConfigBundle\Entity\LoanParameter;
+use MemberBundle\Entity\Member;
 use ReportBundle\Entity\GeneralLedgerBalance;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use UserBundle\Entity\Utilisateur;
 
 /**
  * Loan controller.
  *
  * @Route("loan")
  */
-class LoanController extends Controller{
+class LoanController extends Controller
+{
+    private $errors = [];
     /**
      * Lists all loan entities.
      *
@@ -40,19 +47,20 @@ class LoanController extends Controller{
      *
      * @Route("/{id}/receipt", name="loan_fees_receipt")
      * @Method("GET")
+     * @param Loan $loan
+     * @return Response
      */
-    public function memberRegistrationReceiptAction(Loan $loan){
+    public function loanReceipt(Loan $loan){
 
         $em = $this->getDoctrine()->getManager();
-        $agency = $em->getRepository('ConfigBundle:Agency')->find(1);
+        $agency = $em->getRepository('ConfigBundle:Agency')->findOneBy([],['id' => 'ASC']);
 
         $loanName = str_replace(' ', '_', $loan->getLoanCode());
 
-
-        $html =  $this->renderView('loan/loan_fees_receipt_file.html.twig', array(
+        $html =  $this->renderView('loan/loan_fees_receipt_file.html.twig', [
             'agency' => $agency,
             'loan' => $loan,
-        ));
+        ]);
 
         $html2pdf = $this->get('html2pdf_factory')->create('P', 'A4', 'en', true, 'UTF-8', array(10, 5, 10, 10));
         $html2pdf->pdf->SetAuthor('GreenSoft-Team');
@@ -73,8 +81,10 @@ class LoanController extends Controller{
      *
      * @Route("/new", name="loan_new")
      * @Method({"GET", "POST"})
+     * @param Request $request
+     * @return Response
      */
-    public function newAction(Request $request){
+    public function create(Request $request){
         $loan = new Loan();
         $form = $this->createForm('AccountBundle\Form\LoanType', $loan);
         $form->handleRequest($request);
@@ -83,167 +93,44 @@ class LoanController extends Controller{
             $em = $this->getDoctrine()->getManager();
             // Get the current user connected
             $currentUserId  = $this->get('security.token_storage')->getToken()->getUser()->getId();
-            $currentUser    = $em->getRepository('UserBundle:Utilisateur')->find($currentUserId);
-
-            $loanParameter = $em->getRepository('ConfigBundle:LoanParameter')->find(1)->getParameter();
+            $currentUser    = $em->getRepository(Utilisateur::class)->find($currentUserId);
             $member = $loan->getPhysicalMember();
-            $target = $loan->getLoanAmount()/$loanParameter;
-            
-            if ($target >= ($member->getShare() + $member->getSaving())) {
-                $this->addFlash('warning', 'The loan cannot be done!!!! check the amount of your share and savings accounts');
-            }else{
-                $account = $em->getRepository('ClassBundle:InternalAccount')->find(32);//Normal Loan Identification
+
+            if ($this->loanValidation($loan, $member)) {
+                $this->addFlash('warning', $this->errors['message']);
+            } else {
+                $account = $em->getRepository(InternalAccount::class)->find(32);//Normal Loan Identification
                 $account->setBalance($account->getBalance() - $loan->getLoanAmount());
 
-                $classeLoan = $em->getRepository('ClassBundle:Classe')->find($account->getClasse()->getId());
-                $classeLoan->setBalance($classeLoan->getBalance() - $loan->getLoanAmount());
-                
-                $operation = new Operation();
-                $operation->setTypeOperation(Operation::TYPE_CASH_OUT);
-                $operation->setCurrentUser($currentUser);
-                $operation->setDateOperation($loan->getDateLoan());
-                $operation->setAmount($loan->getLoanAmount());
-                $operation->setMember($member);
-                $operation->setBalance($account->getBalance());
-                $operation->setRepresentative($member->getName());
-                $em->persist($operation);
+                $classLoan = $em->getRepository(Classe::class)->find($account->getClasse()->getId());
+                $classLoan->setBalance($classLoan->getBalance() - $loan->getLoanAmount());
 
-                // first Step
-                $ledgerBalanceOther = new GeneralLedgerBalance();
-                $ledgerBalanceOther->setTypeOperation(Operation::TYPE_CASH_OUT);
-                $ledgerBalanceOther->setCredit($loan->getLoanAmount());
-                $ledgerBalanceOther->setCurrentUser($currentUser);
-                $ledgerBalanceOther->setDateOperation($loan->getDateLoan());
-                $latestEntryGBL = $em->getRepository('ReportBundle:GeneralLedgerBalance')->findOneBy(
-                    [],
-                    ['id' => 'DESC']);
-                if ($latestEntryGBL) {
-                    $ledgerBalanceOther->setBalance($latestEntryGBL->getBalance() - $loan->getLoanAmount());
-                }else{
-                    $ledgerBalanceOther->setBalance($loan->getLoanAmount());
-                }
-                $ledgerBalanceOther->setAccount($account);
-                $ledgerBalanceOther->setRepresentative($member->getName());
-                $ledgerBalanceOther->setAccountBalance($account->getBalance());
-                $ledgerBalanceOther->setAccountTitle($account->getAccountName()." A/C_".$member->getMemberNumber());
-                $ledgerBalanceOther->setMember($loan->getPhysicalMember());
-                $em->persist($ledgerBalanceOther);
+                $em ->getRepository(Loan::class)->saveLoanOperation($currentUser, $loan, $member, $account);
+                $em ->getRepository(Loan::class)->saveLoanInGeneralLedger($loan, $currentUser, $account, $member);
                 $em->flush();
 
-
-                $accountProcessing = $em->getRepository('ClassBundle:InternalAccount')->find(140);//Processing Fees
+                $accountProcessing = $em->getRepository(InternalAccount::class)->find(140);//Processing Fees
                 $accountProcessing->setBalance($accountProcessing->getBalance() + $loan->getLoanProcessingFees());
 
-                $classeProcessing = $em->getRepository('ClassBundle:Classe')->find($accountProcessing->getClasse()->getId());
-                $classeProcessing->setBalance($classeProcessing->getBalance() + $loan->getLoanProcessingFees());
-                
-                $operationProcessing = new Operation();
-                $operationProcessing->setTypeOperation(Operation::TYPE_CASH_IN);
-                $operationProcessing->setCurrentUser($currentUser);
-                $operationProcessing->setDateOperation($loan->getDateLoan());
-                $operationProcessing->setAmount($loan->getLoanProcessingFees());
-                $operationProcessing->setMember($loan->getPhysicalMember());
-                $operationProcessing->setRepresentative($member->getName());
-                $operationProcessing->setBalance($accountProcessing->getBalance());
+                $classProcessing = $em->getRepository(Classe::class)->find($accountProcessing->getClasse()->getId());
+                $classProcessing->setBalance($classProcessing->getBalance() + $loan->getLoanProcessingFees());
+
+                $em ->getRepository(Loan::class)->saveLoanProcessingFeesOperation($currentUser, $loan, $member, $accountProcessing);
 
                 // first Step
-                $ledgerBalanceProc = new GeneralLedgerBalance();
-                $ledgerBalanceProc->setTypeOperation(Operation::TYPE_CASH_IN);
-                $ledgerBalanceProc->setDebit($loan->getLoanProcessingFees());
-                $ledgerBalanceProc->setCurrentUser($currentUser);
-                $ledgerBalanceProc->setDateOperation($loan->getDateLoan());
-                $latestEntryGBL = $em->getRepository('ReportBundle:GeneralLedgerBalance')->findOneBy(
-                    [],
-                    ['id' => 'DESC']);
-                if ($latestEntryGBL) {
-                    $ledgerBalanceProc->setBalance($latestEntryGBL->getBalance() + $loan->getLoanProcessingFees());
-                }else{
-                    $ledgerBalanceProc->setBalance($loan->getLoanProcessingFees());
-                }
-                $ledgerBalanceProc->setAccount($accountProcessing);
-                $ledgerBalanceProc->setRepresentative($member->getName());
-                $ledgerBalanceProc->setAccountBalance($accountProcessing->getBalance());
-                $ledgerBalanceProc->setAccountTitle($accountProcessing->getAccountName()." A/C_".$member->getMemberNumber());
-                $ledgerBalanceProc->setMember($loan->getPhysicalMember());
-                $em->persist($ledgerBalanceProc);
-                
+                $em ->getRepository(Loan::class)->saveProcessingFeesInGeneralLedger($loan, $currentUser, $accountProcessing, $member);
+
                 /*Make record*/
-                $em->persist($operationProcessing);
                 $em->persist($loan);
                 $em->flush();
                 return $this->redirectToRoute('loan_index');
             }
         }
 
-        return $this->render('loan/new.html.twig', array(
+        return $this->render('loan/new.html.twig', [
             'loan' => $loan,
             'form' => $form->createView(),
-        ));
-    }
-
-
-    /**
-     * Creates a new loan entity.
-     *
-     * @Route("/new/moral", name="moral_loan_new")
-     * @Method({"GET", "POST"})
-     */
-    public function newMoralLoanAction(Request $request)
-    {
-        $loan = new Loan();
-        $form = $this->createForm('AccountBundle\Form\MoralLoanType', $loan);
-        $form->handleRequest($request);
-
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $loanParameter = $em->getRepository('ConfigBundle:LoanParameter')->find(1)->getParameter();
-            
-            $shares = $em->getRepository('AccountBundle:Share')->findBy(
-                    [
-                        'moralMember' => $loan->getMoralMember(),
-                    ]
-                );
-
-            $savings = $em->getRepository('AccountBundle:Saving')->findBy(
-                    [
-                        'moralMember' => $loan->getMoralMember(),
-                    ]
-                );
-
-            $accountsAmount = 0;
-
-            foreach ($shares as $share) {
-                $accountsAmount += $share->getSolde();
-            }
-
-            foreach ($savings as $saving) {
-                $accountsAmount += $saving->getSolde();
-            }
-
-            $target = $loan->getLoanAmount()/$loanParameter;
-            if ($target > $accountsAmount) {
-                $this->addFlash('warning', 'The loan cannot be done!!!! check the amount of your share and savings accounts');
-            }else{
-
-                $income = new TransactionIncome();
-
-                $income->setAmount($loan->getLoanProcessingFees());
-                $income->setDescription("Loan processing fees. Loan Code: ".$loan->getLoanCode()." // Loan Owner: ".$loan->getMoralMember());
-
-                $em->persist($loan);
-                $em->persist($income);
-
-
-                $em->flush();
-                return $this->redirectToRoute('loan_index');
-            }
-        }
-
-        return $this->render('loan/new_moral.html.twig', array(
-            'loan' => $loan,
-            'form' => $form->createView(),
-        ));
+        ]);
     }
 
     /**
@@ -251,6 +138,8 @@ class LoanController extends Controller{
      *
      * @Route("/{id}", name="loan_show")
      * @Method("GET")
+     * @param Loan $loan
+     * @return Response
      */
     public function showAction(Loan $loan){
         $em = $this->getDoctrine()->getManager();
@@ -281,6 +170,9 @@ class LoanController extends Controller{
      *
      * @Route("/{id}/edit", name="loan_edit")
      * @Method({"GET", "POST"})
+     * @param Request $request
+     * @param Loan $loan
+     * @return Response
      */
     public function editAction(Request $request, Loan $loan)
     {
@@ -306,6 +198,9 @@ class LoanController extends Controller{
      *
      * @Route("/{id}", name="loan_delete")
      * @Method("DELETE")
+     * @param Request $request
+     * @param Loan $loan
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function deleteAction(Request $request, Loan $loan)
     {
@@ -333,7 +228,36 @@ class LoanController extends Controller{
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('loan_delete', array('id' => $loan->getId())))
             ->setMethod('DELETE')
-            ->getForm()
-        ;
+            ->getForm();
+    }
+
+    /**
+     * @param Loan $loan
+     * @param Member $member
+     * @return bool
+     */
+    private function loanValidation(Loan $loan, Member $member)
+    {
+        $this->errors = [];
+        $em = $this->getDoctrine()->getManager();
+        $loanParameter = $em->getRepository(LoanParameter::class)->findOneBy([],['id' => 'ASC']);
+        if (!$loanParameter){
+            $this->errors['message'] = 'The value of the loan parameter is not yet set';
+            return true;
+        }
+        $target = $loan->getLoanAmount()/$loanParameter->getParameter();
+        if ($target >= ($member->getShare() + $member->getSaving())){
+            $this->errors['message'] = 'The loan cannot be done!!!! check the amount of your share and savings accounts';
+            return true;
+        }
+        $loanExist = $em->getRepository(Loan::class)->findOneBy([
+            'physicalMember' => $member,
+            'status' => true
+        ]);
+        if ($loanExist){
+            $this->errors['message'] = 'This member has a loan which is not yet closed';
+            return true;
+        }
+        return false;
     }
 }

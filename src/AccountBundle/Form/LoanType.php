@@ -2,6 +2,10 @@
 
 namespace AccountBundle\Form;
 
+use AccountBundle\Entity\Loan;
+use MemberBundle\Entity\Client;
+use MemberBundle\Entity\Member;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -38,7 +42,10 @@ class LoanType extends AbstractType
         ->add('loanCode')
         ->add('rate')
         ->add('loanAmount')
-        ->add('physicalMember')
+        ->add('physicalMember', EntityType::class,[
+             'class' => Member::class,
+            'required' => true
+             ])
         ->add('monthlyPayment')
         ->add('loanProcessingFees')
         ->add('status');
@@ -50,7 +57,7 @@ class LoanType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'AccountBundle\Entity\Loan'
+            'data_class' => Loan::class
         ));
     }
 
