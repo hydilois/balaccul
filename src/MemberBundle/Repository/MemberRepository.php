@@ -222,11 +222,11 @@ class MemberRepository extends EntityRepository
      * @param $loanInterest
      * @param Utilisateur $currentUser
      * @param \DateTime $dateOperation
-     * @param InternalAccount $memberDeposits
+     * @param InternalAccount $loanInterestAcccount
      * @param Member $member
      * @param $representative
      */
-    public function saveMemberLoanInterestInGeneralLedger($loanInterest, Utilisateur $currentUser, \DateTime $dateOperation, InternalAccount $memberDeposits, Member $member, $representative)
+    public function saveMemberLoanInterestInGeneralLedger($loanInterest, Utilisateur $currentUser, \DateTime $dateOperation, InternalAccount $loanInterestAcccount, Member $member, $representative)
     {
         $entityManager = $this->getEntityManager();
         $ledgerBalanceInterest = new GeneralLedgerBalance();
@@ -240,10 +240,10 @@ class MemberRepository extends EntityRepository
             $ledgerBalanceInterest->setBalance($loanInterest);
         }
         $ledgerBalanceInterest->setTypeOperation(Operation::TYPE_CASH_IN);
-        $ledgerBalanceInterest->setAccount($memberDeposits);
+        $ledgerBalanceInterest->setAccount($loanInterestAcccount);
         $ledgerBalanceInterest->setRepresentative($representative);
-        $ledgerBalanceInterest->setAccountBalance($memberDeposits->getBalance());
-        $ledgerBalanceInterest->setAccountTitle($memberDeposits->getAccountName()." A/C ".$member->getMemberNumber());
+        $ledgerBalanceInterest->setAccountBalance($loanInterestAcccount->getBalance());
+        $ledgerBalanceInterest->setAccountTitle($loanInterestAcccount->getAccountName()." A/C ".$member->getMemberNumber());
         $ledgerBalanceInterest->setMember($member);
         $entityManager->persist($ledgerBalanceInterest);
     }

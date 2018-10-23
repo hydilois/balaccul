@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+{% block title %}{{ parent() }}Error page{% endblock %}
+{% block contenu %}
+	<div class="wrapper-page">
+		<div class="ex-page-content text-center">
+			<div class="text-error"><span class="text-info">ERR<i class="ti-face-sad text-pink"></i>R</span>
+			</div>
+			<h2>An error occurred during the registering of the loan.</h2>
+			<br>
+			<p style="font-size: 25px;">Make sure that the Loan amount entered in not more than the remain loan to pay.
+			Close this page and update the transaction in the previous Page
+			</p>
+			<br>
+
+		</div>
+	</div>
+	<!-- end wrapper page -->
+{% endblock %}

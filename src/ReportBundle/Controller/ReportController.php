@@ -610,14 +610,13 @@ class ReportController extends Controller{
     /**
      * member situation on saving.
      *
-     * @Route("/loans/{id}/generate", name="member_situation_loan")
+     * @Route("/loans/{id}", name="member_situation_loan")
      * @Method("GET")
      * @param $id
      * @return Response
      */
     public function loanSituationAction($id)
     {
-
         $entityManager = $this->getDoctrine()->getManager();
         $member  = $entityManager->getRepository(Member::class)->find($id);
         $agency = $entityManager->getRepository(Agency::class)->findOneBy([], ['id' => 'ASC']);

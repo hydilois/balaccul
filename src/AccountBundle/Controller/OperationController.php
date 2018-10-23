@@ -203,7 +203,7 @@ class OperationController extends Controller
     /**
      * @param Request $request [contains the http request that is passed on]
      * 
-     * @Route("/cashIn/save", name="operation_cash_in_save")
+     * @Route("/cash_in/save", name="operation_cash_in_save")
      * @Method({"GET", "POST"})
      * @return Response
      */
@@ -236,8 +236,8 @@ class OperationController extends Controller
                 $representative = $member->getName();
             }
 
-            $loan_history = new Loanhistory();
             if ($mainLoan != 0 || $loanInterest != 0) { //Loan Repayment for physical member
+                $loan_history = new Loanhistory();
                 $loan = $entityManager->getRepository(Loan::class)->findOneBy(['physicalMember' => $member, 'status' => true]);
                 if ($loan) {
                     $loan_history->setCurrentUser($currentUser);
@@ -253,6 +253,10 @@ class OperationController extends Controller
                         ->where('l.id = :loan')->setParameter('loan', $loan)
                         ->getQuery()
                         ->getSingleScalarResult();
+
+                    if ($lowest_remain_amount_LoanHistory && $mainLoan && $lowest_remain_amount_LoanHistory < $mainLoan ){
+                        return $this->render('Exception/loan_amount_warning.html.twig');
+                    }
 
                     $latestLoanHistory = $entityManager->getRepository('AccountBundle:LoanHistory')->findOneBy([
                         'remainAmount' => $lowest_remain_amount_LoanHistory,
@@ -310,6 +314,7 @@ class OperationController extends Controller
                         $classInterest->setBalance($classInterest->getBalance() + $loanInterest);
 
                         $entityManager->getRepository(Member::class)->saveMemberLoanInterestOperation($currentUser, $dateOperation, $member, $loanInterest, $LoanInterestAccount, $representative);
+                        $entityManager->getRepository(Member::class)->saveMemberLoanInterestInGeneralLedger($loanInterest, $currentUser, $dateOperation, $LoanInterestAccount, $member, $representative);
                         /*Make record*/
                         $entityManager->flush();
                     }
