@@ -28,8 +28,8 @@
             <th>Name</th>
             <th>Login</th>
             <th>Email</th>
-            <th>Phon number</th>
-            <th>Groupe</th>
+            <th>Phone number</th>
+            <th>Group</th>
             <th>Activate / Deactivate</th>
         </tr>
         </thead>
@@ -42,7 +42,7 @@
                     <span class="fa fa-caret-down"></span></button>
                   <ul class="dropdown-menu fadeInUp animated">
                     <li>
-                        <a name="show-utilisateur" data-utilisateur="{{utilisateur.id}}"><i class="fa fa-eye"></i> View</a>
+                        <a name="show-utilisateur" data-utilisateur="{{ utilisateur.id }}"><i class="fa fa-eye"></i> View</a>
                     </li>
                     <li><a href="{{ path('utilisateur_edit', { 'id': utilisateur.id }) }}"><i class="fa fa-edit"></i> Edit</a></li>
                   </ul>
@@ -74,23 +74,23 @@
         </div>
         </section>
         </div>
-        <!-- modal window to show utilisateur-details-->
+        <!-- modal window to show user-details-->
 
         <div class="modal fade modal-show-utilisateur-details" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
           <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
               <div class="modal-header">
-                    <h3 class="text-center">Consulter Un utilisateur</h3>
+                    <h3 class="text-center">Details on a user</h3>
               </div>
               <div class="modal-body">
                 <div class="table-responsive">          
                     <table class="table table-striped">
                     <tr>
-                        <td> ID Utilisateur: </td>
+                        <td> User ID: </td>
                         <td id="idUtilisateur"></td>
                     </tr>
                     <tr>
-                        <td>Nom de l'utilisateur :</td>
+                        <td>Name :</td>
                         <td id="nomUtilisateur"></td>
                     </tr>
                     <tr>
@@ -98,11 +98,11 @@
                         <td id="loginUser"></td>
                     </tr>
                     <tr>
-                        <td>Adresse Email :</td>
+                        <td>Email :</td>
                         <td id="emailUtilisateur"></td>
                     </tr>
                     <tr>
-                        <td>Numéro de téléphone:</td>
+                        <td>Phone Number:</td>
                         <td id="numeroTelephone"></td>
                     </tr>
                 </table>

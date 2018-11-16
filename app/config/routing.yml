@@ -60,7 +60,7 @@ member:
     prefix:   /
 
 user_utilisateur:
-    resource: "@UserBundle/Controller/UtilisateurController.php"
+    resource: "@UserBundle/Controller/UserController.php"
     type:     annotation
 
 user:

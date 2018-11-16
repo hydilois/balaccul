@@ -45,7 +45,7 @@ $(function() {
          * @return {void} nothing
          */
         UtilisateurEndpoint.prototype.setShowUtilisateurListener = function() {
-            $('a[name="show-utilisateur"').on('click', function() {
+            $('a[name="show-utilisateur"]').on('click', function() {
                 console.log("Show user");
 
                 var that = this;
@@ -57,7 +57,7 @@ $(function() {
                 $.ajax({
                     method: "POST",
                     data: { data: data },
-                    url: "../utilisateur/getUtilisateur",
+                    url: "../user/getUtilisateur",
                     dataType: "JSON",
                     beforeSend: function() {
                         $(that).parent().parent().parent().parent().parent().LoadingOverlay('show');
@@ -109,7 +109,7 @@ $(function() {
                 $.ajax({
                     method: "POST",
                     data: { data: data },
-                    url: "../utilisateur/getUtilisateur",
+                    url: "../user/getUtilisateur",
                     dataType: "JSON",
                     beforeSend: function() {
                         $(that).parent().parent().parent().parent().parent().LoadingOverlay('show');
