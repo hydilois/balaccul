@@ -67,8 +67,8 @@
                                    <button type="button" class="btn btn-info dropdown-toggle waves-effect waves-light" data-toggle="dropdown" aria-expanded="false"><i class="caret"></i></button>
                                        <ul class="dropdown-menu" role="menu" >
                                            <li><a href="{{path('report_generate_document', {status:'allMembers', type:'Members' })}}" target="_blank">All Members</a></li>
-                                           {# <li><a href="{{path('report_generate_document', {status:'activeMembers', type:'Members'})}}" target="_blank">Active Members</a></li> #}
-                                           {# <li><a href="{{path('report_generate_document', {status:'inactiveMembers', type:'Members'})}}" target="_blank">Inactive Members</a></li> #}
+                                            <li><a href="{{path('report_generate_document', {status:'activeMembers', type:'Members'})}}" target="_blank">Active Members</a></li>
+                                            <li><a href="{{path('report_generate_document', {status:'inactiveMembers', type:'Members'})}}" target="_blank">Inactive Members</a></li>
                                        </ul>
                                </div>
                                 {# <div class="btn-group dropdown">
@@ -80,6 +80,7 @@
                                            <li><a href="{{path('report_generate_document', {status:'inactiveLoans', type:'Loans'})}}" target="_blank">Inactive Loans</a></li>
                                          </ul>
                                  </div>                                   #}
+                         <a class="btn btn-default" target="_blank" href="{{ path('all_situations_pdf') }}">General Situation</a>
                       <!--/section-->
                     </div>
             </fieldset>

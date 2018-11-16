@@ -68,12 +68,13 @@ class ReportController extends Controller{
      * @param Request $request
      * @return Response
      */
-    public function reportMonthAction(Request $request){
+    public function reportMonthAction(Request $request)
+    {
         $em = $this->getDoctrine()->getManager();
 
         if ($request->getMethod() == "POST") {
 
-            $agency = $em->getRepository('ConfigBundle:Agency')->find(1);
+            $agency = $em->getRepository('ConfigBundle:Agency')->findOneBy([], ['id' => 'ASC']);
             $currentDate = new \DateTime('now');
 
             $currentUserId  = $this->get('security.token_storage')->getToken()->getUser()->getId();
@@ -132,8 +133,8 @@ class ReportController extends Controller{
                 'incomeOp' => $incomeOperations,
             ]);
 
-            $html2pdf = $this->get('html2pdf_factory')->create('P', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 8));
-            $html2pdf->pdf->SetAuthor('GreenSoft-Team');
+            $html2pdf = $this->get('html2pdf_factory')->create('P', 'A4', 'en', true, 'UTF-8', [10, 10, 10, 8]);
+            $html2pdf->pdf->SetAuthor('GreenSoft-Group Technologies');
             $html2pdf->pdf->SetDisplayMode('real');
             $html2pdf->pdf->SetTitle('Monthly Report');
             $response = new Response();
@@ -359,21 +360,23 @@ class ReportController extends Controller{
      * @Method("GET")
      * @return Response
      */
-    public function generateDocumentAction($status, $type){
+    public function generateDocumentAction($status, $type)
+    {
 
         $entityManager = $this->getDoctrine()->getManager();
-        $agency = $entityManager->getRepository('ConfigBundle:Agency')->find(1);
+        $agency = $entityManager->getRepository(Agency::class)->findOneBy([], ['id' => 'ASC']);
 
+        $lists = [];
+        $listLoanWithOutHistory = [];
         switch ($status) {
             case "allMembers":
-                $lists  = $entityManager->getRepository('MemberBundle:Member')->findBy([], ['memberNumber' => 'ASC']);
-                $listLoanWithOutHistory = [];
+                $lists  = $entityManager->getRepository(Member::class)->findBy([], ['memberNumber' => 'ASC']);
                 break;
             case "activeMembers":
-                # code...
+                $lists  = $entityManager->getRepository(Member::class)->getActiveMembers();
                 break;
             case "inactiveMembers":
-                # code...
+                $lists  = $entityManager->getRepository(Member::class)->getAllInActiveMembers();
                 break;
             case "allLoans":
                 $subQuery  = $entityManager->createQueryBuilder()
@@ -424,6 +427,7 @@ class ReportController extends Controller{
             'agency' => $agency,
             'lists' => $lists,
             'type' => $type,
+            'status' => $status,
             'listLoanWithOutHistory' => $listLoanWithOutHistory,
         ]);
 
@@ -446,7 +450,7 @@ class ReportController extends Controller{
                 break;
         }
 
-        $html2pdf->pdf->SetAuthor('GreenSoft-Team');
+        $html2pdf->pdf->SetAuthor('GreenSoft-Group Technologies');
         $html2pdf->pdf->SetDisplayMode('real');
         $html2pdf->writeHTML($html);
         $content = $html2pdf->Output('', true);
@@ -461,12 +465,15 @@ class ReportController extends Controller{
      *
      * @Route("/saving/{id}", name="member_situation_saving")
      * @Method("GET")
+     * @param $id
+     * @return Response
      */
-    public function savingSituationAction($id){
+    public function savingSituationAction($id)
+    {
 
         $entityManager = $this->getDoctrine()->getManager();
         $member  = $entityManager->getRepository('MemberBundle:Member')->find($id);
-        $agency = $entityManager->getRepository('ConfigBundle:Agency')->find(1);
+        $agency = $entityManager->getRepository('ConfigBundle:Agency')->findOneBy([], ['id' => 'ASC']);
         $currentDate = new \DateTime('now');
 
         $operations = $entityManager->getRepository('AccountBundle:Operation')->findBy([
@@ -827,6 +834,8 @@ class ReportController extends Controller{
     /**
      * @Route("/daily/history", name="dailyreport")
      * @Method({"GET", "POST"})
+     * @param Request $request
+     * @return Response
      */
     public function dailyReportAction(Request $request){
         $em = $this->getDoctrine()->getManager();
@@ -964,6 +973,8 @@ class ReportController extends Controller{
     /**
      * @Route("/daily/confirmation", name="operation_confirmation")
      * @Method({"GET", "POST"})
+     * @param Request $request
+     * @return Response
      */
     public function dailyReportConfirmationAction(Request $request){
         $em = $this->getDoctrine()->getManager();
@@ -1093,10 +1104,7 @@ class ReportController extends Controller{
      */
     function saveOperationFromJSON(Request $request)
     {
-
         $entityManager = $this->getDoctrine()->getManager();
-
-        $logger = $this->get('logger');
 
         // Get the current user connected
         $currentUserId  = $this->get('security.token_storage')->getToken()->getUser()->getId();
@@ -1289,5 +1297,149 @@ class ReportController extends Controller{
             $response["success"] = false;
             return new Response(json_encode($response));
         }
+    }
+
+    /**
+     * @Route("/all/situations", name="all_situations_pdf")
+     * @return Response
+     */
+    public function generateAllSituations()
+    {
+        // Test is the user does not have the default role
+        if (!$this->container->get('security.authorization_checker')->isGranted('ROLE_USER')) {
+            return new RedirectResponse($this->container->get ('router')->generate ('fos_user_security_login'));
+        }
+
+        $em = $this->getDoctrine()->getManager();
+        $agency = $em->getRepository('ConfigBundle:Agency')->find(1);
+        $members = $em->getRepository('MemberBundle:Member')->findAll();
+
+        $loans = $em->getRepository('AccountBundle:Loan')->findByStatus(true);
+
+        $totalShares = $em->createQueryBuilder()
+            ->select('SUM(m.share)')
+            ->from('MemberBundle:Member', 'm')
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        $totalSavings = $em->createQueryBuilder()
+            ->select('SUM(s.saving)')
+            ->from('MemberBundle:Member', 's')
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        $totalDeposits = $em->createQueryBuilder()
+            ->select('SUM(s.deposit)')
+            ->from('MemberBundle:Member', 's')
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        $ds1 = $em->getRepository('ClassBundle:InternalAccount')->find(38);
+        $ds2 = $em->getRepository('ClassBundle:InternalAccount')->find(39);
+        $ds3 = $em->getRepository('ClassBundle:InternalAccount')->find(40);
+        $ds4 = $em->getRepository('ClassBundle:InternalAccount')->find(41);
+        $totalDailySavings = $ds1->getBalance() + $ds2->getBalance() + $ds3->getBalance() + $ds4->getBalance() ;
+
+        $totalRegistrationFeesPM = $em->createQueryBuilder()
+            ->select('SUM(m.registrationFees)')
+            ->from('MemberBundle:Member', 'm')
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        $totalBuildingFees = $em->createQueryBuilder()
+            ->select('SUM(m.buildingFees)')
+            ->from('MemberBundle:Member', 'm')
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        //get the number of the daily collectors
+        $totalCollectors = $em->createQueryBuilder()
+            ->select('COUNT(u)')
+            ->from('UserBundle:Utilisateur', 'u')
+            ->innerJoin('UserBundle:Groupe', 'g', 'WITH','g.id = u.groupe')
+            ->where('g.name = :name')
+            ->orWhere('g.name = :name2')
+            ->setParameters([
+                'name' => 'COLLECTOR',
+                'name2' => 'CASHER'
+            ])
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        $unpaidInterest = 0;
+        $loanUnpaid = 0;
+        $loanPaid = 0;
+        foreach ($loans as $loan) {
+            //get the last element in loan history
+            $lowest_remain_amount_LoanHistory = $em->createQueryBuilder()
+                ->select('MIN(lh.remainAmount)')
+                ->from('AccountBundle:LoanHistory', 'lh')
+                ->innerJoin('AccountBundle:Loan', 'l', 'WITH','lh.loan = l.id')
+                ->where('l.id = :loan')
+                ->orderBy('lh.id', 'DESC')
+                ->setParameter('loan', $loan)
+                ->getQuery()
+                ->getSingleScalarResult();
+
+            if ($lowest_remain_amount_LoanHistory) {
+                $latestLoanHistory = $em->getRepository('AccountBundle:LoanHistory')->findOneBy(
+                    [
+                        'remainAmount' => $lowest_remain_amount_LoanHistory,
+                        'loan' => $loan
+                    ],
+                    ['id' => 'DESC']
+                );
+                $unpaidInterest += $latestLoanHistory->getUnpaidInterest();
+                $loanUnpaid += $latestLoanHistory->getRemainAmount();
+
+                $loanPaid += + ($loan->getLoanAmount() - $latestLoanHistory->getRemainAmount());
+            }else{
+                $loanUnpaid += $loan->getLoanAmount();
+            }
+        }
+
+        $bayelleBalance = $em->getRepository('ClassBundle:InternalAccount')->find(82)->getBalance();
+
+        $ubBalance = $em->getRepository('ClassBundle:InternalAccount')->find(76)->getBalance();
+        /*Get the total cash on hand*/
+        $cashOnHand= $em->getRepository('ReportBundle:GeneralLedgerBalance')
+            ->findOneBy(
+                [], ['id' => 'DESC' ]
+            )->getBalance();
+        /*total loan Interest*/
+        $loanInterest = $em->getRepository('ClassBundle:InternalAccount')->find(136)->getBalance();
+
+        $html =  $this->renderView('pdf_files/general_situation_file.html.twig', [
+            'numberNumber' => count($members),
+            'agency' => $agency,
+            'members' => $members,
+            'totalShares' => $totalShares,
+            'totalSaving' => $totalSavings,
+            'totalDeposit' => $totalDeposits,
+            'buildingFees' => $totalBuildingFees,
+            'totalRegistration' => $totalRegistrationFeesPM,
+            'unpaidInterest' => $unpaidInterest,
+            'loans' => count($loans),
+            'loanUnpaid' => $loanUnpaid,
+            'totalDailySavings' => $totalDailySavings,
+            'totaCollectors' => $totalCollectors,
+            'bayelleBalance' => $bayelleBalance,
+            'ubBalance' => $ubBalance,
+            'cashOnHand' => $cashOnHand,
+            'loanInterest' => $loanInterest,
+        ]);
+
+        $html2pdf = $this->get('html2pdf_factory')->create('P', 'A4', 'en', true, 'UTF-8', [10, 10, 10, 10]);
+        $html2pdf->pdf->SetAuthor('GreenSoft-Group Technologies');
+        $html2pdf->pdf->SetDisplayMode('real');
+        $html2pdf->pdf->SetTitle('General Situation');
+        $response = new Response();
+        $html2pdf->pdf->SetTitle('General Situation');
+        $html2pdf->writeHTML($html);
+        $content = $html2pdf->Output('', true);
+        $response->setContent($content);
+        $response->headers->set('Content-Type', 'application/pdf');
+        $response->headers->set('Content-disposition', 'filename=General Situation.pdf');
+        return $response;
     }
 }

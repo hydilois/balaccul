@@ -8,6 +8,7 @@ use MemberBundle\Entity\Beneficiary;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\Request;
 use ReportBundle\Entity\GeneralLedgerBalance;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,7 +26,7 @@ class MemberController extends Controller
      * @Route("/", name="member_index")
      * @Method("GET")
      */
-    public function indexAction(){
+    public function index(){
         
         $entityManager = $this->getDoctrine()->getManager();
 
@@ -98,6 +99,9 @@ class MemberController extends Controller
      *
      * @Route("/beneficiary/{id}/new", name="beneficiary_new")
      * @Method({"GET", "POST"})
+     * @param Request $request
+     * @param Member $member
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
      */
     public function newBeneficiaryAction(Request $request, Member $member){
         $beneficiary = new Beneficiary();
@@ -119,20 +123,18 @@ class MemberController extends Controller
             if (((int)$totalRatio + $beneficiary->getRatio()) > 100) {
                 $this->addFlash('warning', 'Check the Ratio Value');
                 return $this->redirectToRoute('member_show', array('id' => $member->getId()));
-
-                // die("Mauvais");
             }else{
                 $em->persist($beneficiary);
                 $em->flush();
+                return $this->redirectToRoute('member_show', ['id' => $member->getId()]);
             }
-            return $this->redirectToRoute('member_index');
         }
 
-        return $this->render('member/new_beneficiary.html.twig', array(
+        return $this->render('member/new_beneficiary.html.twig', [
             'bForm' => $bForm->createView(),
             'member' => $member,
             'beneficiary' => $beneficiary,
-        ));
+        ]);
     }
 
     /**
@@ -140,6 +142,8 @@ class MemberController extends Controller
      *
      * @Route("/{id}/show", name="member_show")
      * @Method("GET")
+     * @param Member $member
+     * @return Response
      */
     public function showAction(Member $member){
 
@@ -159,6 +163,9 @@ class MemberController extends Controller
      *
      * @Route("/{id}/edit", name="member_edit")
      * @Method({"GET", "POST"})
+     * @param Request $request
+     * @param Member $member
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
      */
     public function editAction(Request $request, Member $member){
         $deleteForm = $this->createDeleteForm($member);
@@ -182,8 +189,11 @@ class MemberController extends Controller
      *
      * @Route("/{id}", name="member_delete")
      * @Method("DELETE")
+     * @param Request $request
+     * @param Member $member
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function deleteAction(Request $request, Member $member){
+    public function delete(Request $request, Member $member){
         $form = $this->createDeleteForm($member);
         $form->handleRequest($request);
 
@@ -217,8 +227,10 @@ class MemberController extends Controller
      * 
      * @Route("/new_json", name="member_new_json")
      * @Method({"GET", "POST"})
+     * @return Response
      */
-    function addNewMemberFromJSON(Request $request){
+    function addNewMemberFromJSON(Request $request)
+    {
 
         $entityManager = $this->getDoctrine()->getManager();
         $logger = $this->get('logger');
@@ -306,7 +318,7 @@ class MemberController extends Controller
         $dateOperation = new \DateTime($memberJSON["membershipDateCreation"]);
 
         /**
-        * Record the member situaton at the the creation
+        * Record the member situation at the the creation
         */
         if ($member->getShare() != 0) { //member shares is not null
             $operationShare = new Operation();

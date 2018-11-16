@@ -4,7 +4,6 @@ namespace UserBundle\Controller;
 
 use UserBundle\Entity\Utilisateur;
 use FOS\UserBundle\Event\FormEvent;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -16,14 +15,14 @@ use FOS\UserBundle\FOSUserEvents;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
- * Utilisateur controller.
+ * User controller.
  *
- * @Route("utilisateur")
+ * @Route("user")
  */
-class UtilisateurController extends BaseController
+class UserController extends BaseController
 {
     /**
-     * Lists all utilisateur entities.
+     * Lists all users entities.
      *
      * @Route("/", name="utilisateur_index")
      * @Method("GET")
@@ -32,10 +31,10 @@ class UtilisateurController extends BaseController
     {
         $em = $this->getDoctrine()->getManager();
 
-        $utilisateurs = $em->getRepository('UserBundle:Utilisateur')->findAll();
+        $users = $em->getRepository('UserBundle:Utilisateur')->findAll();
 
         return $this->render('utilisateur/index.html.twig', array(
-            'utilisateurs' => $utilisateurs,
+            'utilisateurs' => $users,
         ));
     }
 
@@ -44,7 +43,7 @@ class UtilisateurController extends BaseController
      * @Template("utilisateur/online_users.html.twig")
     */
     public function whoIsOnlineAction(){
-        $users = $this->getDoctrine()->getManager()->getRepository('UserBundle:Utilisateur')->getActive();
+        $users = $this->getDoctrine()->getManager()->getRepository(Utilisateur::class)->getActive();
         return array('users' => $users);
     }
 
@@ -54,23 +53,25 @@ class UtilisateurController extends BaseController
      *
      * @Route("/new", name="utilisateur_new")
      * @Method({"GET", "POST"})
+     * @param Request $request
+     * @return RedirectResponse|Response
      */
     public function newAction(Request $request)
     {
-        $utilisateur = new Utilisateur();
-        $form = $this->createForm('UserBundle\Form\UtilisateurType', $utilisateur);
+        $user = new Utilisateur();
+        $form = $this->createForm('UserBundle\Form\UtilisateurType', $user);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $em->persist($utilisateur);
+            $em->persist($user);
             $em->flush();
 
-            return $this->redirectToRoute('utilisateur_show', array('id' => $utilisateur->getId()));
+            return $this->redirectToRoute('utilisateur_show', array('id' => $user->getId()));
         }
 
         return $this->render('utilisateur/new.html.twig', array(
-            'utilisateur' => $utilisateur,
+            'utilisateur' => $user,
             'form' => $form->createView(),
         ));
     }
@@ -89,8 +90,6 @@ class UtilisateurController extends BaseController
             $userManager = $this->get('fos_user.user_manager');
             /** @var $dispatcher EventDispatcherInterface */
             $dispatcher = $this->get('event_dispatcher');
-
-            $em = $this->getDoctrine()->getManager();
 
             $user = $userManager->createUser();
 
@@ -127,9 +126,8 @@ class UtilisateurController extends BaseController
                     /*$dispatcher->dispatch(FOSUserEvents::REGISTRATION_COMPLETED, new FilterUserResponseEvent($user, $request, $response));*/
                     
                     //Flasbag message
-                   $request->getSession()
-                    ->getFlashBag()
-                    ->add('success', ' User Account successfully created');
+                   $this
+                    ->addFlash('success', ' User Account successfully created');
 
                     return $response;
                 }
@@ -152,13 +150,15 @@ class UtilisateurController extends BaseController
      *
      * @Route("/{id}", name="utilisateur_show")
      * @Method("GET")
+     * @param Utilisateur $user
+     * @return Response
      */
-    public function showAction(Utilisateur $utilisateur)
+    public function showAction(Utilisateur $user)
     {
-        $deleteForm = $this->createDeleteForm($utilisateur);
+        $deleteForm = $this->createDeleteForm($user);
 
         return $this->render('utilisateur/show.html.twig', array(
-            'utilisateur' => $utilisateur,
+            'utilisateur' => $user,
             'delete_form' => $deleteForm->createView(),
         ));
     }
@@ -168,23 +168,26 @@ class UtilisateurController extends BaseController
      *
      * @Route("/{id}/edit", name="utilisateur_edit")
      * @Method({"GET", "POST"})
+     * @param Request $request
+     * @param Utilisateur $user
+     * @return RedirectResponse|Response
      */
-    public function editAction(Request $request, Utilisateur $utilisateur)
+    public function editAction(Request $request, Utilisateur $user)
     {
-        $deleteForm = $this->createDeleteForm($utilisateur);
-        $editForm = $this->createForm('UserBundle\Form\UtilisateurType', $utilisateur);
+        $deleteForm = $this->createDeleteForm($user);
+        $editForm = $this->createForm('UserBundle\Form\UtilisateurType', $user);
         $editForm->handleRequest($request);
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
 
-            $utilisateur->setRoles(["ROLE_".$utilisateur->getGroupe()]);
+            $user->setRoles(["ROLE_".$user->getGroupe()]);
             $this->getDoctrine()->getManager()->flush();
 
             return $this->redirectToRoute('utilisateur_index');
         }
 
         return $this->render('utilisateur/edit.html.twig', array(
-            'utilisateur' => $utilisateur,
+            'utilisateur' => $user,
             'edit_form' => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
         ));
@@ -195,15 +198,18 @@ class UtilisateurController extends BaseController
      *
      * @Route("/{id}", name="utilisateur_delete")
      * @Method("DELETE")
+     * @param Request $request
+     * @param Utilisateur $user
+     * @return RedirectResponse
      */
-    public function deleteAction(Request $request, Utilisateur $utilisateur)
+    public function deleteAction(Request $request, Utilisateur $user)
     {
-        $form = $this->createDeleteForm($utilisateur);
+        $form = $this->createDeleteForm($user);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $em->remove($utilisateur);
+            $em->remove($user);
             $em->flush();
         }
 
@@ -213,14 +219,14 @@ class UtilisateurController extends BaseController
     /**
      * Creates a form to delete a utilisateur entity.
      *
-     * @param Utilisateur $utilisateur The utilisateur entity
+     * @param Utilisateur $user The utilisateur entity
      *
      * @return \Symfony\Component\Form\Form The form
      */
-    private function createDeleteForm(Utilisateur $utilisateur)
+    private function createDeleteForm(Utilisateur $user)
     {
         return $this->createFormBuilder()
-            ->setAction($this->generateUrl('utilisateur_delete', array('id' => $utilisateur->getId())))
+            ->setAction($this->generateUrl('utilisateur_delete', array('id' => $user->getId())))
             ->setMethod('DELETE')
             ->getForm()
         ;
@@ -249,12 +255,12 @@ class UtilisateurController extends BaseController
             ->where('u.id = ' . $idUtilisateur)
             ->getQuery();
 
-        $utilisateurArray = $query->getSingleResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
+        $userArray = $query->getSingleResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
         $response = [
             "message" => "Entité Utilisateur", 
             "params" => $idUtilisateur, 
             "status" => "success", 
-            "data" => json_decode(json_encode($utilisateurArray))
+            "data" => json_decode(json_encode($userArray))
         ];
         return new Response(json_encode($response));
     }
@@ -263,7 +269,9 @@ class UtilisateurController extends BaseController
      * This function is made to disable a user account.
      *
      * @Route("/{id}/disable", name="utilisateur_disable")
-     * 
+     * @param Request $request
+     * @param Utilisateur $user
+     * @return RedirectResponse
      */
     public function disableAction(Request $request, Utilisateur $user){
 
@@ -282,16 +290,18 @@ class UtilisateurController extends BaseController
      * This function is made to enable a user account.
      *
      * @Route("/{id}/enable", name="utilisateur_enable")
-     * 
+     * @param Utilisateur $user
+     * @return RedirectResponse
+     * @internal param Request $request
      */
-    public function enableAction( Request $request, Utilisateur $user){
+    public function enableAction( Utilisateur $user)
+    {
 
         $user->setEnabled(true);
         $this->getDoctrine()->getManager()->flush();
 
-        $request->getSession()
-            ->getFlashBag()
-            ->add('success', 'Compte Utilisateur activé avec succès');
+        $this
+            ->addFlash('success', 'Compte Utilisateur activé avec succès');
 
         return $this->redirectToRoute('utilisateur_index');
     }

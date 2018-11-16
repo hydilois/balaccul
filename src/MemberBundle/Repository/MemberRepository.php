@@ -17,6 +17,35 @@ use UserBundle\Entity\Utilisateur;
  */
 class MemberRepository extends EntityRepository
 {
+
+    /**
+     * @return array
+     */
+    public function getActiveMembers()
+    {
+        $members = $this->createQueryBuilder('m')
+            ->where('m.share != 0')
+            ->orderBy('m.memberNumber', 'ASC')
+            ->getQuery()
+            ->getResult();
+
+        return $members;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAllInActiveMembers()
+    {
+        $members = $this->createQueryBuilder('m')
+            ->where('m.share = 0')
+            ->orderBy('m.memberNumber', 'ASC')
+            ->getQuery()
+            ->getResult();
+
+        return $members;
+    }
+
     /**
      * @param Utilisateur $currentUser
      * @param \DateTime $dateTime

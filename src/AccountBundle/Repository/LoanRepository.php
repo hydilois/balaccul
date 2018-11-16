@@ -19,6 +19,23 @@ use UserBundle\Entity\Utilisateur;
 class LoanRepository extends EntityRepository
 {
     /**
+     * @return array
+     */
+    public function getLoansOrderByAccountName()
+    {
+        $loans = $this->createQueryBuilder('l')
+            ->innerJoin(Member::class, 'm', 'WITH', 'l.physicalMember = m.id')
+            ->andWhere('l.status = :status')
+            ->orderBy('m.name', 'ASC')
+            ->setParameters([
+                'status' => true
+                ]
+            )
+            ->getQuery()
+            ->getResult();
+        return $loans;
+    }
+    /**
      * @param Utilisateur $currentUser
      * @param Loan $loan
      * @param Member $member

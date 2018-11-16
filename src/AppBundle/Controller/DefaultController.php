@@ -13,8 +13,10 @@ use Symfony\Component\Yaml\Yaml;
 class DefaultController extends Controller{
     /**
      * @Route("/", name="homepage")
+     * @return Response
      */
-    public function indexAction(Request $request){
+    public function indexAction()
+    {
         // Test is the user does not have the default role
         if (!$this->container->get('security.authorization_checker')->isGranted('ROLE_USER')) {
             return new RedirectResponse($this->container->get ('router')->generate ('fos_user_security_login'));
@@ -63,7 +65,7 @@ class DefaultController extends Controller{
             ->getSingleScalarResult();
 
         //get the number of the daily collectors
-        $totaCollectors = $em->createQueryBuilder()
+        $totalCollectors = $em->createQueryBuilder()
             ->select('COUNT(u)')
             ->from('UserBundle:Utilisateur', 'u')
             ->innerJoin('UserBundle:Groupe', 'g', 'WITH','g.id = u.groupe')
@@ -121,7 +123,6 @@ class DefaultController extends Controller{
 
         // replace this example code with whatever you need
         return $this->render('default/index.html.twig', [
-            'base_dir' => realpath($this->getParameter('kernel.project_dir')).DIRECTORY_SEPARATOR,
             'numberNumber' => count($members),
             'agency' => $agency,
             'members' => $members,
@@ -134,7 +135,7 @@ class DefaultController extends Controller{
             'loans' => $loans,
             'loanUnpaid' => $loanUnpaid,
             'totalDailySavings' => $totalDailySavings,
-            'totaCollectors' => $totaCollectors,
+            'totaCollectors' => $totalCollectors,
             'bayelleBalance' => $bayelleBalance,
             'ubBalance' => $ubBalance,
             'cashOnHand' => $cashOnHand,
@@ -144,8 +145,9 @@ class DefaultController extends Controller{
 
     /**
      * @Route("/lock_screen", name="lock_screen")
+     * @return Response
      */
-    public function pageGardeAction(Request $request){
+    public function pageGardeAction(){
 
         // replace this example code with whatever you need
         $em = $this->getDoctrine()->getManager();
@@ -157,11 +159,12 @@ class DefaultController extends Controller{
     }
 
 
-        /**
-         * @Route("/dump", name="database_dump")
-         * @Method({"GET", "POST"})
-         */
-        public function databaseDumpAction(Request $request){
+    /**
+     * @Route("/dump", name="database_dump")
+     * @Method({"GET", "POST"})
+     * @return string
+     */
+        public function databaseDumpAction(){
             try{
                 $date = date("Y-m-d_H:i:s");
                 $db_user = $this->getParameter('database_user');
@@ -176,7 +179,6 @@ class DefaultController extends Controller{
                 ]);
 
                 }catch(Exception $ex){
-                    $logger("AN ERROR OCCURED");
                     return json_encode([
                         "status" => "failed",
                     ]);

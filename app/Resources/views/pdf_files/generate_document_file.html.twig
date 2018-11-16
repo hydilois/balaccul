@@ -1,16 +1,47 @@
-<page footer="page;">
+<style type="text/css">
+    table {
+        width: 100%;
+        line-height: 5mm;
+        border-collapse: collapse;
+    }
+
+    .p-5{width: 5%}
+    .p-10 { width: 10%; }
+    .p-25{width: 25%;}
+    .p-20{width: 20%;}
+    .p-30 {width: 30%;}
+    .p-60 { width: 60%; }
+    .p-40{width: 40%}
+    .p-100{width: 100%;}
+
+    .trial_balance td,.trial_balance th {
+        border: 1px solid black;
+        height: 20px;
+        font-size: 14px;
+    }
+
+    .trial_balance th {
+        background: gray; text-align:center;
+    }
+    .text-center {
+        text-align: center;
+    }
+</style>
+
+<page footer="page;" backbottom="5mm">
     <page_footer>
-        <span>{{agency.abreviation}}</span> <span style="margin-left:500px;">GreenSoft-Group</span>
+        <hr>
+        <span>{{agency.abreviation}}</span> <span style="margin-left:400px;">GreenSoft-Group Technologies</span>
     </page_footer>
     <table>
         <tr>
-            <td class="60p">
+            <td class="p-60">
                  <b>{{agency.name}}</b> <br/>
                  <b>{{agency.abreviation}} HEAD OFFICE</b><br/>
                  <b>TEL: {{agency.phoneNumber}}</b><br>
                  <b>POX BOX: {{agency.poBox}}</b>
             </td>
-            <td  style="text-align: right;" class="40p">
+            <td  style="text-align: right;" class="p-40">
                 <img style="height:80px;" src="./assets/images/users/logo_cu1.jpg"  alt="logo">
             </td>
         </tr>
@@ -18,21 +49,30 @@
     {% if type == "Members" %}
         <table>
             <tr>
-                <td class="100p">
-                    <h3 style="text-align:center"><strong>BALACCUL MEMBERS LIST</strong></h3>
+                <td class="p-100">
+                    <h3 class="text-center"><strong>
+                            {% if status == 'allMembers' %}
+                                BALACCUL MEMBERS LIST
+                            {% elseif status == 'activeMembers' %}
+                                BALACCUL ACTIVE MEMBERS
+                            {% else %}
+                                BALACCUL INACTIVE MEMBERS
+                            {% endif %}
+                        </strong></h3>
                 </td>
             </tr>
         </table>
-        <table class="trialbalance">
+        <table class="trial_balance">
             <tr>
-                <th style="background: gray; text-align:center" class="10p">A/C N°</th>
-                <th style="background: gray; text-align:center" class="30p">ACCOUNT NAME</th>
-                <th style="background: gray; text-align:center" class="10p">REG</th>
-                <th style="background: gray; text-align:center" class="10p">SHARES</th>
-                <th style="background: gray; text-align:center" class="10p">SAVINGS</th>
-                <th style="background: gray; text-align:center" class="10p">DEPOSITS</th>
-                <th style="background: gray; text-align:center" class="10p">BF</th>
-                <th style="background: gray; text-align:center" class="10p">OBSERVATION</th>
+                <th class="p-5">N°</th>
+                <th class="p-10">A/C N°</th>
+                <th class="p-25">ACCOUNT NAME</th>
+                <th class="p-10">REG</th>
+                <th class="p-10">SHARES</th>
+                <th class="p-10">SAVINGS</th>
+                <th class="p-10">DEPOSITS</th>
+                <th class="p-10">BF</th>
+                <th class="p-10">OBSERVATION</th>
             </tr>
                 {% set totalReg = 0 %}
                 {% set totalSh = 0 %}
@@ -41,14 +81,15 @@
                 {% set totalBF = 0 %}
                 {% for account in lists %}
                     <tr>
-                        <td style="text-align:center">{{account.memberNumber }}</td>
-                        <td style="text-align:center">{{account.name[:20]}}</td>
-                        <td style="text-align:center">{{account.registrationFees |number_format(0, '.', ' ')}}</td>
-                        <td style="text-align:center">{{account.share |number_format(0, '.', ' ')}}</td>
-                        <td style="text-align:center">{{account.saving |number_format(0, '.', ' ')}}</td>
-                        <td style="text-align:center">{{account.deposit |number_format(0, '.', ' ')}}</td>
-                        <td style="text-align:center">{{account.buildingFees |number_format(0, '.', ' ')}}</td>
-                        <td style="text-align:center"></td>
+                        <td class="text-center">{{ loop.index }}</td>
+                        <td class="text-center">{{account.memberNumber }}</td>
+                        <td class="text-center">{{account.name[:20]}}</td>
+                        <td class="text-center">{{account.registrationFees |number_format(0, '.', ' ')}}</td>
+                        <td class="text-center">{{account.share |number_format(0, '.', ' ')}}</td>
+                        <td class="text-center">{{account.saving |number_format(0, '.', ' ')}}</td>
+                        <td class="text-center">{{account.deposit |number_format(0, '.', ' ')}}</td>
+                        <td class="text-center">{{account.buildingFees |number_format(0, '.', ' ')}}</td>
+                        <td class="text-center"></td>
                     </tr>
                     {% set totalReg = totalReg + account.registrationFees %}
                     {% set totalSh = totalSh + account.share %}
@@ -57,30 +98,30 @@
                     {% set totalBF = totalBF + account.buildingFees %}
                 {% endfor %}
                 <tr>
-                    <td colspan="2" style="text-align:center"><b>TOTAL</b></td>
-                    <td style="text-align:center"><b>{{totalReg |number_format(0, '.', ' ')}}</b></td>
-                    <td style="text-align:center"><b>{{totalSh |number_format(0, '.', ' ')}}</b></td>
-                    <td style="text-align:center"><b>{{totalSa |number_format(0, '.', ' ')}}</b></td>
-                    <td style="text-align:center"><b>{{totalDep |number_format(0, '.', ' ')}}</b></td>
-                    <td style="text-align:center"><b>{{totalBF |number_format(0, '.', ' ')}}</b></td>
-                    <td style="text-align:center"></td>
+                    <td colspan="3" class="text-center"><b>TOTAL</b></td>
+                    <td class="text-center"><b>{{totalReg |number_format(0, '.', ' ')}}</b></td>
+                    <td class="text-center"><b>{{totalSh |number_format(0, '.', ' ')}}</b></td>
+                    <td class="text-center"><b>{{totalSa |number_format(0, '.', ' ')}}</b></td>
+                    <td class="text-center"><b>{{totalDep |number_format(0, '.', ' ')}}</b></td>
+                    <td class="text-center"><b>{{totalBF |number_format(0, '.', ' ')}}</b></td>
+                    <td class="text-center"></td>
                 </tr>
         </table>
     {% else %}
     <table>
         <tr>
-            <td class="100p">
-                <h3 style="text-align:center"><strong>lOANS LIST</strong></h3>
+            <td class="p-100">
+                <h3 class="text-center"><strong>LOANS LIST</strong></h3>
             </td>
         </tr>
     </table>
-    <table class="trialbalance">
+    <table class="trial_balance">
         <tr>
-            <th style="background: gray; text-align:center" class="10p">CODE</th>
-            <th style="background: gray; text-align:center" class="30p">LOAN CONTRACTED</th>
-            <th style="background: gray; text-align:center" class="20p">LOAN REPAID</th>
-            <th style="background: gray; text-align:center" class="20p">UNPAID INTEREST</th>
-            <th style="background: gray; text-align:center" class="20p">BALANCE</th>
+            <th class="p-10">CODE</th>
+            <th class="p-30">LOAN CONTRACTED</th>
+            <th class="p-20">LOAN REPAID</th>
+            <th class="p-20">UNPAID INTEREST</th>
+            <th class="p-20">BALANCE</th>
         </tr>
             {% set totalLC = 0 %}
             {% set totalLR = 0 %}
@@ -90,11 +131,11 @@
         {% if lists %}
             {% for loan in lists %}
                 <tr>
-                    <td style="text-align:center">{{loan.l_loanCode }}</td>
-                    <td style="text-align:center">{{loan.l_loanAmount |number_format(0, '.', ' ')}}</td>
-                    <td style="text-align:center">{{(loan.l_loanAmount - loan.lh_remainAmount) |number_format(0, '.', ' ')}}</td>
-                    <td style="text-align:center">{{loan.lh_unpaidInterest |number_format(0, '.', ' ')}}</td>
-                    <td style="text-align:center">{{loan.lh_remainAmount |number_format(0, '.', ' ')}}</td>
+                    <td class="text-center">{{loan.l_loanCode }}</td>
+                    <td class="text-center">{{loan.l_loanAmount |number_format(0, '.', ' ')}}</td>
+                    <td class="text-center">{{(loan.l_loanAmount - loan.lh_remainAmount) |number_format(0, '.', ' ')}}</td>
+                    <td class="text-center">{{loan.lh_unpaidInterest |number_format(0, '.', ' ')}}</td>
+                    <td class="text-center">{{loan.lh_remainAmount |number_format(0, '.', ' ')}}</td>
                 </tr>
                 {% set totalLC = totalLC + loan.l_loanAmount %}
                 {% set totalLR = totalLR + (loan.l_loanAmount - loan.lh_remainAmount) %}
@@ -105,25 +146,23 @@
         {% if listLoanWithOutHistory %}
             {% for loan in listLoanWithOutHistory %}
                 <tr>
-                    <td style="text-align:center">{{loan.loanCode }}</td>
-                    <td style="text-align:center">{{loan.loanAmount}}</td>
-                    <td style="text-align:center">0</td>
-                    <td style="text-align:center">0</td>
-                    <td style="text-align:center">{{loan.loanAmount |number_format(0, '.', ' ')}}</td>
+                    <td class="text-center">{{loan.loanCode }}</td>
+                    <td class="text-center">{{loan.loanAmount}}</td>
+                    <td class="text-center">0</td>
+                    <td class="text-center">0</td>
+                    <td class="text-center">{{loan.loanAmount |number_format(0, '.', ' ')}}</td>
                 </tr>
                 {% set totalLC = totalLC + loan.loanAmount %}
                 {% set totalBA = totalBA + loan.loanAmount %}
             {% endfor %}
         {% endif %}
             <tr>
-                <td style="text-align:center"><b>TOTAL</b></td>
-                <td style="text-align:center"><b>{{totalLC |number_format(0, '.', ' ')}}</b></td>
-                <td style="text-align:center"><b>{{totalLR |number_format(0, '.', ' ')}}</b></td>
-                <td style="text-align:center"><b>{{totalUI |number_format(0, '.', ' ')}}</b></td>
-                <td style="text-align:center"><b>{{totalBA |number_format(0, '.', ' ')}}</b></td>
+                <td class="text-center"><b>TOTAL</b></td>
+                <td class="text-center"><b>{{totalLC |number_format(0, '.', ' ')}}</b></td>
+                <td class="text-center"><b>{{totalLR |number_format(0, '.', ' ')}}</b></td>
+                <td class="text-center"><b>{{totalUI |number_format(0, '.', ' ')}}</b></td>
+                <td class="text-center"><b>{{totalBA |number_format(0, '.', ' ')}}</b></td>
             </tr>
         </table>
     {% endif %}
 </page>
-
-{% include '/report/extra_file_report.css.html.twig' %}

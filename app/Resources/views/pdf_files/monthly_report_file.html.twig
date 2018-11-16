@@ -1,83 +1,110 @@
+<style type="text/css">
+    table {
+        width: 100%;
+        line-height: 5mm;
+        border-collapse: collapse;
+    }
+
+    .p-20{width: 20%;}
+    .p-15 { width: 15%; }
+    .p-30 {width: 30%;}
+    .p-40{width: 40%}
+    .p-50 { width: 50%; }
+    .p-60 { width: 60%; }
+    .p-100{width: 100%;}
+
+    .report th, .report td{
+        border: 1px solid black;
+        height: 15px;
+        font-size: 15px;
+    }
+
+    .report th {
+        background: gray; text-align:center;
+    }
+    
+    .text-center {
+        text-align: center;
+    }
+</style>
 <page footer="page;">
     <page_footer>
         <hr />
-        <span>{{agency.abreviation}}</span> <span style="margin-left:100px;">Printed By <b>{{currentUser}}</b></span><span style="margin-left:150px;">GreenSoft-Consulting</span>
+        <span><b>{{ agency.abreviation }}</b></span> <span style="margin-left:80px;">Printed By <b>{{ currentUser }}</b></span><span style="margin-left:100px;">GreenSoft-Group Technologies</span>
     </page_footer>
     <table>
         <tr>
-            <td class="60p">
+            <td class="p-60">
                  <b>{{agency.name}}</b> <br/>
                  <b>HEAD OFFICE {{agency.town}}</b> <br/>
                  <b>Tel: {{agency.phoneNumber}}</b><br>
                  <b>PO BOX: {{agency.poBox}}</b>
             </td>
-            <td  style="text-align: right;" class="40p">
+            <td  style="text-align: right;" class="p-40">
                 <img style="height:80px;" src="./assets/images/users/logo_cu1.jpg"  alt="logo">
             </td>
         </tr>
     </table>
     <table>
         <tr>
-            <td class="100p">
-                <h3 style="text-align:center"><strong>INCOME AND EXPENDITURE A/C</strong></h3>
+            <td class="p-100">
+                <h3 class="text-center"><strong>INCOME AND EXPENDITURE A/C</strong></h3>
             </td>
         </tr>
     </table>
     <table>
         <tr>
-            <td class="50p">Printed on: <strong>{{date |date('d-m-Y H:i')}}</strong></td>
-            <td style="text-align:right" class="50p">Period From: <b>{{ displayDateStart}}</b> to <b>{{displayDateEnd}}</b></td>
+            <td class="p-50">Printed on: <strong>{{date |date('d-m-Y H:i')}}</strong></td>
+            <td style="text-align:right" class="p-50">Period From: <b>{{ displayDateStart}}</b> to <b>{{displayDateEnd}}</b></td>
         </tr>
     </table> <br>
     <table class="report">
         <tr>
-            <th style="background: gray; text-align:center" class="20p">A/C N°</th>
-            <th style="background: gray; text-align:center" class="50p">DESCRIPTION</th>
-            <th style="background: gray; text-align:center" class="15p">AMOUNT</th>
-            <th style="background: gray; text-align:center" class="15p">AMOUNT</th>
+            <th class="p-20">A/C N°</th>
+            <th class="p-50">DESCRIPTION</th>
+            <th class="p-15">AMOUNT</th>
+            <th class="p-15">TOTAL</th>
         </tr>
             {% set totalIncome = 0 %}
             {% set totalExpenditure = 0 %}
             {% for operation in incomeOp %} 
                 <tr>
-                    <td style="text-align:center">{{operation.ia_accountNumber }}</td>
-                    <td style="text-align:center">{{operation.ia_accountName[:30]}}</td>
-                    <td style="text-align:center">{{operation.amount |number_format(0, '.', ' ')}}</td>
-                    <td style="text-align:center"></td>
+                    <td class="text-center">{{operation.ia_accountNumber }}</td>
+                    <td class="text-center">{{operation.ia_accountName[:30]}}</td>
+                    <td class="text-center">{{operation.amount |number_format(0, '.', ' ')}}</td>
+                    <td class="text-center"></td>
                 </tr>
                 {% set totalIncome = totalIncome + operation.amount %}
             {% endfor %}
             <tr>
-                <td colspan="3" class="30p" style="text-align:center"><b>TOTAL INCOME FOR THE MONTH</b></td>
-                <td class="15p" style="text-align:center"><b>{{totalIncome |number_format(0, '.', ' ')}}</b></td>
+                <td colspan="3" class="p-30 text-center"><b>TOTAL INCOME FOR THE MONTH</b></td>
+                <td class="p-15 text-center"><b>{{ totalIncome |number_format(0, '.', ' ') }}</b></td>
             </tr>
 
             {% for operation in expenditureOp %} 
                 <tr>
-                    <td style="text-align:center">{{operation.ia_accountNumber }}</td>
-                    <td style="text-align:center">{{operation.ia_accountName[:30]}}</td>
-                    <td style="text-align:center">{{operation.credit |number_format(0, '.', ' ')}}</td>
-                    <td style="text-align:center"></td>
+                    <td class="text-center">{{operation.ia_accountNumber }}</td>
+                    <td class="text-center">{{ operation.ia_accountName[:30] }}</td>
+                    <td class="text-center">{{ operation.credit |number_format(0, '.', ' ') }}</td>
+                    <td class="text-center"></td>
                 </tr>
                 {% set totalExpenditure = totalExpenditure + operation.credit %}
             {% endfor %}
             <tr>
-                <td colspan="3" class="30p" style="text-align:center"><b>TOTAL EXPENDITURE FOR THE MONTH</b></td>
-                <td class="15p" style="text-align:center"><b>{{totalExpenditure |number_format(0, '.', ' ')}}</b></td>
+                <td colspan="3" class="p-30 text-center"><b>TOTAL EXPENDITURE FOR THE MONTH</b></td>
+                <td class="p-15 text-center"><b>{{totalExpenditure |number_format(0, '.', ' ')}}</b></td>
             </tr>
             <tr>
-                <td colspan="3" class="30p" style="text-align:center"><b>NET PROFIT FOR THE MONTH(UNDIVIDED EARNINGS)</b></td>
+                <td colspan="3" class="p-30 text-center"><b>NET PROFIT FOR THE MONTH(UNDIVIDED EARNINGS)</b></td>
                 {% set benefit = totalIncome - totalExpenditure %}
-                <td class="15p" style="text-align:center"><b>{{benefit |number_format(0, '.', ' ')}}</b></td>
+                <td class="p-15 text-center"><b>{{benefit |number_format(0, '.', ' ')}}</b></td>
             </tr>
     </table>
     <br><br>
     <table>
         <tr>
-            <td class="50p" style="text-align: center; font-size: 15px; font-weight: bold;">MANAGER</td>
-            <td class="50p" style="text-align: center; font-size: 15px; font-weight: bold;">PRESIDENT</td>
+            <td class="p-50" style="text-align: center; font-size: 15px; font-weight: bold;">MANAGER</td>
+            <td class="p-50" style="text-align: center; font-size: 15px; font-weight: bold;">PRESIDENT</td>
         </tr>
     </table>
 </page>
-
-{% include '/report/extra_file_report.css.html.twig' %}

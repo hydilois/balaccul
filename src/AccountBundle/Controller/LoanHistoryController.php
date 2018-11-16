@@ -41,44 +41,20 @@ class LoanHistoryController extends Controller
      * @Route("/loans/situation", name="all_loans_situation")
      * @Method("GET")
      */
-    public function allLoansSituationAction(){
+    public function allLoansSituationAction()
+    {
 
         $em = $this->getDoctrine()->getManager();
-        $agency = $em->getRepository('ConfigBundle:Agency')->find(1);
-        $loans = $em->getRepository('AccountBundle:Loan')->findByStatus(true);
+        $agency = $em->getRepository('ConfigBundle:Agency')->findOneBy([],['id' => 'ASC']);
+        $loans = $em->getRepository(LoanHistory::class)->getAllActiveLoans();
 
-        foreach ($loans as $loan) {
-                //get the last element in loan history
-            $lowest_remain_amount_LoanHistory = $em->createQueryBuilder()
-                ->select('MIN(lh.remainAmount)')
-                ->from('AccountBundle:LoanHistory', 'lh')
-                ->innerJoin('AccountBundle:Loan', 'l', 'WITH','lh.loan = l.id')
-                ->where('l.id = :loan')
-                ->orderBy('lh.id', 'DESC')
-                ->setParameter('loan', $loan)
-                ->getQuery()
-                ->getSingleScalarResult();
-
-            if ($lowest_remain_amount_LoanHistory) {
-                $latestLoanHistory = $em->getRepository('AccountBundle:LoanHistory')->findOneBy(
-                    [
-                        'remainAmount' => $lowest_remain_amount_LoanHistory,
-                        'loan' => $loan
-                    ],
-                    ['id' => 'DESC']
-                );
-
-                $loan->setLoanHistory($latestLoanHistory);
-            }
-        }
-
-        $html =  $this->renderView('loanhistory/members_loans_situation_pdf.html.twig', array(
+        $html =  $this->renderView('loanhistory/members_loans_situation_pdf.html.twig', [
             'agency' => $agency,
             'loans' => $loans,
-        ));
+        ]);
 
         $html2pdf = $this->get('html2pdf_factory')->create('L', 'A4', 'en', true, 'UTF-8', array(10, 5, 10, 10));
-        $html2pdf->pdf->SetAuthor('GreenSoft-Team');
+        $html2pdf->pdf->SetAuthor('GreenSoft-Group Technologies');
         $html2pdf->pdf->SetDisplayMode('real');
         $html2pdf->pdf->SetTitle('Members_Loans_Situation');
         $response = new Response();
@@ -117,6 +93,8 @@ class LoanHistoryController extends Controller
      *
      * @Route("/new", name="loanhistory_new")
      * @Method({"GET", "POST"})
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
      */
     public function newAction(Request $request)
     {
@@ -143,6 +121,8 @@ class LoanHistoryController extends Controller
      *
      * @Route("/{id}", name="loanhistory_show")
      * @Method("GET")
+     * @param LoanHistory $loanHistory
+     * @return Response
      */
     public function showAction(LoanHistory $loanHistory)
     {
@@ -159,6 +139,9 @@ class LoanHistoryController extends Controller
      *
      * @Route("/{id}/edit", name="loanhistory_edit")
      * @Method({"GET", "POST"})
+     * @param Request $request
+     * @param LoanHistory $loanHistory
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
      */
     public function editAction(Request $request, LoanHistory $loanHistory)
     {
@@ -184,6 +167,9 @@ class LoanHistoryController extends Controller
      *
      * @Route("/{id}", name="loanhistory_delete")
      * @Method("DELETE")
+     * @param Request $request
+     * @param LoanHistory $loanHistory
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function deleteAction(Request $request, LoanHistory $loanHistory)
     {
@@ -221,13 +207,11 @@ class LoanHistoryController extends Controller
      * 
      * @Route("/save", name="loanhistory_new_save")
      * @Method({"GET", "POST"})
+     * @return Response
      */
-    function saveLoanHistoryFromJSON(Request $request){
-
+    function saveLoanHistoryFromJSON(Request $request)
+    {
         $entityManager = $this->getDoctrine()->getManager();
-
-        $logger = $this->get('logger');
-
 
         // Get the current user connected
         $currentUserId  = $this->get('security.token_storage')->getToken()->getUser()->getId();
@@ -334,7 +318,6 @@ class LoanHistoryController extends Controller
        
         }catch(Exception $ex){
 
-            $logger("AN ERROR OCCURED");
             $response["success"] = false;
             return new Response(json_encode($response));
         }
@@ -346,10 +329,10 @@ class LoanHistoryController extends Controller
      * 
      * @Route("/close", name="loan_save_close")
      * @Method({"GET", "POST"})
+     * @return Response
      */
     function closeLoanFromJSON(Request $request){
         $entityManager = $this->getDoctrine()->getManager();
-        $logger = $this->get('logger');
         try{
             $loanJSON = json_decode(json_encode($request->request->get('data')), true);
 
@@ -373,7 +356,6 @@ class LoanHistoryController extends Controller
        
         }catch(Exception $ex){
 
-            $logger("AN ERROR OCCURED");
             $response["success"] = false;
             return new Response(json_encode($response));
         }
