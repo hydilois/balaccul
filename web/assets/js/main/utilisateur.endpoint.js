@@ -21,7 +21,7 @@ $(function() {
             this.feedbackHelper = new FeedbackHelper();
         }
 
-        var utilisateurEndpoint = new UtilisateurEndpoint();
+        var userEndpoint = new UtilisateurEndpoint();
 
         /**
          * allow to initialize the view
@@ -75,12 +75,12 @@ $(function() {
 
                         } else {
                             console.log("Message d'erreur Impossible de recuperer la classe en question");
-                            utilisateurEndpoint.feedbackHelper.showMessageWithPrompt("Désolé", "un problème est survenu pendant la soumission de votre requête si le problème persiste, contactez votre administrateur", "error")
+                            userEndpoint.feedbackHelper.showMessageWithPrompt("Désolé", "un problème est survenu pendant la soumission de votre requête si le problème persiste, contactez votre administrateur", "error")
                         }
                     },
                     error: function(returnedData) {
                         console.error(returnedData);
-                        utilisateurEndpoint.feedbackHelper.showMessageWithPrompt("Désolé", "un problème est survenu pendant la soumission de votre requête si le problème persiste, contactez votre administrateur", "error");
+                        userEndpoint.feedbackHelper.showMessageWithPrompt("Désolé", "un problème est survenu pendant la soumission de votre requête si le problème persiste, contactez votre administrateur", "error");
                     }
                     ,
                     complete: function() {
@@ -127,12 +127,12 @@ $(function() {
 
                         } else {
                             console.log("Message d'erreur Impossible de recuperer la classe en question");
-                            utilisateurEndpoint.feedbackHelper.showMessageWithPrompt("Désolé", "un problème est survenu pendant la soumission de votre requête si le problème persiste, contactez votre administrateur", "error")
+                            userEndpoint.feedbackHelper.showMessageWithPrompt("Désolé", "un problème est survenu pendant la soumission de votre requête si le problème persiste, contactez votre administrateur", "error")
                         }
                     },
                     error: function(returnedData) {
                         console.error(returnedData);
-                        utilisateurEndpoint.feedbackHelper.showMessageWithPrompt("Désolé", "un problème est survenu pendant la soumission de votre requête si le problème persiste, contactez votre administrateur", "error");
+                        userEndpoint.feedbackHelper.showMessageWithPrompt("Désolé", "un problème est survenu pendant la soumission de votre requête si le problème persiste, contactez votre administrateur", "error");
                     }
                     ,
                     complete: function() {
@@ -143,7 +143,7 @@ $(function() {
             });
         }
         //this should be at the end
-        utilisateurEndpoint.initializeView();
-        utilisateurEndpoint.setListeners();
+        userEndpoint.initializeView();
+        userEndpoint.setListeners();
     });
 });

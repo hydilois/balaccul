@@ -273,7 +273,6 @@ class OperationController extends Controller
                         $interestToPay = round($dailyInterestPayment * floor((strtotime($dateOperation->format('Y-m-d')) - $date) / (60 * 60 * 24)));
                         if ($interestToPay + $latestLoanHistory->getUnpaidInterest() - $loanInterest < 0) {
                             return $this->render('Exception/loan_interest_warning.html.twig');
-//                            $loan_history->setUnpaidInterest(0);
                         } else {
                             $loan_history->setUnpaidInterest($interestToPay + $latestLoanHistory->getUnpaidInterest() - $loanInterest);
                         }
@@ -285,7 +284,6 @@ class OperationController extends Controller
                         $interestToPay = round($dailyInterestPayment * floor(($dateNow - $date) / (60 * 60 * 24)));
                         if ($interestToPay - $loanInterest < 0) {
                             return $this->render('Exception/loan_interest_warning.html.twig');
-//                            $loan_history->setUnpaidInterest(0);
                         } else {
                             $loan_history->setUnpaidInterest($interestToPay - $loanInterest);
                         }

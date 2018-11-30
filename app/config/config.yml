@@ -8,8 +8,6 @@ imports:
     - { resource: "@ClassBundle/Resources/config/services.yml" }
     - { resource: "@ReportBundle/Resources/config/services.yml" }
     - { resource: "@AccountBundle/Resources/config/services.yml" }
-    # - { resource: "@ConfigBundle/Resources/config/services.yml" }
-    # - { resource: "@IntendanceBundle/Resources/config/services.yml" }
 
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
@@ -47,8 +45,6 @@ twig:
     debug: '%kernel.debug%'
     strict_variables: '%kernel.debug%'
     form_theme: 'bootstrap_3_layout.html.twig'
-    form_themes:
-        - LexikFormFilterBundle:Form:form_div_layout.html.twig
 
 # Doctrine Configuration
 doctrine:
@@ -108,7 +104,6 @@ ensepar_html2pdf:
     encoding: UTF-8
     margin: [2,0,0,0]
 
-    # $html2pdf = $this->get('html2pdf_factory')->create('P', 'A4', 'en', true, 'UTF-8', array(10, 15, 10, 15));
 
 fos_rest:
     param_fetcher_listener: true

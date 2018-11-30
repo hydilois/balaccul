@@ -2,6 +2,7 @@
 
 namespace MemberBundle\Controller;
 
+use ConfigBundle\Entity\Agency;
 use MemberBundle\Entity\Member;
 use AccountBundle\Entity\Operation;
 use MemberBundle\Entity\Beneficiary;
@@ -30,7 +31,7 @@ class MemberController extends Controller
         
         $entityManager = $this->getDoctrine()->getManager();
 
-        $members = $entityManager->getRepository('MemberBundle:Member')->findAll();
+        $members = $entityManager->getRepository(Member::class)->findAll();
 
         return $this->render('member/index.html.twig', array(
             'members' => $members,
@@ -42,17 +43,19 @@ class MemberController extends Controller
      *
      * @Route("/{id}/receipt", name="member_registration_receipt")
      * @Method("GET")
+     * @param Member $member
+     * @return Response
      */
     public function memberRegistrationReceiptAction(Member $member){
         $em = $this->getDoctrine()->getManager();
-        $agency = $em->getRepository('ConfigBundle:Agency')->find(1);
+        $agency = $em->getRepository(Agency::class)->findOneBy([], ['id' => 'ASC']);
         $memberName = str_replace(' ', '_', $member->getName());
         $html =  $this->renderView('member/registration_fees_receipt_file.html.twig', array(
             'agency' => $agency,
             'member' => $member,
         ));
         $html2pdf = $this->get('html2pdf_factory')->create('P', 'A4', 'en', true, 'UTF-8', array(10, 5, 10, 10));
-        $html2pdf->pdf->SetAuthor('GreenSoft-Team');
+        $html2pdf->pdf->SetAuthor('GreenSoft-Group Technologies');
         $html2pdf->pdf->SetDisplayMode('real');
         $html2pdf->pdf->SetTitle('Receipt_registration_'.$memberName);
         $response = new Response();
