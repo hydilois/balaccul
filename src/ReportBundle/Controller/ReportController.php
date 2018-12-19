@@ -21,9 +21,9 @@ use UserBundle\Entity\Utilisateur;
  */
 class ReportController extends Controller{
     /**
-     * @Route("/trialbalance", name="report_trial_balance")
+     * @Route("/trial_balance", name="report_trial_balance")
      */
-    public function indexAction()
+    public function index()
     {
         
         // Test is the user does not have the default role
@@ -39,7 +39,7 @@ class ReportController extends Controller{
     /**
      * @Route("/situations", name="internal_account_balance")
      */
-    public function internalAccountSituationAction(){
+    public function internalAccountSituation(){
         // Test is the user does not have the default role
         if (!$this->container->get('security.authorization_checker')->isGranted('ROLE_BOARD')) {
             return new RedirectResponse($this->container->get ('router')->generate ('fos_user_security_login'));
@@ -123,7 +123,7 @@ class ReportController extends Controller{
                     )
                     ->getQuery()->getScalarResult();
 
-            $html =  $this->renderView('pdf_files/monthly_report_file.html.twig', [
+            $template =  $this->renderView('pdf_files/monthly_report_file.html.twig', [
                 'displayDateStart' => $dateDebut,
                 'displayDateEnd' => $dateFin,
                 'currentUser' => $currentUser,
@@ -133,18 +133,10 @@ class ReportController extends Controller{
                 'incomeOp' => $incomeOperations,
             ]);
 
-            $html2pdf = $this->get('html2pdf_factory')->create('P', 'A4', 'en', true, 'UTF-8', [10, 10, 10, 8]);
-            $html2pdf->pdf->SetAuthor('GreenSoft-Group Technologies');
-            $html2pdf->pdf->SetDisplayMode('real');
-            $html2pdf->pdf->SetTitle('Monthly Report');
-            $response = new Response();
-            $html2pdf->pdf->SetTitle('Monthly Report');
-            $html2pdf->writeHTML($html);
-            $content = $html2pdf->Output('', true);
-            $response->setContent($content);
-            $response->headers->set('Content-Type', 'application/pdf');
-            $response->headers->set('Content-disposition', 'filename=Monthly_Report.pdf');
-            return $response;
+            $title = 'Monthly_Report'.$currentDate->format('d-m-Y');
+            $html2PdfService = $this->get('app.html2pdf');
+            $html2PdfService->create('P', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 10));
+            return $html2PdfService->generatePdf($template, $title.'.pdf', 'ledgers',$title, 'FI');
 
         }
         return $this->render('report/report_month.html.twig', [
@@ -206,7 +198,7 @@ class ReportController extends Controller{
                 ->getQuery()
                 ->getResult();
 
-            $html = $this->renderView('situation/general_ledger_pdf.html.twig', [
+            $template = $this->renderView('situation/general_ledger_pdf.html.twig', [
                 'operations' => $operations,
                 'agency' => $agency,
                 'currentUser' => $currentUser,
@@ -217,18 +209,13 @@ class ReportController extends Controller{
                 'dayBefore' => $dayBefore_endDatetime,
             ]);
 
-            $html2pdf = $this->get('html2pdf_factory')->create('P', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 10));
-            $html2pdf->pdf->SetAuthor('GreenSoft-Group');
-            $html2pdf->pdf->SetDisplayMode('real');
-            $html2pdf->pdf->SetTitle('General Ledger Balance');
-            $response = new Response();
-            $html2pdf->pdf->SetTitle('General Ledger Balance');
-            $html2pdf->writeHTML($html);
-            $content = $html2pdf->Output('', true);
-            $response->setContent($content);
-            $response->headers->set('Content-Type', 'application/pdf');
-            $response->headers->set('Content-disposition', 'filename=GeneralLedger.pdf');
-            return $response;
+            $title = 'General_Ledger_'.$date->format('d-m-Y');
+            $html2PdfService = $this->get('app.html2pdf');
+            $html2PdfService->create('P', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 10));
+            if ($operations){
+                return $html2PdfService->generatePdf($template, $title.'.pdf', 'ledgers',$title, 'FI');
+            }
+            return $html2PdfService->generatePdf($template, $title.'.pdf', 'ledgers',$title, 'I');
         }
 
         $accounts = $em->getRepository('ClassBundle:InternalAccount')->findAll();
@@ -247,7 +234,7 @@ class ReportController extends Controller{
         
         $em = $this->getDoctrine()->getManager();
         if ($request->getMethod() =="POST") {
-            $agency = $em->getRepository('ConfigBundle:Agency')->find(1);
+            $agency = $em->getRepository('ConfigBundle:Agency')->findOneBy([], ['id' => 'ASC']);
             $currentDate = new \DateTime('now');
 
             $currentUserId  = $this->get('security.token_storage')->getToken()->getUser()->getId();
@@ -302,7 +289,7 @@ class ReportController extends Controller{
                 ->getResult();
 
             $account = $em->getRepository('ClassBundle:InternalAccount')->find($accountId);
-            $html = $this->renderView('situation/individual_ledger_pdf.html.twig', [
+            $template = $this->renderView('situation/individual_ledger_pdf.html.twig', [
                 'operations' => $operations,
                 'agency' => $agency,
                 'account' => $account,
@@ -313,18 +300,14 @@ class ReportController extends Controller{
                 'dayBefore' => $dayBefore_endDatetime,
             ]);
 
-            $html2pdf = $this->get('html2pdf_factory')->create('P', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 10));
-            $html2pdf->pdf->SetAuthor('GreenSoft-Team');
-            $html2pdf->pdf->SetDisplayMode('real');
-            $html2pdf->pdf->SetTitle('Individual Ledger Balance');
-            $response = new Response();
-            $html2pdf->pdf->SetTitle('Individual Ledger Balance');
-            $html2pdf->writeHTML($html);
-            $content = $html2pdf->Output('', true);
-            $response->setContent($content);
-            $response->headers->set('Content-Type', 'application/pdf');
-            $response->headers->set('Content-disposition', 'filename=IndividualLedger.pdf');
-            return $response;
+            $accountName = str_replace(' ', '_', $account->getAccountName());
+            $title = 'Individual_Ledger_'.$accountName.'_'.$date->format('d-m-Y');
+            $html2PdfService = $this->get('app.html2pdf');
+            $html2PdfService->create('P', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 10));
+            if ($operations){
+                return $html2PdfService->generatePdf($template, $title.'.pdf', 'ledgers',$title, 'FI');
+            }
+            return $html2PdfService->generatePdf($template, $title.'.pdf', 'ledgers',$title, 'I');
         }
 
         $accounts = $em->getRepository('ClassBundle:InternalAccount')->findAll();
@@ -423,7 +406,7 @@ class ReportController extends Controller{
                 break;
         }
 
-        $html =  $this->renderView('pdf_files/generate_document_file.html.twig', [
+        $template =  $this->renderView('pdf_files/generate_document_file.html.twig', [
             'agency' => $agency,
             'lists' => $lists,
             'type' => $type,
@@ -431,33 +414,11 @@ class ReportController extends Controller{
             'listLoanWithOutHistory' => $listLoanWithOutHistory,
         ]);
 
-        $html2pdf = $this->get('html2pdf_factory')->create('L', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 10));
-        $response = new Response();
-    
-        switch ($type) {
-            case "Members":
-                $html2pdf->pdf->SetTitle('List_Members');
-                $html2pdf->pdf->SetTitle('List_Members');
-                $response->headers->set('Content-disposition', 'filename=List_Members.pdf');
-                break;
-            case "Loans":
-                $html2pdf->pdf->SetTitle('List_Loans');
-                $html2pdf->pdf->SetTitle('List Loans');
-                $response->headers->set('Content-disposition', 'filename=List_Loans.pdf');
-                break;
-            default:
-                # code...
-                break;
-        }
 
-        $html2pdf->pdf->SetAuthor('GreenSoft-Group Technologies');
-        $html2pdf->pdf->SetDisplayMode('real');
-        $html2pdf->writeHTML($html);
-        $content = $html2pdf->Output('', true);
-        $response->setContent($content);
-        $response->headers->set('Content-Type', 'application/pdf');
-        
-        return $response;
+        $title = 'List_'.$type;
+        $html2PdfService = $this->get('app.html2pdf');
+        $html2PdfService->create('P', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 10));
+        return $html2PdfService->generatePdf($template, $title.'.pdf', 'ledgers',$title, 'FI');
     }
 
     /**
@@ -468,7 +429,7 @@ class ReportController extends Controller{
      * @param $id
      * @return Response
      */
-    public function savingSituationAction($id)
+    public function savingSituation($id)
     {
 
         $entityManager = $this->getDoctrine()->getManager();
@@ -487,9 +448,9 @@ class ReportController extends Controller{
             ['id' => 'ASC',]
             );
 
-        $nomMember = str_replace(' ', '_', $member->getName());
+        $MemberName = str_replace(' ', '_', $member->getName());
         $type = "Savings";
-        $html =  $this->renderView('situation/saving_situation_file.html.twig', array(
+        $template =  $this->renderView('situation/accounts_situation_file.html.twig', array(
             'agency' => $agency,
             'member' => $member,
             'firstOp' => $firstOp,
@@ -498,18 +459,10 @@ class ReportController extends Controller{
             'operations' => $operations,
         ));
 
-        $html2pdf = $this->get('html2pdf_factory')->create('P', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 10));
-        $html2pdf->pdf->SetAuthor('GreenSoft-Team');
-        $html2pdf->pdf->SetDisplayMode('real');
-        $html2pdf->pdf->SetTitle('Situation_'.$type.'_'.$nomMember);
-        $response = new Response();
-        $html2pdf->pdf->SetTitle('Situation_'.$type.'_'.$nomMember);
-        $html2pdf->writeHTML($html);
-        $content = $html2pdf->Output('', true);
-        $response->setContent($content);
-        $response->headers->set('Content-Type', 'application/pdf');
-        $response->headers->set('Content-disposition', 'filename=Situation_'.$type.'_'.$nomMember.'.pdf');
-        return $response;
+        $title = 'Situation_'.$type.'_'.$MemberName;
+        $html2PdfService = $this->get('app.html2pdf');
+        $html2PdfService->create('P', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 10));
+        return $html2PdfService->generatePdf($template, $title.'.pdf', 'savings',$title, 'FI');
     }
 
 
@@ -518,12 +471,14 @@ class ReportController extends Controller{
      *
      * @Route("/shares/{id}", name="member_situation_shares")
      * @Method("GET")
+     * @param $id
+     * @return Response
      */
     public function sharesSituationAction($id){
 
         $entityManager = $this->getDoctrine()->getManager();
         $member  = $entityManager->getRepository('MemberBundle:Member')->find($id);
-        $agency = $entityManager->getRepository('ConfigBundle:Agency')->find(1);
+        $agency = $entityManager->getRepository('ConfigBundle:Agency')->findOneBy([], ['id' => 'ASC']);
         $currentDate = new \DateTime('now');
 
         $operations = $entityManager->getRepository('AccountBundle:Operation')->findBy([
@@ -537,9 +492,9 @@ class ReportController extends Controller{
             ['id' => 'ASC',]
             );
 
-        $nomMember = str_replace(' ', '_', $member->getName());
+        $MemberName = str_replace(' ', '_', $member->getName());
         $type = "Shares";
-        $html =  $this->renderView('situation/saving_situation_file.html.twig', array(
+        $template =  $this->renderView('situation/accounts_situation_file.html.twig', array(
             'agency' => $agency,
             'member' => $member,
             'type' => $type,
@@ -548,18 +503,10 @@ class ReportController extends Controller{
             'operations' => $operations,
         ));
 
-        $html2pdf = $this->get('html2pdf_factory')->create('P', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 10));
-        $html2pdf->pdf->SetAuthor('GreenSoft-Team');
-        $html2pdf->pdf->SetDisplayMode('real');
-        $html2pdf->pdf->SetTitle('Situation_'.$type.'_'.$nomMember);
-        $response = new Response();
-        $html2pdf->pdf->SetTitle('Situation_'.$type.'_'.$nomMember);
-        $html2pdf->writeHTML($html);
-        $content = $html2pdf->Output('', true);
-        $response->setContent($content);
-        $response->headers->set('Content-Type', 'application/pdf');
-        $response->headers->set('Content-disposition', 'filename=Situation_'.$type.'_'.$nomMember.'.pdf');
-        return $response;
+        $title = 'Situation_'.$type.'_'.$MemberName;
+        $html2PdfService = $this->get('app.html2pdf');
+        $html2PdfService->create('P', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 10));
+        return $html2PdfService->generatePdf($template, $title.'.pdf', 'shares',$title, 'FI');
     }
 
     /**
@@ -570,11 +517,11 @@ class ReportController extends Controller{
      * @Method("GET")
      * @return Response
      */
-    public function depositSituationAction($id){
+    public function depositSituation($id){
 
         $entityManager = $this->getDoctrine()->getManager();
         $member  = $entityManager->getRepository('MemberBundle:Member')->find($id);
-        $agency = $entityManager->getRepository('ConfigBundle:Agency')->find(1);
+        $agency = $entityManager->getRepository('ConfigBundle:Agency')->findOneBy([], ['id' => 'ASC']);
         $currentDate = new \DateTime('now');
 
         $operations = $entityManager->getRepository('AccountBundle:Operation')->findBy([
@@ -588,9 +535,9 @@ class ReportController extends Controller{
             );
 
 
-        $nomMember = str_replace(' ', '_', $member->getName());
+        $MemberName = str_replace(' ', '_', $member->getName());
         $type = "Deposits";
-        $html =  $this->renderView('situation/saving_situation_file.html.twig', array(
+        $template =  $this->renderView('situation/accounts_situation_file.html.twig', array(
             'agency' => $agency,
             'member' => $member,
              'firstOp' => $firstOp,
@@ -599,18 +546,10 @@ class ReportController extends Controller{
             'operations' => $operations,
         ));
 
-        $html2pdf = $this->get('html2pdf_factory')->create('P', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 10));
-        $html2pdf->pdf->SetAuthor('GreenSoft-Team');
-        $html2pdf->pdf->SetDisplayMode('real');
-        $html2pdf->pdf->SetTitle('Situation_'.$type.'_'.$nomMember);
-        $response = new Response();
-        $html2pdf->pdf->SetTitle('Situation_'.$type.'_'.$nomMember);
-        $html2pdf->writeHTML($html);
-        $content = $html2pdf->Output('', true);
-        $response->setContent($content);
-        $response->headers->set('Content-Type', 'application/pdf');
-        $response->headers->set('Content-disposition', 'filename=Situation_'.$type.'_'.$nomMember.'.pdf');
-        return $response;
+        $title = 'Situation_'.$type.'_'.$MemberName;
+        $html2PdfService = $this->get('app.html2pdf');
+        $html2PdfService->create('P', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 10));
+        return $html2PdfService->generatePdf($template, $title.'.pdf', 'deposits',$title, 'FI');
     }
 
 
@@ -622,7 +561,7 @@ class ReportController extends Controller{
      * @param $id
      * @return Response
      */
-    public function loanSituationAction($id)
+    public function loanSituation($id)
     {
         $entityManager = $this->getDoctrine()->getManager();
         $member  = $entityManager->getRepository(Member::class)->find($id);
@@ -633,9 +572,9 @@ class ReportController extends Controller{
 
         $loanSituations = $entityManager->getRepository(LoanHistory::class)->findBy(['loan' => $loan]);
 
-        $nomMember = str_replace(' ', '_', $member->getName());
+        $MemberName = str_replace(' ', '_', $member->getName());
         $type = "Loans";
-        $html =  $this->renderView('situation/loan_situation_file.html.twig', [
+        $template =  $this->renderView('situation/loan_situation_file.html.twig', [
             'agency' => $agency,
             'member' => $member,
             'loan' => $loan,
@@ -643,36 +582,31 @@ class ReportController extends Controller{
             'currentDate' => $currentDate,
             'loanSituations' => $loanSituations,
         ]);
+        $title = 'Situation_'.$type.'_'.$MemberName;
+        $html2PdfService = $this->get('app.html2pdf');
+        $html2PdfService->create('P', 'A4', 'en', true, 'UTF-8', array(5, 10, 5, 10));
+        if ($loanSituations){
+            return $html2PdfService->generatePdf($template, $title.'.pdf', 'loans',$title, 'FI');
+        }
+        return $html2PdfService->generatePdf($template, $title.'.pdf', 'loans',$title, 'I');
 
-        $html2pdf = $this->get('html2pdf_factory')->create('P', 'A4', 'en', true, 'UTF-8', [5, 10, 5, 10]);
-        $html2pdf->pdf->SetAuthor('GreenSoft-Group');
-        $html2pdf->pdf->SetDisplayMode('real');
-        $html2pdf->pdf->SetTitle('Situation_'.$type.'_'.$nomMember);
-        $response = new Response();
-        $html2pdf->pdf->SetTitle('Situation_'.$type.'_'.$nomMember);
-        $html2pdf->writeHTML($html);
-        $content = $html2pdf->Output('', true);
-        $response->setContent($content);
-        $response->headers->set('Content-Type', 'application/pdf');
-        $response->headers->set('Content-disposition', 'filename=Situation_'.$type.'_'.$nomMember.'.pdf');
-        return $response;
     }
 
 
     /**
-     * @Route("/generate/trialbalance", name="trialbalance_report")
+     * @Route("/generate/trial_balance", name="trialbalance_report")
      * @Method({"GET", "POST"})
      * @param Request $request
      * @return Response
      */
-    public function trialBalanceAction(Request $request){
+    public function trialBalance(Request $request){
 
         if ($request->getMethod() == 'POST') {
             $em = $this->getDoctrine()->getManager();
             $currentUserId  = $this->get('security.token_storage')->getToken()->getUser()->getId();
             $currentUser    = $em->getRepository('UserBundle:Utilisateur')->find($currentUserId);
             $date = new \DateTime('now');
-            $agency = $em->getRepository('ConfigBundle:Agency')->find(1);
+            $agency = $em->getRepository('ConfigBundle:Agency')->findOneBy([], ['id' => 'ASC']);
 
             $internalAccounts = $em->createQueryBuilder()
                 ->select('ia')
@@ -694,7 +628,7 @@ class ReportController extends Controller{
             $displayDateStart  = $newDateStart[1]."-".$newDateStart[0]."-".$newDateStart[2];
             $displayDateEnd  = $newDateEnd[1]."-".$newDateEnd[0]."-".$newDateEnd[2];
 
-                $html =  $this->renderView('report/trialbalance_file.html.twig', array(
+                $template =  $this->renderView('report/trial_balance_file.html.twig', array(
                     'displayDateStart' => $displayDateStart,
                     'displayDateEnd' => $displayDateEnd,
                     'currentUser' => $currentUser,
@@ -702,19 +636,11 @@ class ReportController extends Controller{
                     'agency' => $agency,
                     'internalAccounts' => $internalAccounts,
                 ));
-                
-                $html2pdf = $this->get('html2pdf_factory')->create('P', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 15));
-                $html2pdf->pdf->SetAuthor('GreenSoft-Team');
-                $html2pdf->pdf->SetDisplayMode('real');
-                $html2pdf->pdf->SetTitle('Trial Balance');
-                $response = new Response();
-                $html2pdf->pdf->SetTitle('Trial Balance');
-                $html2pdf->writeHTML($html);
-                $content = $html2pdf->Output('', true);
-                $response->setContent($content);
-                $response->headers->set('Content-Type', 'application/pdf');
-                $response->headers->set('Content-disposition', 'filename=Trial_Balance.pdf');
-                return $response;
+
+                $title = 'Trial_Balance';
+                $html2PdfService = $this->get('app.html2pdf');
+                $html2PdfService->create('P', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 15));
+                    return $html2PdfService->generatePdf($template, $title.'.pdf', 'loans',$title, 'I');
             }
         }
 
@@ -728,7 +654,7 @@ class ReportController extends Controller{
         public function accountHistoryAction(Request $request){
             $em = $this->getDoctrine()->getManager();
             $qb = $em->createQueryBuilder();
-            $agency = $em->getRepository('ConfigBundle:Agency')->find(1);
+            $agency = $em->getRepository('ConfigBundle:Agency')->findOneBy([], ['id' => 'ASC']);
 
             $currentDate = new \DateTime('now');
 
@@ -839,7 +765,7 @@ class ReportController extends Controller{
      */
     public function dailyReportAction(Request $request){
         $em = $this->getDoctrine()->getManager();
-        $agency = $em->getRepository('ConfigBundle:Agency')->find(1);
+        $agency = $em->getRepository('ConfigBundle:Agency')->findOneBy([], ['id' => 'ASC']);
 
 
         if ($request->getMethod() == 'POST') {
@@ -1311,7 +1237,7 @@ class ReportController extends Controller{
         }
 
         $em = $this->getDoctrine()->getManager();
-        $agency = $em->getRepository('ConfigBundle:Agency')->find(1);
+        $agency = $em->getRepository('ConfigBundle:Agency')->findOneBy([], ['id' => 'ASC']);
         $members = $em->getRepository('MemberBundle:Member')->findAll();
 
         $loans = $em->getRepository('AccountBundle:Loan')->findByStatus(true);
@@ -1409,7 +1335,7 @@ class ReportController extends Controller{
         /*total loan Interest*/
         $loanInterest = $em->getRepository('ClassBundle:InternalAccount')->find(136)->getBalance();
 
-        $html =  $this->renderView('pdf_files/general_situation_file.html.twig', [
+        $template =  $this->renderView('pdf_files/general_situation_file.html.twig', [
             'numberNumber' => count($members),
             'agency' => $agency,
             'members' => $members,
@@ -1429,17 +1355,9 @@ class ReportController extends Controller{
             'loanInterest' => $loanInterest,
         ]);
 
-        $html2pdf = $this->get('html2pdf_factory')->create('P', 'A4', 'en', true, 'UTF-8', [10, 10, 10, 10]);
-        $html2pdf->pdf->SetAuthor('GreenSoft-Group Technologies');
-        $html2pdf->pdf->SetDisplayMode('real');
-        $html2pdf->pdf->SetTitle('General Situation');
-        $response = new Response();
-        $html2pdf->pdf->SetTitle('General Situation');
-        $html2pdf->writeHTML($html);
-        $content = $html2pdf->Output('', true);
-        $response->setContent($content);
-        $response->headers->set('Content-Type', 'application/pdf');
-        $response->headers->set('Content-disposition', 'filename=General Situation.pdf');
-        return $response;
+        $title = 'General_Situation';
+        $html2PdfService = $this->get('app.html2pdf');
+        $html2PdfService->create('P', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 10));
+        return $html2PdfService->generatePdf($template, $title.'.pdf', 'ledgers',$title, 'FI');
     }
 }

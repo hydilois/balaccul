@@ -10,6 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\Config\Definition\Exception\Exception;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use ReportBundle\Entity\GeneralLedgerBalance;
 use Symfony\Component\HttpFoundation\Response;
@@ -49,23 +50,15 @@ class MemberController extends Controller
     public function memberRegistrationReceiptAction(Member $member){
         $em = $this->getDoctrine()->getManager();
         $agency = $em->getRepository(Agency::class)->findOneBy([], ['id' => 'ASC']);
-        $memberName = str_replace(' ', '_', $member->getName());
-        $html =  $this->renderView('member/registration_fees_receipt_file.html.twig', array(
+        $template =  $this->renderView('member/pdf_files/registration_fees_receipt_file.html.twig', array(
             'agency' => $agency,
             'member' => $member,
         ));
-        $html2pdf = $this->get('html2pdf_factory')->create('P', 'A4', 'en', true, 'UTF-8', array(10, 5, 10, 10));
-        $html2pdf->pdf->SetAuthor('GreenSoft-Group Technologies');
-        $html2pdf->pdf->SetDisplayMode('real');
-        $html2pdf->pdf->SetTitle('Receipt_registration_'.$memberName);
-        $response = new Response();
-        $html2pdf->pdf->SetTitle('Registration_Receipt_'.$memberName);
-        $html2pdf->writeHTML($html);
-        $content = $html2pdf->Output('', true);
-        $response->setContent($content);
-        $response->headers->set('Content-Type', 'application/pdf');
-        $response->headers->set('Content-disposition', 'filename=Registration_Receipt_'.$memberName.'.pdf');
-        return $response;
+        $memberName = str_replace(' ', '_', $member->getName());
+        $title = 'Receipt_Registration_'.$memberName;
+        $html2PdfService = $this->get('app.html2pdf');
+        $html2PdfService->create('P', 'A4', 'en', true, 'UTF-8', array(10, 5, 10, 10));
+        return $html2PdfService->generatePdf($template, $title.'.pdf', 'registrations',$title, 'FI');
     }
 
     /**
@@ -73,8 +66,11 @@ class MemberController extends Controller
      *
      * @Route("/new", name="member_new")
      * @Method({"GET", "POST"})
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
      */
-    public function newAction(Request $request){
+    public function newAction(Request $request)
+    {
         $member = new Member();
         $beneficiary = new Beneficiary();
         $form = $this->createForm('MemberBundle\Form\MemberType', $member);
@@ -548,6 +544,7 @@ class MemberController extends Controller
      * @param Request $request
      * @Route("/close", name="member_status")
      * @Method({"GET", "POST"})
+     * @return JsonResponse
      */
     public function databaseBackupAction(Request $request)
     {

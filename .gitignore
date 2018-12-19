@@ -19,3 +19,24 @@
 
 /.idea/log
 /.idea/*
+
+/web/archives/registrations/*
+!web/archives/registrations/.gitkeep
+
+/web/archives/loans/*
+!web/archives/loans/.gitkeep
+
+/web/archives/savings/*
+!web/archives/savings/.gitkeep
+
+/web/archives/deposits/*
+!web/archives/deposits/.gitkeep
+
+/web/archives/shares/*
+!web/archives/shares/.gitkeep
+
+/web/archives/ledgers/*
+!web/archives/ledgers/.gitkeep
+
+/web/archives/operations/*
+!web/archives/operations/.gitkeep

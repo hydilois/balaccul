@@ -57,23 +57,14 @@ class LoanController extends Controller
 
         $loanName = str_replace(' ', '_', $loan->getLoanCode());
 
-        $html =  $this->renderView('loan/loan_fees_receipt_file.html.twig', [
+        $template =  $this->renderView('loan/pdf_files/loan_fees_receipt_file.html.twig', [
             'agency' => $agency,
             'loan' => $loan,
         ]);
-
-        $html2pdf = $this->get('html2pdf_factory')->create('P', 'A4', 'en', true, 'UTF-8', array(10, 5, 10, 10));
-        $html2pdf->pdf->SetAuthor('GreenSoft-Team');
-        $html2pdf->pdf->SetDisplayMode('real');
-        $html2pdf->pdf->SetTitle('Receipt_registration_'.$loanName);
-        $response = new Response();
-        $html2pdf->pdf->SetTitle('Registration_Receipt_'.$loanName);
-        $html2pdf->writeHTML($html);
-        $content = $html2pdf->Output('', true);
-        $response->setContent($content);
-        $response->headers->set('Content-Type', 'application/pdf');
-        $response->headers->set('Content-disposition', 'filename=Registration_Receipt_'.$loanName.'.pdf');
-        return $response;
+        $title = 'Receipt_Loan_'.$loanName.'_'.$loan->getDateLoan()->format('d-m-Y');
+        $html2PdfService = $this->get('app.html2pdf');
+        $html2PdfService->create('P', 'A4', 'en', true, 'UTF-8', array(10, 5, 10, 10));
+        return $html2PdfService->generatePdf($template, $title.'.pdf', 'loans',$title, 'FI');
     }
 
     /**

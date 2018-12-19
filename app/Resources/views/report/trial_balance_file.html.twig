@@ -1,7 +1,7 @@
 <page footer="page;">
     <page_footer>
         <hr />
-        <span>{{agency.abreviation}}</span> <span style="margin-left:150px;">Printed By <b>{{currentUser}}</b></span><span style="margin-left:100px;">GreenSoft-Team</span>
+        <span>{{agency.abreviation}}</span> <span style="margin-left:50px;">Printed By <b>{{currentUser}}</b></span><span style="margin-left:100px;">GreenSoft-Group Technologies</span>
     </page_footer>
     <table>
         <tr>
@@ -33,9 +33,6 @@
             <th style="background: gray; text-align:center" class="20p">A/C N°</th>
             <th style="background: gray; text-align:center" class="60p">ACCOUNT NAME</th>
             <th style="background: gray; text-align:center" class="20p">BALANCE</th>
-            {# <th style="background: gray; text-align:center" class="15p">DEBIT</th> #}
-            {# <th style="background: gray; text-align:center" class="15p">CREDIT</th> #}
-            {# <th style="background: gray; text-align:center" class="15p">FINAL BALANCE</th> #}
         </tr>
             {% set totalBalance = 0 %}
             {% for account in internalAccounts %} 
@@ -49,7 +46,6 @@
             <tr>
                 <td class="30p" style="text-align:center" colspan="2"><b>TOTAL</b></td>
                 <td class="20p" style="text-align:center"><b>{{totalBalance |number_format(0, '.', ' ')}}</b></td>
-                {# <td class="15p" style="text-align:center"><b>{{totalEndBalance |number_format(0, '.', ' ')}}</b></td> #}
             </tr>
     </table>
 </page>

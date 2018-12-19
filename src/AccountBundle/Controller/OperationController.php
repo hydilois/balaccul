@@ -173,28 +173,23 @@ class OperationController extends Controller
      * @param Operation $operation
      * @return Response
      */
-    public function operationReceiptAction(Operation $operation){
+    public function operationReceiptAction(Operation $operation) {
 
         $em = $this->getDoctrine()->getManager();
         $agency = $em->getRepository('ConfigBundle:Agency')->find(1);
 
-        $html =  $this->renderView('operation/operation_receipt_file.html.twig', [
+        $template =  $this->renderView('operation/operation_receipt_file.html.twig', [
             'agency' => $agency,
             'operation' => $operation,
         ]);
 
-        $html2pdf = $this->get('html2pdf_factory')->create('P', 'A4', 'en', true, 'UTF-8', [5, 10, 5, 10]);
-        $html2pdf->pdf->SetAuthor('GreenSoft-Team');
-        $html2pdf->pdf->SetDisplayMode('real');
-        $html2pdf->pdf->SetTitle('RECEIPT_'.$operation->getTypeOperation());
-        $response = new Response();
-        $html2pdf->pdf->SetTitle('RECEIPT_'.$operation->getTypeOperation());
-        $html2pdf->writeHTML($html);
-        $content = $html2pdf->Output('', true);
-        $response->setContent($content);
-        $response->headers->set('Content-Type', 'application/pdf');
-        $response->headers->set('Content-disposition', 'filename=Receipt'.$operation->getTypeOperation().'.pdf');
-        return $response;
+        $title = 'Receipt_'.$operation->getTypeOperation().'_'.$operation->getDateOperation()->format('d-m-Y');
+        $html2PdfService = $this->get('app.html2pdf');
+        $html2PdfService->create('P', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 10));
+        if ($operation){
+            return $html2PdfService->generatePdf($template, $title.'.pdf', 'operations',$title, 'FI');
+        }
+        return $html2PdfService->generatePdf($template, $title.'.pdf', 'operations',$title, 'I');
     }
 
 
@@ -574,7 +569,7 @@ class OperationController extends Controller
     /**
      * @param Request $request [contains the http request that is passed on]
      * 
-     * @Route("/cashOut/save", name="operation_cash_out_save")
+     * @Route("/cash_out/save", name="operation_cash_out_save")
      * @Method({"GET", "POST"})
      * @return Response
      */
@@ -648,7 +643,7 @@ class OperationController extends Controller
             $others = [];
         }
         $entityManager->flush();
-        $html =  $this->renderView('operation/cash_out_receipt_file.html.twig', [
+        $template =  $this->renderView('operation/cash_out_receipt_file.html.twig', [
                 'agency' => $agency,
                 'member' => $member,
                 'analytics' => $analytics,
@@ -662,22 +657,15 @@ class OperationController extends Controller
                 'accountOperations' => $operations,
             ]);
 
-        $nomMember = str_replace(' ', '_', $member->getName());
-        $html2pdf = $this->get('html2pdf_factory')->create('P', 'A4', 'en', true, 'UTF-8', array(2.5, 2.5, 2.5, 10));
-        $html2pdf->pdf->SetAuthor('GreenSoft-Team');
-        $html2pdf->pdf->SetDisplayMode('real');
-        $html2pdf->pdf->SetTitle('RECEIPT_CASH_OUT_'.$nomMember);
-        $response = new Response();
-        $html2pdf->pdf->SetTitle('RECEIPT_CASH_OUT_'.$nomMember);
-        $html2pdf->writeHTML($html);
-        $content = $html2pdf->Output('', true);
-        $response->setContent($content);
-        $response->headers->set('Content-Type', 'application/pdf');
-        $response->headers->set('Content-disposition', 'filename=Receipt_Cash_Out_'.$member->getMemberNumber().'.pdf');
-        return $response;
+        $memberName = str_replace(' ', '_', $member->getName());
+        $title = 'Receipt_CASH_OUT_'.$memberName.'_'.$data['dateOp']->format('d-m-Y_H:i:s');
+        $html2PdfService = $this->get('app.html2pdf');
+        $html2PdfService->create('P', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 10));
+        if ($operations){
+            return $html2PdfService->generatePdf($template, $title.'.pdf', 'operations',$title, 'FI');
+        }
+        return $html2PdfService->generatePdf($template, $title.'.pdf', 'operations',$title, 'I');
     }
-
-
 
 
     /**
@@ -688,6 +676,7 @@ class OperationController extends Controller
      * @return Response
      */
     function saveOtherCashOutOperation(Request $request) {
+
         $entityManager = $this->getDoctrine()->getManager();
         $agency = $entityManager->getRepository('ConfigBundle:Agency')->findAll()[0];
         // Get the current user connected
@@ -707,13 +696,13 @@ class OperationController extends Controller
 
             /*Get the account by ID*/ 
             $account = $entityManager->getRepository(InternalAccount::class)->find($accountId);
-            $classe = $entityManager->getRepository(Classe::class)->find($account->getClasse()->getId());
+            $class = $entityManager->getRepository(Classe::class)->find($account->getClasse()->getId());
             if ($accountId == 82 || $accountId == 76){
                 $account->setBalance($account->getBalance() + $amount);
-                $classe->setBalance($classe->getBalance() + $amount);
+                $class->setBalance($class->getBalance() + $amount);
             }else{
                 $account->setBalance($account->getBalance() - $amount);
-                $classe->setBalance($classe->getBalance() - $amount);
+                $class->setBalance($class->getBalance() - $amount);
             }
             $ledgerBalance = $entityManager->getRepository(GeneralLedgerBalance::class)->registerGBLCashOut($amount ,$currentUser, $dateOperation, $account, $representative);
             $totalTransaction += $amount;
@@ -721,10 +710,10 @@ class OperationController extends Controller
 
             $analytics = $this->analyticsArray($request->get('10000'), $request->get('5000'), $request->get('2000'),$request->get('1000'), $request->get('500'), $request->get('100'), $request->get('50'), $request->get('25'), $request->get('10'), $request->get('5'), $request->get('1')
                 );
-        }
-        $entityManager->flush();
-        
-        $html =  $this->renderView('operation/other_out_receipt_file.html.twig', array(
+
+            $entityManager->flush();
+
+            $template =  $this->renderView('operation/other_out_receipt_file.html.twig', array(
                 'agency' => $agency,
                 'analytics' => $analytics,
                 'numberInWord' => $this->convertNumberToWord($totalTransaction),
@@ -735,21 +724,17 @@ class OperationController extends Controller
                 'accountOperations' => $operations,
             ));
 
-        $operationType = str_replace(' ', '_', $ledgerBalance->getTypeOperation());
-        $accountName = str_replace(' ', '_', $account->getAccountName());
+            $operationType = str_replace(' ', '_', $ledgerBalance->getTypeOperation());
+            $accountName = str_replace(' ', '_', $account->getAccountName());
 
-        $html2pdf = $this->get('html2pdf_factory')->create('P', 'A4', 'en', true, 'UTF-8', [10, 10, 10, 15]);
-        $html2pdf->pdf->SetAuthor('GreenSoft-Team');
-        $html2pdf->pdf->SetDisplayMode('real');
-        $html2pdf->pdf->SetTitle('RECEIPT_CASH_OUT_'.$accountName);
-        $response = new Response();
-        $html2pdf->pdf->SetTitle('RECEIPT_CASH_OUT_'.$accountName);
-        $html2pdf->writeHTML($html);
-        $content = $html2pdf->Output('', true);
-        $response->setContent($content);
-        $response->headers->set('Content-Type', 'application/pdf');
-        $response->headers->set('Content-disposition', 'filename=Receipt'.$operationType.'_'.$accountName.'.pdf');
-        return $response;
+            $title = 'Receipt_'.$operationType.'_'.$accountName.'_'.$ledgerBalance->getDateOperation()->format('d-m-Y_H:i:s');
+            $html2PdfService = $this->get('app.html2pdf');
+            $html2PdfService->create('P', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 10));
+            if ($operations){
+                return $html2PdfService->generatePdf($template, $title.'.pdf', 'operations',$title, 'FI');
+            }
+            return $html2PdfService->generatePdf($template, $title.'.pdf', 'operations',$title, 'I');
+        }
     }
 
     public function convertNumberToWord($num = false)

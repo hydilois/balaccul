@@ -89,21 +89,6 @@ fos_user:
         confirmation:
             enabled: true
 
-lexik_form_filter:
-    listeners:
-        doctrine_orm: true
-        doctrine_dbal: false
-        doctrine_mongodb: false
-    where_method: ~  # null | and | or
-
-ensepar_html2pdf:
-    orientation: L
-    format: A5
-    lang: fr
-    unicode: true
-    encoding: UTF-8
-    margin: [2,0,0,0]
-
 
 fos_rest:
     param_fetcher_listener: true
