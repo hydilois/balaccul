@@ -29,12 +29,16 @@
     .text-center {
         text-align: center;
     }
+
+    img {
+        height: 80px;
+    }
 </style>
 
 <page footer="page;" backbottom="5mm">
     <page_footer>
         <hr>
-        <span>{{agency.abreviation}}</span> <span style="margin-left:400px;">&copy; GreenSoft-Group Technologies</span>
+        <span>{{agency.abreviation}}</span> <span style="margin-left:400px;">&copy; <b>HYMIF</b> made by GreenSoft-Group Technologies</span>
     </page_footer>
     <table>
         <tr>
@@ -45,7 +49,7 @@
                  <b>PO BOX: {{agency.poBox}}</b>
             </td>
             <td  style="text-align: right;" class="p-40">
-                <img style="height:80px;" src="./assets/images/users/logo_cu1.jpg"  alt="logo">
+                <img src="./assets/images/users/logo_cu1.jpg"  alt="logo">
             </td>
         </tr>
     </table>
@@ -67,11 +71,18 @@
                 <th class="p-8">Loan Amount</th>
                 <th class="p-8">Date of Loan</th>
                 <th class="p-8">Loan Balance</th>
-                <th class="p-8">Total interest Accute</th>
+                <th class="p-8">Total interest Accrute</th>
                 <th class="p-8">Delinquent installment</th>
                 <th class="p-5">N° Days delinquent</th>
                 <th class="p-5">Remarks</th>
             </tr>
+            {% set totalShares = 0 %}
+            {% set totalSavings = 0 %}
+            {% set totalDeposits = 0 %}
+            {% set totaLoanss = 0 %}
+            {% set totalLoans = 0 %}
+            {% set totalRemainAmount = 0 %}
+            {% set totalInterestToPayAt = 0 %}
             {% for member in members  %}
                 <tr>
                     <td class="text-center">{{ loop.index }}</td>
@@ -85,12 +96,22 @@
                         {% endif %}
                     </td>
                     <td class="text-center">{{ member.memberNumber }}</td>
-                    <td class="text-center">{{ member.share |number_format(0, '.', ' ') }}</td>
-                    <td class="text-center">{{ member.saving |number_format(0, '.', ' ') }}</td>
-                    <td class="text-center">{{ member.deposit |number_format(0, '.', ' ') }}</td>
+                    <td class="text-center">
+                        {{ member.share |number_format(0, '.', ' ') }}
+                        {% set totalShares = totalShares + member.share %}
+                    </td>
+                    <td class="text-center">
+                        {{ member.saving |number_format(0, '.', ' ') }}
+                        {% set totalSavings = totalSavings + member.saving %}
+                    </td>
+                    <td class="text-center">
+                        {{ member.deposit |number_format(0, '.', ' ') }}
+                        {% set totalDeposits = totalDeposits + member.deposit %}
+                    </td>
                     <td class="text-center">
                         {% if member.loan %}
                             {{ member.loan.loanAmount |number_format(0, '.', ' ') }}
+                            {% set totalLoans = totalLoans + member.loan.loanAmount %}
                         {% endif %}
                     </td>
                     <td class="text-center">
@@ -102,14 +123,17 @@
                         {% if member.loan %}
                             {% if member.loan.loanHistory %}
                                 {{ member.loan.loanHistory.remainAmount |number_format(0, '.', ' ') }}
+                                {% set totalRemainAmount = totalRemainAmount + member.loan.loanHistory.remainAmount %}
                             {% else %}
                                 {{ member.loan.loanAmount |number_format(0, '.', ' ') }}
+                                {% set totalRemainAmount = totalRemainAmount + member.loan.loanAmount %}
                             {% endif %}
                         {% endif %}
                     </td>
                     <td class="text-center">
                         {% if member.loan %}
                             {{ member.loan.interestToPayAt |number_format(0, '.', ' ') }}
+                            {% set totalInterestToPayAt = totalInterestToPayAt + member.loan.interestToPayAt %}
                         {% endif %}
                     </td>
                     <td class="text-center">
@@ -126,5 +150,18 @@
                     <td></td>
                 </tr>
             {% endfor %}
+            <tr>
+                <td class="text-center" colspan="3"><b>Total</b></td>
+                <td class="text-center"><b>{{ totalShares }}</b></td>
+                <td class="text-center"><b>{{ totalSavings }}</b></td>
+                <td class="text-center"><b>{{ totalDeposits }}</b></td>
+                <td class="text-center"><b>{{ totalLoans }}</b></td>
+                <td></td>
+                <td class="text-center"><b>{{ totalRemainAmount }}</b></td>
+                <td class="text-center"><b>{{ totalInterestToPayAt }}</b></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
         </table>
 </page>
