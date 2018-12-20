@@ -4,6 +4,7 @@ namespace ReportBundle\Controller;
 
 use AccountBundle\Entity\Loan;
 use AccountBundle\Entity\LoanHistory;
+use AccountBundle\Entity\Operation;
 use ConfigBundle\Entity\Agency;
 use MemberBundle\Entity\Member;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -230,7 +231,8 @@ class ReportController extends Controller{
      * @Route("/individual_ledger", name="report_individual_ledger")
      * @return Response
      */
-    public function individualLedgerBalanceAction(Request $request){
+    public function individualLedgerBalance(Request $request)
+    {
         
         $em = $this->getDoctrine()->getManager();
         if ($request->getMethod() =="POST") {
@@ -240,68 +242,41 @@ class ReportController extends Controller{
             $currentUserId  = $this->get('security.token_storage')->getToken()->getUser()->getId();
             $currentUser    = $em->getRepository('UserBundle:Utilisateur')->find($currentUserId);
 
-            $date  = $request->get('currentDate');
-            $accountId  = $request->get('accountNumber');
-            $date = explode( "/" , substr($date,strrpos($date," ")));
+            $data = $request->request->all();
+            $start = explode( "/" , substr($data['start'],strrpos($data['start']," ")));
+            $end = explode( "/" , substr($data['end'],strrpos($data['end']," ")));
 
-            $today_start_datetime = \DateTime::createFromFormat("Y-m-d H:i:s", date($date[2]."-".$date[1]."-".$date[0]." 00:00:00"));
-            $today_end_datetime = \DateTime::createFromFormat("Y-m-d H:i:s", date($date[2]."-".$date[1]."-".$date[0]." 23:59:59"));
-
-            $date  = new \DateTime($date[2]."-".$date[1]."-".$date[0]);
-            $day_before = date( 'Y-m-d', strtotime( $date->format('Y-m-d') . ' -1 day' ) );
-            $dayBefore_endDatetime = \DateTime::createFromFormat("Y-m-d H:i:s", $day_before." 23:59:59");
-
-                /*Get the balance brod*ad foward for the new day*/ 
-            $totalGLBDayBefore = $em->createQueryBuilder()
-                ->select('glb')
-                ->from('ReportBundle:GeneralLedgerBalance', 'glb')
-                ->innerJoin('ClassBundle:InternalAccount', 'ia', 'WITH', 'ia.id = glb.account')
-                ->where('glb.dateOperation <= :date')
-                ->andWhere('ia.id = :idAccount')
-                ->setParameters([
-                    'date' => $dayBefore_endDatetime,
-                    'idAccount' => $accountId
-                    ])
-                ->getQuery()
-                 ->getResult();
-
-                 $lastElement = end($totalGLBDayBefore);
-                 if ($lastElement) {
-                     $lastElement = $lastElement->getAccountBalance();
-                 }else{
-                    $lastElement = 0;
-                 }
-
+            $start_datetime = \DateTime::createFromFormat("Y-m-d H:i:s", date($start[2]."-".$start[1]."-".$start[0]." 00:00:00"));
+            $end_datetime = \DateTime::createFromFormat("Y-m-d H:i:s", date($end[2]."-".$end[1]."-".$end[0]." 23:59:59"));
 
             $operations = $em->createQueryBuilder()
                 ->select('glb')
                 ->from('ReportBundle:GeneralLedgerBalance', 'glb')
                 ->innerJoin('ClassBundle:InternalAccount', 'ia', 'WITH', 'ia.id = glb.account')
                 ->where('glb.dateOperation >= :date')
-                ->andWhere('glb.dateOperation <= :dateend')
-                ->andWhere('ia.id = :idAccount')
+                ->andWhere('glb.dateOperation <= :date_end')
+                ->andWhere('ia.id = :accountId')
                 ->setParameters([
-                    'date' => $today_start_datetime,
-                    'dateend' => $today_end_datetime,
-                    'idAccount' => $accountId
+                    'date' => $start_datetime,
+                    'date_end' => $end_datetime,
+                    'accountId' => $data['account_number']
                     ])
                 ->getQuery()
                 ->getResult();
 
-            $account = $em->getRepository('ClassBundle:InternalAccount')->find($accountId);
+            $account = $em->getRepository('ClassBundle:InternalAccount')->find($data['account_number']);
             $template = $this->renderView('situation/individual_ledger_pdf.html.twig', [
                 'operations' => $operations,
                 'agency' => $agency,
                 'account' => $account,
                 'currentUser' => $currentUser,
                 'date' => $currentDate,
-                'endDate' => $date,
-                'balanceBF' => $lastElement,
-                'dayBefore' => $dayBefore_endDatetime,
+                'start_date' => $start_datetime,
+                'end_date' => $end_datetime,
             ]);
 
             $accountName = str_replace(' ', '_', $account->getAccountName());
-            $title = 'Individual_Ledger_'.$accountName.'_'.$date->format('d-m-Y');
+            $title = 'Individual_Ledger_'.$accountName.'_'.$currentDate->format('d-m-Y');
             $html2PdfService = $this->get('app.html2pdf');
             $html2PdfService->create('P', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 10));
             if ($operations){
@@ -360,6 +335,9 @@ class ReportController extends Controller{
                 break;
             case "inactiveMembers":
                 $lists  = $entityManager->getRepository(Member::class)->getAllInActiveMembers();
+                break;
+            case "foundingMembers":
+                $lists  = $entityManager->getRepository(Member::class)->getFoundingMembers();
                 break;
             case "allLoans":
                 $subQuery  = $entityManager->createQueryBuilder()
@@ -445,8 +423,7 @@ class ReportController extends Controller{
         $firstOp = $entityManager->getRepository('AccountBundle:Operation')->findOneBy([
             'member' => $member,
             'isSaving' => true],
-            ['id' => 'ASC',]
-            );
+            ['id' => 'ASC',]);
 
         $MemberName = str_replace(' ', '_', $member->getName());
         $type = "Savings";
@@ -1358,6 +1335,56 @@ class ReportController extends Controller{
         $title = 'General_Situation';
         $html2PdfService = $this->get('app.html2pdf');
         $html2PdfService->create('P', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 10));
+        return $html2PdfService->generatePdf($template, $title.'.pdf', 'ledgers',$title, 'FI');
+    }
+
+
+    /**
+     * @Route("/individual/ledger/pdf", name="members_individual_ledger_pdf")
+     * @param Request $request
+     * @return Response
+     */
+    public function membersIndividualLedger(Request $request)
+    {
+        // Test is the user does not have the default role
+        if (!$this->container->get('security.authorization_checker')->isGranted('ROLE_USER')) {
+            return new RedirectResponse($this->container->get ('router')->generate ('fos_user_security_login'));
+        }
+
+        $currentDate  = $request->get('currentDate');
+        $date = explode( "/" , substr($currentDate,strrpos($currentDate," ")));
+
+        $date  = new \DateTime($date[2]."-".$date[1]."-".$date[0]);
+
+        $em = $this->getDoctrine()->getManager();
+        $agency = $em->getRepository('ConfigBundle:Agency')->findOneBy([], ['id' => 'ASC']);
+        $members = $em->getRepository('MemberBundle:Member')->findBy([],['memberNumber' => 'ASC']);
+
+        foreach ($members as $member){
+            $tmpLoan = $em->getRepository(Loan::class)->findOneBy([
+                'physicalMember' => $member,
+                'status' => true
+            ]);
+
+            $member = $em->getRepository(Operation::class)->getSituationAt($member, $date);
+
+
+            if ($tmpLoan) {
+                $loan = $em->getRepository(LoanHistory::class)->getActiveLoanPerMember($tmpLoan, $date);
+                $member->setLoan($loan);
+            }
+        }
+
+        $template =  $this->renderView('pdf_files/all_situation_file.html.twig', [
+            'numberNumber' => count($members),
+            'members' => $members,
+            'agency' => $agency,
+            'date' => $currentDate,
+        ]);
+
+        $title = 'All_Members_General_Situation';
+        $html2PdfService = $this->get('app.html2pdf');
+        $html2PdfService->create('L', 'A4', 'en', true, 'UTF-8', array(5, 10, 10, 10));
         return $html2PdfService->generatePdf($template, $title.'.pdf', 'ledgers',$title, 'FI');
     }
 }

@@ -1,0 +1,130 @@
+<style type="text/css">
+    table {
+        width: 100%;
+        line-height: 5mm;
+        border-collapse: collapse;
+    }
+
+    .p-3 {width: 3%}
+    .p-6 {width: 6%}
+    .p-8 {width: 8%}
+    .p-5 {width: 5%;}
+    .p-12 {width: 12%;}
+    .p-60 { width: 60%;}
+    .p-40 {width: 40%}
+    .p-100 {width: 100%;}
+
+    .info td, .info th {
+        border: 1px solid black;
+        height: 15px;
+        font-size: 15px;
+    }
+
+    .info th {
+        background: gray;
+        text-align: center;
+        font-size: 12px;
+
+    }
+    .text-center {
+        text-align: center;
+    }
+</style>
+
+<page footer="page;" backbottom="5mm">
+    <page_footer>
+        <hr>
+        <span>{{agency.abreviation}}</span> <span style="margin-left:400px;">&copy; GreenSoft-Group Technologies</span>
+    </page_footer>
+    <table>
+        <tr>
+            <td class="p-60">
+                 <b>{{agency.name}}</b> <br/>
+                 <b>HEAD OFFICE: {{agency.town}}</b><br/>
+                 <b>TEL: {{agency.phoneNumber}}</b><br>
+                 <b>PO BOX: {{agency.poBox}}</b>
+            </td>
+            <td  style="text-align: right;" class="p-40">
+                <img style="height:80px;" src="./assets/images/users/logo_cu1.jpg"  alt="logo">
+            </td>
+        </tr>
+    </table>
+    <table>
+        <tr>
+            <td class="p-100">
+                <h3 class="text-center"><strong>Individual Ledger Extracted at {{ date }} </strong></h3>
+            </td>
+        </tr>
+    </table>
+        <table class="info">
+            <tr>
+                <th class="p-3 text-center">S/N</th>
+                <th class="p-12">Name of Members</th>
+                <th class="p-6">A/C N°</th>
+                <th class="p-8">Shares</th>
+                <th class="p-8">Savings</th>
+                <th class="p-8">Deposit</th>
+                <th class="p-8">Loan Amount</th>
+                <th class="p-8">Date of Loan</th>
+                <th class="p-8">Loan Balance</th>
+                <th class="p-8">Total interest Accute</th>
+                <th class="p-8">Delinquent installment</th>
+                <th class="p-5">N° Days delinquent</th>
+                <th class="p-5">Remarks</th>
+            </tr>
+            {% for member in members  %}
+                <tr>
+                    <td class="text-center">{{ loop.index }}</td>
+                    <td>
+                        {% if member.name %}
+                            {% set array = member.name|split(' ') %}
+                            {{ attribute(array, 0) }}
+                            {% if array| length >= 2 %}
+                                {{ attribute(array, 1) }}
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                    <td class="text-center">{{ member.memberNumber }}</td>
+                    <td class="text-center">{{ member.share |number_format(0, '.', ' ') }}</td>
+                    <td class="text-center">{{ member.saving |number_format(0, '.', ' ') }}</td>
+                    <td class="text-center">{{ member.deposit |number_format(0, '.', ' ') }}</td>
+                    <td class="text-center">
+                        {% if member.loan %}
+                            {{ member.loan.loanAmount |number_format(0, '.', ' ') }}
+                        {% endif %}
+                    </td>
+                    <td class="text-center">
+                        {% if member.loan %}
+                            {{ member.loan.dateLoan | date('d-m-Y') }}
+                        {% endif %}
+                    </td>
+                    <td class="text-center">
+                        {% if member.loan %}
+                            {% if member.loan.loanHistory %}
+                                {{ member.loan.loanHistory.remainAmount |number_format(0, '.', ' ') }}
+                            {% else %}
+                                {{ member.loan.loanAmount |number_format(0, '.', ' ') }}
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                    <td class="text-center">
+                        {% if member.loan %}
+                            {{ member.loan.interestToPayAt |number_format(0, '.', ' ') }}
+                        {% endif %}
+                    </td>
+                    <td class="text-center">
+                        {% if member.loan %}
+                            {{ member.loan.numberOfDelinquent }}
+                        {% endif %}
+
+                    </td>
+                    <td class="text-center">
+                        {% if member.loan %}
+                            {{ member.loan.numberOfDays}}
+                        {% endif %}
+                    </td>
+                    <td></td>
+                </tr>
+            {% endfor %}
+        </table>
+</page>

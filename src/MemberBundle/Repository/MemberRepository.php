@@ -47,6 +47,20 @@ class MemberRepository extends EntityRepository
     }
 
     /**
+     * @return array
+     */
+    public function getFoundingMembers()
+    {
+        $members = $this->createQueryBuilder('m')
+            ->orderBy('m.memberNumber', 'ASC')
+            ->getQuery()
+            ->setMaxResults(30)
+            ->getResult();
+
+        return $members;
+    }
+
+    /**
      * @param Utilisateur $currentUser
      * @param \DateTime $dateTime
      * @param Member $member

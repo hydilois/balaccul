@@ -48,23 +48,15 @@ class LoanHistoryController extends Controller
         $agency = $em->getRepository('ConfigBundle:Agency')->findOneBy([],['id' => 'ASC']);
         $loans = $em->getRepository(LoanHistory::class)->getAllActiveLoans();
 
-        $html =  $this->renderView('loanhistory/members_loans_situation_pdf.html.twig', [
+        $template =  $this->renderView('loanhistory/members_loans_situation_pdf.html.twig', [
             'agency' => $agency,
             'loans' => $loans,
         ]);
 
-        $html2pdf = $this->get('html2pdf_factory')->create('L', 'A4', 'en', true, 'UTF-8', array(10, 5, 10, 10));
-        $html2pdf->pdf->SetAuthor('GreenSoft-Group Technologies');
-        $html2pdf->pdf->SetDisplayMode('real');
-        $html2pdf->pdf->SetTitle('Members_Loans_Situation');
-        $response = new Response();
-        $html2pdf->pdf->SetTitle('Members_Loans_Situation');
-        $html2pdf->writeHTML($html);
-        $content = $html2pdf->Output('', true);
-        $response->setContent($content);
-        $response->headers->set('Content-Type', 'application/pdf');
-        $response->headers->set('Content-disposition', 'filename=Members_Loans_Situation.pdf');
-        return $response;
+        $title = 'Members_Loans_Situation';
+        $html2PdfService = $this->get('app.html2pdf');
+        $html2PdfService->create('L', 'A4', 'en', true, 'UTF-8', array(10, 5, 10, 10));
+        return $html2PdfService->generatePdf($template, $title.'.pdf', 'loans',$title, 'FI');
     }
 
 

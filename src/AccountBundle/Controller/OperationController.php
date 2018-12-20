@@ -275,8 +275,7 @@ class OperationController extends Controller
                         $interest = ($loan->getLoanAmount() * $loan->getRate()) / 100;
                         $dailyInterestPayment = $interest / 30;
                         $date = strtotime($loan->getDateLoan()->format('Y-m-d'));
-                        $dateNow = time();
-                        $interestToPay = round($dailyInterestPayment * floor(($dateNow - $date) / (60 * 60 * 24)));
+                        $interestToPay = round($dailyInterestPayment * floor((strtotime($dateOperation->format('Y-m-d')) - $date) / (60 * 60 * 24)));
                         if ($interestToPay - $loanInterest < 0) {
                             return $this->render('Exception/loan_interest_warning.html.twig');
                         } else {

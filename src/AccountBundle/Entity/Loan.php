@@ -128,6 +128,23 @@ class Loan{
 
     private $loanHistory;
 
+    /**
+     * @var int
+     */
+    private $interestToPayAt;
+
+    /**
+     * @var int
+     */
+    private $numberOfDays;
+
+    /**
+     * @var int
+     */
+    private $numberOfDelinquent;
+
+
+
 
     public function __construct(){
         //The default status of the account is true
@@ -394,4 +411,53 @@ class Loan{
     {
         return $this->loanHistory;
     }
+
+    /**
+     * @return integer
+     */
+    public function getInterestToPayAt()
+    {
+        return $this->interestToPayAt;
+    }
+
+    /**
+     * @param integer $interestToPayAt
+     */
+    public function setInterestToPayAt($interestToPayAt)
+    {
+        $this->interestToPayAt = $interestToPayAt;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getNumberOfDays()
+    {
+        return $this->numberOfDays;
+    }
+
+    /**
+     * @param mixed $numberOfDays
+     */
+    public function setNumberOfDays($numberOfDays)
+    {
+        $this->numberOfDays = $numberOfDays;
+    }
+
+    /**
+     * @return int
+     */
+    public function getNumberOfDelinquent()
+    {
+        return $this->numberOfDelinquent;
+    }
+
+    /**
+     * @param int $numberOfDelinquent
+     */
+    public function setNumberOfDelinquent($numberOfDelinquent)
+    {
+        $this->numberOfDelinquent = $numberOfDelinquent;
+    }
+
 }

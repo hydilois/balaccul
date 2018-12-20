@@ -169,6 +169,8 @@ class Member{
      */
     private $deposit;
 
+    private $loan;
+
 
 
     /**
@@ -741,5 +743,21 @@ class Member{
     public function getDeposit()
     {
         return $this->deposit;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLoan()
+    {
+        return $this->loan;
+    }
+
+    /**
+     * @param mixed $loan
+     */
+    public function setLoan($loan)
+    {
+        $this->loan = $loan;
     }
 }

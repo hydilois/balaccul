@@ -12,7 +12,7 @@
       Monthly Report
     </li>
   </ol>
-    <div style="margin-top:100px" class="row">
+    <div class="row">
         <fieldset>
             <legend>
                 MONTHLY REPORT
@@ -53,6 +53,47 @@
         </div>
         </fieldset>
         </div> <!-- End row -->
+    <div class="row">
+        <fieldset>
+            <legend>
+                INDIVIDUAL LEDGER EXTRACTION
+            </legend>
+            <div class=" col-lg-offset-2 col-lg-8 col-md-8 col-sm-8 col-xs-8 ">
+                <div class="portlet">
+                    <div class="portlet-heading bg-blue">
+                        <div class="portlet-widgets pull-left">
+                            <span class="divider"></span>
+                            <span class="divider"></span>
+                        </div>
+                        <h3 class="portlet-title">
+                            INPUT THE DATE
+                        </h3>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div id="bg-info1" class="panel-collapse collapse" style="display:block">
+                        <div class="portlet-body">
+                            <div class="p-20">
+                                <form target="_blank" method="POST" action="{{ path('members_individual_ledger_pdf') }}" class="form-horizontal">
+                                    <div class="form-group">
+                                        <label class="control-label col-sm-4">Day</label>
+                                        <div class="col-sm-4">
+                                            <div class="input-group">
+                                                <input type="text" required class="form-control" placeholder="day/month/year" id="datepicker-autoclose" name="currentDate">
+                                                <span class="input-group-addon bg-blue b-0 text-white"><i class="icon-calender"></i></span>
+                                            </div><!-- input-group -->
+                                            <br>
+                                            <input  type="submit" class="btn btn-primary" value="Validate"/>
+                                        </div>
+                                    </div>
+
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+    </div> <!-- End row -->
 
         <div class="row">
             <fieldset>
@@ -69,6 +110,7 @@
                                            <li><a href="{{path('report_generate_document', {status:'allMembers', type:'Members' })}}" target="_blank">All Members</a></li>
                                             <li><a href="{{path('report_generate_document', {status:'activeMembers', type:'Members'})}}" target="_blank">Active Members</a></li>
                                             <li><a href="{{path('report_generate_document', {status:'inactiveMembers', type:'Members'})}}" target="_blank">Inactive Members</a></li>
+                                            <li><a href="{{path('report_generate_document', {status:'foundingMembers', type:'Members'})}}" target="_blank">Founding Members</a></li>
                                        </ul>
                                </div>
                                 {# <div class="btn-group dropdown">
@@ -80,7 +122,7 @@
                                            <li><a href="{{path('report_generate_document', {status:'inactiveLoans', type:'Loans'})}}" target="_blank">Inactive Loans</a></li>
                                          </ul>
                                  </div>                                   #}
-                         <a class="btn btn-default" target="_blank" href="{{ path('all_situations_pdf') }}">General Situation</a>
+                         <a class="btn btn-default" target="_blank" href="{{ path('all_situations_pdf') }}">Main Accounts Situation</a>
                       <!--/section-->
                     </div>
             </fieldset>

@@ -120,4 +120,84 @@ class OperationRepository extends EntityRepository
         $entityManager->flush();
         return $operation;
     }
+
+    /**
+     * @param $member
+     * @param $dateOperation
+     * @return mixed
+     */
+    public function getSituationAt($member, $dateOperation)
+    {
+        $em = $this->getEntityManager();
+        $operationShare = $em->createQueryBuilder()
+            ->select('op')
+            ->from('AccountBundle:Operation', 'op')
+            ->innerJoin('MemberBundle:Member', 'm', 'WITH', 'op.member=m.id')
+            ->where('op.dateOperation <= :date')
+            ->andWhere('op.isShare = true')
+            ->andWhere('m.id = :id')
+            ->setParameters([
+                'date' => $dateOperation,
+                'id' => $member->getId()
+            ])
+            ->getQuery()
+            ->getResult();
+
+        if ($operationShare){
+            $lastElement = array_values(array_slice($operationShare, -1))[0];
+            $member->setShare($lastElement->getBalance());
+        } else {
+            if ($member->getMembershipDateCreation() > $dateOperation){
+                $member->setShare(0);
+            }
+        }
+
+        $operationSavings = $em->createQueryBuilder()
+            ->select('op')
+            ->from('AccountBundle:Operation', 'op')
+            ->innerJoin('MemberBundle:Member', 'm', 'WITH', 'op.member=m.id')
+            ->where('op.dateOperation <= :date')
+            ->andWhere('op.isSaving = true')
+            ->andWhere('m.id = :id')
+            ->setParameters([
+                'date' => $dateOperation,
+                'id' => $member->getId()
+            ])
+            ->getQuery()
+            ->getResult();
+
+        if ($operationSavings){
+            $lastElement = array_values(array_slice($operationSavings, -1))[0];
+            $member->setSaving($lastElement->getBalance());
+        } else {
+            if ($member->getMembershipDateCreation() > $dateOperation){
+                $member->setSaving(0);
+            }
+        }
+
+        $operationDeposit = $em->createQueryBuilder()
+            ->select('op')
+            ->from('AccountBundle:Operation', 'op')
+            ->innerJoin('MemberBundle:Member', 'm', 'WITH', 'op.member=m.id')
+            ->where('op.dateOperation <= :date')
+            ->andWhere('op.isDeposit = true')
+            ->andWhere('m.id = :id')
+            ->setParameters([
+                'date' => $dateOperation,
+                'id' => $member->getId()
+            ])
+            ->getQuery()
+            ->getResult();
+
+        if ($operationDeposit){
+            $lastElement = array_values(array_slice($operationDeposit, -1))[0];
+            $member->setDeposit($lastElement->getBalance());
+        } else {
+            if ($member->getMembershipDateCreation() > $dateOperation){
+                $member->setDeposit(0);
+            }
+        }
+
+        return $member;
+    }
 }
