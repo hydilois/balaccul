@@ -47,7 +47,7 @@ class Loan{
      * @ORM\Column(name="rate", type="float")
      * @Assert\NotBlank(message="This field cannot be nul")
      * @Assert\Range(
-     *      min = 1,
+     *      min = 0,
      *      max = 100,
      *      minMessage = "The min value should be  {{ limit }}",
      *      maxMessage = "The max value should be {{ limit }}"
@@ -91,7 +91,7 @@ class Loan{
      * @ORM\Column(name="loan_processing_fees", type="bigint")
      * @Assert\NotBlank(message="This field cannot be nul")
      * @Assert\Range(
-     *      min = 1,
+     *      min = 0,
      *      max = 500000,
      *      minMessage = "The min value should be  {{ limit }}",
      *      maxMessage = "The max value should be {{ limit }}"
