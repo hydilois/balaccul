@@ -722,7 +722,7 @@ class OperationController extends Controller
      * @param bool $num
      * @return bool|string
      */
-    public function convertNumberToWord($num = false)
+    private function convertNumberToWord($num = false)
     {
         $num = str_replace(array(',', ' '), '' , trim($num));
         if(! $num) {
@@ -766,7 +766,7 @@ class OperationController extends Controller
         return implode(' ', $words);
     }
 
-    public function analyticsArray($tenThousands, $fiveThousands, $twoThousands, $oneThousands, $fiveHundred, $oneHundred, $fifty, $twentyFive, $ten, $five, $one)
+    private function analyticsArray($tenThousands, $fiveThousands, $twoThousands, $oneThousands, $fiveHundred, $oneHundred, $fifty, $twentyFive, $ten, $five, $one)
     {
         $analytics = [];
 
@@ -887,7 +887,7 @@ class OperationController extends Controller
      * @param $date
      * @return \DateTime
      */
-    public function dateConcatenation($date)
+    private function dateConcatenation($date)
     {
         $dateExplode = explode( "/" , substr($date,strrpos($date," ")));
         $dateStart  = new \DateTime($dateExplode[2]."-".$dateExplode[1]."-".$dateExplode[0]);

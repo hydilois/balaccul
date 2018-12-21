@@ -134,7 +134,7 @@ class ReportController extends Controller{
                 'incomeOp' => $incomeOperations,
             ]);
 
-            $title = 'Monthly_Report'.$currentDate->format('d-m-Y');
+            $title = 'Monthly_Report_'.$dateStart->format('d-m-Y').'_'.$dateEnd->format('d-m-Y');
             $html2PdfService = $this->get('app.html2pdf');
             $html2PdfService->create('P', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 10));
             return $html2PdfService->generatePdf($template, $title.'.pdf', 'ledgers',$title, 'FI');
@@ -817,7 +817,7 @@ class ReportController extends Controller{
                     ]
                 )->getQuery()->getResult();
 
-                $physMemberRegist = $em->createQueryBuilder()
+                $memberRegist = $em->createQueryBuilder()
                     ->select('m')
                     ->from('MemberBundle:Member', 'm')
                     ->where('m.membershipDateCreation >= :start')
@@ -850,7 +850,7 @@ class ReportController extends Controller{
                 'loans' => $loans,
                 'loanHistory' => $loanHistory,
                 'dailyServices' => $dailyServices,
-                'phyMember' => $physMemberRegist,
+                'phyMember' => $memberRegist,
                 'moMember' => $morMemberRegist,
                 'currentDate' => $dateDebut,
                 'transIncome' => $transactionIncome,
@@ -1221,7 +1221,7 @@ class ReportController extends Controller{
         $agency = $em->getRepository('ConfigBundle:Agency')->findOneBy([], ['id' => 'ASC']);
         $members = $em->getRepository('MemberBundle:Member')->findBy([],['memberNumber' => 'ASC']);
 
-        foreach ($members as $member){
+        foreach ($members as $member) {
             $tmpLoan = $em->getRepository(Loan::class)->findOneBy([
                 'physicalMember' => $member,
                 'status' => true

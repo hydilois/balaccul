@@ -50,9 +50,12 @@ class MemberController extends Controller
     public function memberRegistrationReceiptAction(Member $member){
         $em = $this->getDoctrine()->getManager();
         $agency = $em->getRepository(Agency::class)->findOneBy([], ['id' => 'ASC']);
+        $total = $member->getShare() + $member->getSaving() + $member->getDeposit() + $member->getRegistrationFees() + $member->getBuildingFees();
+        $numberInWord = $this->convertNumberToWord($total);
         $template =  $this->renderView('member/pdf_files/registration_fees_receipt_file.html.twig', array(
             'agency' => $agency,
             'member' => $member,
+            'numberInWord' => $numberInWord,
         ));
         $memberName = str_replace(' ', '_', $member->getName());
         $title = 'Receipt_Registration_'.$memberName;
@@ -184,6 +187,21 @@ class MemberController extends Controller
     }
 
     /**
+     * Creates a form to delete a member entity.
+     *
+     * @param Member $member The member entity
+     *
+     * @return \Symfony\Component\Form\Form The form
+     */
+    private function createDeleteForm(Member $member)
+    {
+        return $this->createFormBuilder()
+            ->setAction($this->generateUrl('member_delete', array('id' => $member->getId())))
+            ->setMethod('DELETE')
+            ->getForm();
+    }
+
+    /**
      * Deletes a member entity.
      *
      * @Route("/{id}", name="member_delete")
@@ -205,21 +223,6 @@ class MemberController extends Controller
         return $this->redirectToRoute('member_index');
     }
 
-    /**
-     * Creates a form to delete a member entity.
-     *
-     * @param Member $member The member entity
-     *
-     * @return \Symfony\Component\Form\Form The form
-     */
-    private function createDeleteForm(Member $member)
-    {
-        return $this->createFormBuilder()
-            ->setAction($this->generateUrl('member_delete', array('id' => $member->getId())))
-            ->setMethod('DELETE')
-            ->getForm()
-        ;
-    }
 
     /**
      * @param Request $request [contains the http request that is passed on]
@@ -377,8 +380,8 @@ class MemberController extends Controller
             $memberSavings  = $entityManager->getRepository('ClassBundle:InternalAccount')->find(44);
             $memberSavings->setBalance($memberSavings->getBalance() + $member->getSaving());
 
-            $classeSaving = $entityManager->getRepository('ClassBundle:Classe')->find($memberSavings->getClasse()->getId());
-            $classeSaving->setBalance($classeSaving->getBalance() + $member->getSaving());
+            $classSaving = $entityManager->getRepository('ClassBundle:Classe')->find($memberSavings->getClasse()->getId());
+            $classSaving->setBalance($classSaving->getBalance() + $member->getSaving());
 
             /*First step*/ 
             $ledgerBalance = new GeneralLedgerBalance();
@@ -453,8 +456,8 @@ class MemberController extends Controller
             $memberEntranceFees  = $entityManager->getRepository('ClassBundle:InternalAccount')->find(151);
             $memberEntranceFees->setBalance($memberEntranceFees->getBalance() + $member->getRegistrationFees());
 
-            $classeRegis = $entityManager->getRepository('ClassBundle:Classe')->find($memberEntranceFees->getClasse()->getId());
-            $classeRegis->setBalance($classeRegis->getBalance() + $member->getRegistrationFees());
+            $classRegistration = $entityManager->getRepository('ClassBundle:Classe')->find($memberEntranceFees->getClasse()->getId());
+            $classRegistration->setBalance($classRegistration->getBalance() + $member->getRegistrationFees());
 
             $operationRegis = new Operation();
             $operationRegis->setDateOperation($dateOperation);
@@ -578,5 +581,53 @@ class MemberController extends Controller
                     "status" => "failed"
                 ]);
             }
+    }
+
+    /**
+     * @param bool $num
+     * @return bool|string
+     */
+    private function convertNumberToWord($num = false)
+    {
+        $num = str_replace(array(',', ' '), '' , trim($num));
+        if(! $num) {
+            return false;
+        }
+        $num = (int) $num;
+        $words = array();
+        $list1 = array('', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven',
+            'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'
+        );
+        $list2 = array('', 'ten', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety', 'hundred');
+        $list3 = array('', 'thousand', 'million', 'billion', 'trillion', 'quadrillion', 'quintillion', 'sextillion', 'septillion',
+            'octillion', 'nonillion', 'decillion', 'undecillion', 'duodecillion', 'tredecillion', 'quattuordecillion',
+            'quindecillion', 'sexdecillion', 'septendecillion', 'octodecillion', 'novemdecillion', 'vigintillion'
+        );
+        $num_length = strlen($num);
+        $levels = (int) (($num_length + 2) / 3);
+        $max_length = $levels * 3;
+        $num = substr('00' . $num, -$max_length);
+        $num_levels = str_split($num, 3);
+        for ($i = 0; $i < count($num_levels); $i++) {
+            $levels--;
+            $hundreds = (int) ($num_levels[$i] / 100);
+            $hundreds = ($hundreds ? ' ' . $list1[$hundreds] . ' hundred' . ' ' : '');
+            $tens = (int) ($num_levels[$i] % 100);
+            $singles = '';
+            if ( $tens < 20 ) {
+                $tens = ($tens ? ' ' . $list1[$tens] . ' ' : '' );
+            } else {
+                $tens = (int)($tens / 10);
+                $tens = ' ' . $list2[$tens] . ' ';
+                $singles = (int) ($num_levels[$i] % 10);
+                $singles = ' ' . $list1[$singles] . ' ';
+            }
+            $words[] = $hundreds . $tens . $singles . ( ( $levels && ( int ) ( $num_levels[$i] ) ) ? ' ' . $list3[$levels] . ' ' : '' );
+        } //end for loop
+        $commas = count($words);
+        if ($commas > 1) {
+            $commas = $commas - 1;
+        }
+        return implode(' ', $words);
     }
 }

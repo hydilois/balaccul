@@ -88,7 +88,8 @@ class LoanHistoryRepository extends EntityRepository
                     $interestToPay = round($dailyInterestPayment * floor((strtotime($dateOperation->format('Y-m-d')) - $date) / (60 * 60 * 24)));
                     $loan->setInterestToPayAt($interestToPay);
                 }
-                $loan->setNumberOfDays(floor((strtotime($dateOperation->format('Y-m-d')) - $date) / (60 * 60 * 24)));
+                $numberOfDays = floor((strtotime($dateOperation->format('Y-m-d')) - $date) / (60 * 60 * 24)) - 30;
+                $numberOfDays <= 0 ? $loan->setNumberOfDays(0) : $loan->setNumberOfDays($numberOfDays);
                 $loan->setNumberOfDelinquent(floor((strtotime($dateOperation->format('Y-m-d')) - $date) / (60 * 60 * 24 * 30)));
                 $loan->setLoanHistory($latestLoanHistory);
             }

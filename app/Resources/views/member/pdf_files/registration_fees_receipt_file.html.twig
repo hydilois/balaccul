@@ -5,13 +5,15 @@
         border-collapse: collapse;
     }
 
+    .p-10{ width: 10%;}
+    .p-15{ width: 15%;}
+    .p-20{ width: 20%;}
     .p-25{ width: 25%;}
+    .p-40{ width: 40%;}
     .p-50{ width: 50%;}
     .p-60{ width: 60%;}
     .p-75{ width: 75%;}
-    .p-20{ width: 20%;}
-    .p-40{ width: 40%;}
-    .p-15{ width: 15%;}
+    .p-90{ width: 90%;}
 
     .zone td, .zone th {
         height: 30px;
@@ -19,6 +21,9 @@
     }
     .text-center {
         text-align: center;
+    }
+    img {
+        height: 80px;
     }
 
 </style>
@@ -38,7 +43,7 @@
 
             </td>
             <td  style="text-align: right;" class="p-40">
-                <img style="height:80px;" src="./assets/images/users/logo_cu1.jpg"  alt="logo">
+                <img  src="./assets/images/users/logo_cu1.jpg"  alt="logo">
             </td>
         </tr>
     </table><br>
@@ -100,6 +105,12 @@
         <tr>
             <td class="p-75" style="text-align: left; border-right:1px solid black;"></td>
             <td class="p-25" style="border:1px solid black; font-size: 18px; text-align:center;height: 25px;">TOTAL: <b>{{ total |number_format(0, '.', ' ') }} </b> </td>
+        </tr>
+    </table>
+    <table>
+        <tr>
+            <td class="p-10"></td>
+            <td class="p-90" style="text-align:right">In letters: <b>{{ numberInWord |upper }} F CFA</b></td>
         </tr>
     </table>
     <table style="margin-bottom:0px">
@@ -190,6 +201,12 @@
         <tr>
             <td class="p-75" style="text-align: left; border-right:1px solid black;"></td>
             <td class="p-25" style="border:1px solid black; font-size: 18px; text-align:center;height: 25px;">TOTAL: <b>{{ total |number_format(0, '.', ' ') }} </b> </td>
+        </tr>
+    </table>
+    <table>
+        <tr>
+            <td class="p-10"></td>
+            <td class="p-90" style="text-align:right">In letters: <b>{{ numberInWord |upper }} F CFA</b></td>
         </tr>
     </table>
     <table style="margin-bottom:0px">
