@@ -207,8 +207,7 @@ class OperationController extends Controller
         $entityManager = $this->getDoctrine()->getManager();
         $agency = $entityManager->getRepository(Agency::class)->findOneBy([],['id' => 'ASC']);
         // Get the current user connected
-        $currentUserId  = $this->get('security.token_storage')->getToken()->getUser()->getId();
-        $currentUser    = $entityManager->getRepository(Utilisateur::class)->find($currentUserId);
+        $currentUser  = $this->get('security.token_storage')->getToken()->getUser();
         if ($request->getMethod() == 'POST') {
             /*Getting the principal information data from the form*/
             $balanceStatus = $request->get('balance-display');
@@ -231,8 +230,8 @@ class OperationController extends Controller
                 $representative = $member->getName();
             }
 
+            $loan_history = new Loanhistory();
             if ($mainLoan != 0 || $loanInterest != 0) { //Loan Repayment for physical member
-                $loan_history = new Loanhistory();
                 $loan = $entityManager->getRepository(Loan::class)->findOneBy(['physicalMember' => $member, 'status' => true]);
                 if ($loan) {
                     $loan_history->setCurrentUser($currentUser);
@@ -453,7 +452,7 @@ class OperationController extends Controller
                 $entityManager->getRepository(Member::class)->saveMemberRegistrationFeesInGeneralLedger($registration, $currentUser, $dateOperation, $memberEntranceFees, $member, $representative);
             }
             $entityManager->flush();
-            $html = $this->renderView('operation/cash_in_receipt_file.html.twig', [
+            $template = $this->renderView('operation/cash_in_receipt_file.html.twig', [
                 'agency' => $agency,
                 'member' => $member,
                 'loanhistory' => $loan_history,
@@ -467,21 +466,11 @@ class OperationController extends Controller
                 'accountOperations' => $operations,
             ]);
 
-            $nomMember = str_replace(' ', '_', $member->getName());
-            $operationType = str_replace(' ', '_', Operation::TYPE_CASH_IN);
-
-            $html2pdf = $this->get('html2pdf_factory')->create('P', 'A4', 'en', true, 'UTF-8', [2.5, 2.5, 2.5, 10]);
-            $html2pdf->pdf->SetAuthor('GreenSoft-Group');
-            $html2pdf->pdf->SetDisplayMode('real');
-            $html2pdf->pdf->SetTitle('RECEIPT_' . $operationType . '_' . $nomMember);
-            $response = new Response();
-            $html2pdf->pdf->SetTitle('RECEIPT_' . $operationType . '_' . $nomMember);
-            $html2pdf->writeHTML($html);
-            $content = $html2pdf->Output('', true);
-            $response->setContent($content);
-            $response->headers->set('Content-Type', 'application/pdf');
-            $response->headers->set('Content-disposition', 'filename=Receipt' . $operationType . '_' . $member->getMemberNumber() . '.pdf');
-            return $response;
+            $memberName = str_replace(' ', '_', $member->getName());
+            $title = 'Receipt_CASH_IN_'.$memberName.'_'.$dateOperation->format('d-m-Y_H:i:s');
+            $html2PdfService = $this->get('app.html2pdf');
+            $html2PdfService->create('P', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 10));
+            return $html2PdfService->generatePdf($template, $title.'.pdf', 'operations',$title, 'FI');
         }else{
             return $this->render('Exception/error_404.html.twig');
         }
@@ -531,10 +520,10 @@ class OperationController extends Controller
             $totalTransaction += $amount;
             $operations[] = $ledgerBalance;
             $analytics = $this->analyticsArray($request->get('10000'), $request->get('5000'), $request->get('2000'),$request->get('1000'), $request->get('500'), $request->get('100'), $request->get('50'), $request->get('25'), $request->get('10'), $request->get('5'), $request->get('1'));
-        }
-        $entityManager->flush();
 
-        $html =  $this->renderView('operation/other_in_receipt_file.html.twig', [
+            $entityManager->flush();
+
+            $template =  $this->renderView('operation/other_in_receipt_file.html.twig', [
                 'agency' => $agency,
                 'member' => $member,
                 'balanceStatus' => $balanceStatus,
@@ -544,24 +533,17 @@ class OperationController extends Controller
                 'representative' => $representative,
                 'currentDate' => $dateOperation,
                 'accountOperations' => $operations,
-    ]);
+            ]);
 
-        $operationType = str_replace(' ', '_', $ledgerBalance->getTypeOperation());
-        $accountName = str_replace(' ', '_', $account->getAccountName());
-        
+            $accountName = str_replace(' ', '_', $account->getAccountName());
 
-        $html2pdf = $this->get('html2pdf_factory')->create('P', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 15));
-        $html2pdf->pdf->SetAuthor('GreenSoft-Team');
-        $html2pdf->pdf->SetDisplayMode('real');
-        $html2pdf->pdf->SetTitle('RECEIPT_CASH_IN_'.$account->getAccountName());
-        $response = new Response();
-        $html2pdf->pdf->SetTitle('RECEIPT_CASH_IN_'.$account->getAccountName());
-        $html2pdf->writeHTML($html);
-        $content = $html2pdf->Output('', true);
-        $response->setContent($content);
-        $response->headers->set('Content-Type', 'application/pdf');
-        $response->headers->set('Content-disposition', 'filename=Receipt'.$operationType.'_'.$accountName.'.pdf');
-        return $response;
+            $title = 'Receipt_OTHER_CASH_IN_'.$accountName.'_'.$dateOperation->format('d-m-Y_H:i:s');
+            $html2PdfService = $this->get('app.html2pdf');
+            $html2PdfService->create('P', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 10));
+            return $html2PdfService->generatePdf($template, $title.'.pdf', 'operations',$title, 'FI');
+        }else {
+            return $this->render('Exception/error_404.html.twig');
+        }
     }
 
 
@@ -736,6 +718,10 @@ class OperationController extends Controller
         }
     }
 
+    /**
+     * @param bool $num
+     * @return bool|string
+     */
     public function convertNumberToWord($num = false)
     {
         $num = str_replace(array(',', ' '), '' , trim($num));

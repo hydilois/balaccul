@@ -735,145 +735,6 @@ class ReportController extends Controller{
 
 
     /**
-     * @Route("/daily/history", name="dailyreport")
-     * @Method({"GET", "POST"})
-     * @param Request $request
-     * @return Response
-     */
-    public function dailyReportAction(Request $request){
-        $em = $this->getDoctrine()->getManager();
-        $agency = $em->getRepository('ConfigBundle:Agency')->findOneBy([], ['id' => 'ASC']);
-
-
-        if ($request->getMethod() == 'POST') {
-
-            $dateDebut = $request->get('currentDate');
-
-            $newDateStart = explode( "/" , substr($dateDebut,strrpos($dateDebut," ")));
-
-            $today_startdatetime = \DateTime::createFromFormat("Y-m-d H:i:s", date($newDateStart[2]."-".$newDateStart[1]."-".$newDateStart[0]." 00:00:00"));
-            $today_end_datetime = \DateTime::createFromFormat("Y-m-d H:i:s", date($newDateStart[2]."-".$newDateStart[1]."-".$newDateStart[0]." 23:59:59"));
-
-            $operations = $em->createQueryBuilder()
-                ->select('op')
-                ->from('AccountBundle:Operation', 'op')
-                ->where('op.dateOperation >= :start')
-                ->andWhere('op.dateOperation <= :end')
-                ->setParameters(
-                    [
-                        'start' => $today_startdatetime,
-                        'end' => $today_end_datetime,
-                    ]
-                )->getQuery()->getResult();
-
-
-            $loanHistory = $em->createQueryBuilder()
-                ->select('lh')
-                ->from('AccountBundle:LoanHistory', 'lh')
-                ->where('lh.dateOperation >= :start')
-                ->andWhere('lh.dateOperation <= :end')
-                ->setParameters(
-                    [
-                        'start' => $today_startdatetime,
-                        'end' => $today_end_datetime,
-                    ]
-                )->getQuery()->getResult();
-
-            $transactionIncome = $em->createQueryBuilder()
-                ->select('ti')
-                ->from('ConfigBundle:TransactionIncome', 'ti')
-                ->where('ti.transactionDate >= :start')
-                ->andWhere('ti.transactionDate <= :end')
-                ->setParameters(
-                    [
-                        'start' => $today_startdatetime,
-                        'end' => $today_end_datetime,
-                    ]
-                )->getQuery()->getResult();
-
-            $loans = $em->createQueryBuilder()
-                ->select('l')
-                ->from('AccountBundle:Loan', 'l')
-                ->where('l.dateLoan >= :start')
-                ->andWhere('l.dateLoan <= :end')
-                ->setParameters(
-                    [
-                        'start' => $today_startdatetime,
-                        'end' => $today_end_datetime,
-                    ]
-                )->getQuery()->getResult();
-
-            $dailyServices = $em->createQueryBuilder()
-                ->select('ds')
-                ->from('MemberBundle:DailyServiceOperation', 'ds')
-                ->where('ds.dateOperation >= :start')
-                ->andWhere('ds.dateOperation <= :end')
-                ->andWhere('ds.fees > :fees')
-                ->setParameters(
-                    [
-                        'start' => $today_startdatetime,
-                        'end' => $today_end_datetime,
-                        'fees' => 0,
-                    ]
-                )->getQuery()->getResult();
-
-                $physMemberRegist = $em->createQueryBuilder()
-                    ->select('m')
-                    ->from('MemberBundle:Member', 'm')
-                    ->where('m.membershipDateCreation >= :start')
-                    ->andWhere('m.membershipDateCreation <= :end')
-                    ->setParameters(
-                        [
-                            'start' => $today_startdatetime,
-                            'end' => $today_end_datetime,
-                        ]
-                    )->getQuery()->getResult();
-
-                $morMemberRegist = $em->createQueryBuilder()
-                    ->select('m')
-                    ->from('MemberBundle:MoralMember', 'm')
-                    ->where('m.membershipDateCreation >= :start')
-                    ->andWhere('m.membershipDateCreation <= :end')
-                    ->setParameters(
-                        [
-                            'start' => $today_startdatetime,
-                            'end' => $today_end_datetime,
-                        ]
-                    )->getQuery()->getResult();
-
-
-
-
-            $html =  $this->renderView('report/daily_history_file.html.twig', array(
-                'agency' => $agency,
-                'operations' => $operations,
-                'loans' => $loans,
-                'loanHistory' => $loanHistory,
-                'dailyServices' => $dailyServices,
-                'phyMember' => $physMemberRegist,
-                'moMember' => $morMemberRegist,
-                'currentDate' => $dateDebut,
-                'transIncome' => $transactionIncome,
-                'dateofDay' => new \DateTime('now'),
-            ));
-
-
-            $html2pdf = $this->get('html2pdf_factory')->create('P', 'A4', 'en', true, 'UTF-8', array(5, 10, 5, 10));
-            $html2pdf->pdf->SetAuthor('GreenSoft-Team');
-            $html2pdf->pdf->SetDisplayMode('real');
-            $html2pdf->pdf->SetTitle('Daily_Report');
-            $response = new Response();
-            $html2pdf->pdf->SetTitle('DailyReport');
-            $html2pdf->writeHTML($html);
-            $content = $html2pdf->Output('', true);
-            $response->setContent($content);
-            $response->headers->set('Content-Type', 'application/pdf');
-            $response->headers->set('Content-disposition', 'filename=Daily_report.pdf');
-            return $response;
-        }
-    }
-
-    /**
      * @Route("/daily/confirmation", name="operation_confirmation")
      * @Method({"GET", "POST"})
      * @param Request $request
@@ -889,7 +750,7 @@ class ReportController extends Controller{
 
             $newDateStart = explode( "/" , substr($dateDebut,strrpos($dateDebut," ")));
 
-            $today_startdatetime = \DateTime::createFromFormat("Y-m-d H:i:s", date($newDateStart[2]."-".$newDateStart[1]."-".$newDateStart[0]." 00:00:00"));
+            $today_start_datetime = \DateTime::createFromFormat("Y-m-d H:i:s", date($newDateStart[2]."-".$newDateStart[1]."-".$newDateStart[0]." 00:00:00"));
             $today_end_datetime = \DateTime::createFromFormat("Y-m-d H:i:s", date($newDateStart[2]."-".$newDateStart[1]."-".$newDateStart[0]." 23:59:59"));
 
             $operations = $em->createQueryBuilder()
@@ -900,7 +761,7 @@ class ReportController extends Controller{
                 ->andWhere('op.isConfirmed = FALSE')
                 ->setParameters(
                     [
-                        'start' => $today_startdatetime,
+                        'start' => $today_start_datetime,
                         'end' => $today_end_datetime,
                     ]
                 )->getQuery()->getResult();
@@ -913,7 +774,7 @@ class ReportController extends Controller{
                 ->andWhere('lh.dateOperation <= :end')
                 ->setParameters(
                     [
-                        'start' => $today_startdatetime,
+                        'start' => $today_start_datetime,
                         'end' => $today_end_datetime,
                     ]
                 )->getQuery()->getResult();
@@ -925,7 +786,7 @@ class ReportController extends Controller{
                 ->andWhere('ti.transactionDate <= :end')
                 ->setParameters(
                     [
-                        'start' => $today_startdatetime,
+                        'start' => $today_start_datetime,
                         'end' => $today_end_datetime,
                     ]
                 )->getQuery()->getResult();
@@ -937,7 +798,7 @@ class ReportController extends Controller{
                 ->andWhere('l.dateLoan <= :end')
                 ->setParameters(
                     [
-                        'start' => $today_startdatetime,
+                        'start' => $today_start_datetime,
                         'end' => $today_end_datetime,
                     ]
                 )->getQuery()->getResult();
@@ -950,7 +811,7 @@ class ReportController extends Controller{
                 ->andWhere('ds.fees > :fees')
                 ->setParameters(
                     [
-                        'start' => $today_startdatetime,
+                        'start' => $today_start_datetime,
                         'end' => $today_end_datetime,
                         'fees' => 0,
                     ]
@@ -963,7 +824,7 @@ class ReportController extends Controller{
                     ->andWhere('m.membershipDateCreation <= :end')
                     ->setParameters(
                         [
-                            'start' => $today_startdatetime,
+                            'start' => $today_start_datetime,
                             'end' => $today_end_datetime,
                         ]
                     )->getQuery()->getResult();
@@ -975,7 +836,7 @@ class ReportController extends Controller{
                     ->andWhere('m.membershipDateCreation <= :end')
                     ->setParameters(
                         [
-                            'start' => $today_startdatetime,
+                            'start' => $today_start_datetime,
                             'end' => $today_end_datetime,
                         ]
                     )->getQuery()->getResult();
@@ -1015,7 +876,7 @@ class ReportController extends Controller{
 
 
         try{
-            //first thing we get the classe with the JSON format
+            //first thing we get the class with the JSON format
             $accountJSON = json_decode(json_encode($request->request->get('data')), true);
             $operation = $entityManager->getRepository('AccountBundle:Operation')->find($accountJSON["idOperation"]);
             
@@ -1050,7 +911,7 @@ class ReportController extends Controller{
                             $income->setDescription("Operation charges. Account Number: ".$account->getAccountNumber()." // Amount: ".$operation->getAmount());
                             $entityManager->persist($income);
                             break;
-                        case 3://Transfert Operation
+                        case 3://Transfer Operation
                             $account->setSolde($operation->getCurrentBalance());
                             break;
                         default:

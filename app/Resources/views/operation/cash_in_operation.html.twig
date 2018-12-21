@@ -3,7 +3,7 @@
 {% block contenu %}
     <ol class="breadcrumb">
     <li>
-      <a href="#">BALACCUL</a>
+      <a href="#">HYMIF</a>
     </li>
     <li>
       <a href="#">CASH IN</a>
@@ -55,12 +55,12 @@
                             <td><input class="form-control purpose" min="0" required="required" name="deposits" type="number" value="0"/></td>
                         </tr>
                         <tr>
-                            <th>LOAN REPAYMENT</th>
-                            <td><input class="form-control purpose" min="0" required="required" name="mainLoan" type="number" value="0"/></td>
-                        </tr>
-                        <tr>
                             <th>LOAN INTEREST</th>
                             <td><input class="form-control purpose" min="0" required="required" name="loanInterest" type="number" value="0"/></td>
+                        </tr>
+                        <tr>
+                            <th>LOAN REPAYMENT</th>
+                            <td><input class="form-control purpose" min="0" required="required" name="mainLoan" type="number" value="0"/></td>
                         </tr>
                         <tr class="template fadeInLeft animated hide">
                             <th></th>
@@ -95,7 +95,7 @@
                     <div class="form-group">
                         <input class="btn btn-default" type="submit" value="Save">
                         <a class="btn btn-primary" name="btn-formaccount-reset">Reset</a>
-                        <a class="btn btn-primary" href="{{path('homepage')}}">Back to the homepage</a>
+                        <a class="btn btn-info" href="{{path('homepage')}}">Back to the homepage</a>
                     </div>
             </fieldset>
         </section>
