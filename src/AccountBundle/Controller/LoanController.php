@@ -2,13 +2,11 @@
 
 namespace AccountBundle\Controller;
 
-use AccountBundle\Entity\Operation;
 use AccountBundle\Entity\Loan;
 use ClassBundle\Entity\Classe;
 use ClassBundle\Entity\InternalAccount;
 use ConfigBundle\Entity\LoanParameter;
 use MemberBundle\Entity\Member;
-use ReportBundle\Entity\GeneralLedgerBalance;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -24,13 +22,14 @@ use UserBundle\Entity\Utilisateur;
 class LoanController extends Controller
 {
     private $errors = [];
+
     /**
      * Lists all loan entities.
      *
      * @Route("/", name="loan_index")
      * @Method("GET")
      */
-    public function indexAction()
+    public function index()
     {
         $em = $this->getDoctrine()->getManager();
 
@@ -50,21 +49,22 @@ class LoanController extends Controller
      * @param Loan $loan
      * @return Response
      */
-    public function loanReceipt(Loan $loan){
+    public function loanReceipt(Loan $loan)
+    {
 
         $em = $this->getDoctrine()->getManager();
-        $agency = $em->getRepository('ConfigBundle:Agency')->findOneBy([],['id' => 'ASC']);
+        $agency = $em->getRepository('ConfigBundle:Agency')->findOneBy([], ['id' => 'ASC']);
 
         $loanName = str_replace(' ', '_', $loan->getLoanCode());
 
-        $template =  $this->renderView('loan/pdf_files/loan_fees_receipt_file.html.twig', [
+        $template = $this->renderView('loan/pdf_files/loan_fees_receipt_file.html.twig', [
             'agency' => $agency,
             'loan' => $loan,
         ]);
-        $title = 'Receipt_Loan_'.$loanName.'_'.$loan->getDateLoan()->format('d-m-Y');
+        $title = 'Receipt_Loan_' . $loanName . '_' . $loan->getDateLoan()->format('d-m-Y');
         $html2PdfService = $this->get('app.html2pdf');
         $html2PdfService->create('P', 'A4', 'en', true, 'UTF-8', array(10, 5, 10, 10));
-        return $html2PdfService->generatePdf($template, $title.'.pdf', 'loans',$title, 'FI');
+        return $html2PdfService->generatePdf($template, $title . '.pdf', 'loans', $title, 'FI');
     }
 
     /**
@@ -75,7 +75,8 @@ class LoanController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function create(Request $request){
+    public function create(Request $request)
+    {
         $loan = new Loan();
         $form = $this->createForm('AccountBundle\Form\LoanType', $loan);
         $form->handleRequest($request);
@@ -83,8 +84,8 @@ class LoanController extends Controller
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
             // Get the current user connected
-            $currentUserId  = $this->get('security.token_storage')->getToken()->getUser()->getId();
-            $currentUser    = $em->getRepository(Utilisateur::class)->find($currentUserId);
+            $currentUserId = $this->get('security.token_storage')->getToken()->getUser()->getId();
+            $currentUser = $em->getRepository(Utilisateur::class)->find($currentUserId);
             $member = $loan->getPhysicalMember();
 
             if ($this->loanValidation($loan, $member)) {
@@ -96,20 +97,22 @@ class LoanController extends Controller
                 $classLoan = $em->getRepository(Classe::class)->find($account->getClasse()->getId());
                 $classLoan->setBalance($classLoan->getBalance() - $loan->getLoanAmount());
 
-                $em ->getRepository(Loan::class)->saveLoanOperation($currentUser, $loan, $member, $account);
-                $em ->getRepository(Loan::class)->saveLoanInGeneralLedger($loan, $currentUser, $account, $member);
+                $em->getRepository(Loan::class)->saveLoanOperation($currentUser, $loan, $member, $account);
+                $em->getRepository(Loan::class)->saveLoanInGeneralLedger($loan, $currentUser, $account, $member);
                 $em->flush();
 
-                $accountProcessing = $em->getRepository(InternalAccount::class)->find(140);//Processing Fees
-                $accountProcessing->setBalance($accountProcessing->getBalance() + $loan->getLoanProcessingFees());
+                if ($loan->getLoanProcessingFees() != 0) {
+                    $accountProcessing = $em->getRepository(InternalAccount::class)->find(140);//Processing Fees
+                    $accountProcessing->setBalance($accountProcessing->getBalance() + $loan->getLoanProcessingFees());
 
-                $classProcessing = $em->getRepository(Classe::class)->find($accountProcessing->getClasse()->getId());
-                $classProcessing->setBalance($classProcessing->getBalance() + $loan->getLoanProcessingFees());
+                    $classProcessing = $em->getRepository(Classe::class)->find($accountProcessing->getClasse()->getId());
+                    $classProcessing->setBalance($classProcessing->getBalance() + $loan->getLoanProcessingFees());
 
-                $em ->getRepository(Loan::class)->saveLoanProcessingFeesOperation($currentUser, $loan, $member, $accountProcessing);
+                    $em->getRepository(Loan::class)->saveLoanProcessingFeesOperation($currentUser, $loan, $member, $accountProcessing);
 
-                // first Step
-                $em ->getRepository(Loan::class)->saveProcessingFeesInGeneralLedger($loan, $currentUser, $accountProcessing, $member);
+                    // first Step
+                    $em->getRepository(Loan::class)->saveProcessingFeesInGeneralLedger($loan, $currentUser, $accountProcessing, $member);
+                }
 
                 /*Make record*/
                 $em->persist($loan);
@@ -132,20 +135,21 @@ class LoanController extends Controller
      * @param Loan $loan
      * @return Response
      */
-    public function showAction(Loan $loan){
+    public function show(Loan $loan)
+    {
         $em = $this->getDoctrine()->getManager();
         $lowest_remain_amount_LoanHistory = $em->createQueryBuilder()
             ->select('MIN(lh.remainAmount)')
             ->from('AccountBundle:LoanHistory', 'lh')
-            ->innerJoin('AccountBundle:Loan', 'l', 'WITH','lh.loan = l.id')
+            ->innerJoin('AccountBundle:Loan', 'l', 'WITH', 'lh.loan = l.id')
             ->where('l.id = :loan')->setParameter('loan', $loan)
             ->getQuery()
             ->getSingleScalarResult();
 
         $latestLoanHistory = $em->getRepository('AccountBundle:LoanHistory')->findOneBy([
-                            'remainAmount' => $lowest_remain_amount_LoanHistory,
-                            'loan' => $loan],
-                            ['id' => 'DESC']);
+            'remainAmount' => $lowest_remain_amount_LoanHistory,
+            'loan' => $loan],
+            ['id' => 'DESC']);
 
         $loanHistories = $em->getRepository('AccountBundle:LoanHistory')->findBy(['loan' => $loan]);
 
@@ -165,7 +169,7 @@ class LoanController extends Controller
      * @param Loan $loan
      * @return Response
      */
-    public function editAction(Request $request, Loan $loan)
+    public function edit(Request $request, Loan $loan)
     {
         $deleteForm = $this->createDeleteForm($loan);
         $editForm = $this->createForm('AccountBundle\Form\LoanType', $loan);
@@ -193,7 +197,7 @@ class LoanController extends Controller
      * @param Loan $loan
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function deleteAction(Request $request, Loan $loan)
+    public function delete(Request $request, Loan $loan)
     {
         $form = $this->createDeleteForm($loan);
         $form->handleRequest($request);
@@ -231,13 +235,13 @@ class LoanController extends Controller
     {
         $this->errors = [];
         $em = $this->getDoctrine()->getManager();
-        $loanParameter = $em->getRepository(LoanParameter::class)->findOneBy([],['id' => 'ASC']);
-        if (!$loanParameter){
+        $loanParameter = $em->getRepository(LoanParameter::class)->findOneBy([], ['id' => 'ASC']);
+        if (!$loanParameter) {
             $this->errors['message'] = 'The value of the loan parameter is not yet set';
             return true;
         }
-        $target = $loan->getLoanAmount()/$loanParameter->getParameter();
-        if ($target >= ($member->getShare() + $member->getSaving())){
+        $target = $loan->getLoanAmount() / $loanParameter->getParameter();
+        if ($target >= ($member->getShare() + $member->getSaving())) {
             $this->errors['message'] = 'The loan cannot be done!!!! check the amount of your share and savings accounts';
             return true;
         }
@@ -245,7 +249,7 @@ class LoanController extends Controller
             'physicalMember' => $member,
             'status' => true
         ]);
-        if ($loanExist){
+        if ($loanExist) {
             $this->errors['message'] = 'This member has a loan which is not yet closed';
             return true;
         }

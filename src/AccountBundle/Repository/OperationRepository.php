@@ -1,10 +1,12 @@
 <?php
 
 namespace AccountBundle\Repository;
+
 use AccountBundle\Entity\Operation;
 use MemberBundle\Entity\Member;
 use UserBundle\Entity\Utilisateur;
 use \Doctrine\ORM\EntityRepository;
+
 /**
  * OperationRepository
  *
@@ -143,11 +145,11 @@ class OperationRepository extends EntityRepository
             ->getQuery()
             ->getResult();
 
-        if ($operationShare){
+        if ($operationShare) {
             $lastElement = array_values(array_slice($operationShare, -1))[0];
             $member->setShare($lastElement->getBalance());
         } else {
-            if ($member->getMembershipDateCreation() > $dateOperation){
+            if ($member->getMembershipDateCreation() > $dateOperation) {
                 $member->setShare(0);
             }
         }
@@ -166,11 +168,11 @@ class OperationRepository extends EntityRepository
             ->getQuery()
             ->getResult();
 
-        if ($operationSavings){
+        if ($operationSavings) {
             $lastElement = array_values(array_slice($operationSavings, -1))[0];
             $member->setSaving($lastElement->getBalance());
         } else {
-            if ($member->getMembershipDateCreation() > $dateOperation){
+            if ($member->getMembershipDateCreation() > $dateOperation) {
                 $member->setSaving(0);
             }
         }
@@ -189,11 +191,11 @@ class OperationRepository extends EntityRepository
             ->getQuery()
             ->getResult();
 
-        if ($operationDeposit){
+        if ($operationDeposit) {
             $lastElement = array_values(array_slice($operationDeposit, -1))[0];
             $member->setDeposit($lastElement->getBalance());
         } else {
-            if ($member->getMembershipDateCreation() > $dateOperation){
+            if ($member->getMembershipDateCreation() > $dateOperation) {
                 $member->setDeposit(0);
             }
         }

@@ -147,7 +147,7 @@ class MemberController extends Controller
      * @param Member $member
      * @return Response
      */
-    public function showAction(Member $member){
+    public function show(Member $member){
 
         $deleteForm = $this->createDeleteForm($member);
         
@@ -169,7 +169,7 @@ class MemberController extends Controller
      * @param Member $member
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
      */
-    public function editAction(Request $request, Member $member){
+    public function update(Request $request, Member $member){
         $deleteForm = $this->createDeleteForm($member);
         $editForm = $this->createForm('MemberBundle\Form\MemberEditType', $member);
         $editForm->handleRequest($request);
@@ -459,15 +459,15 @@ class MemberController extends Controller
             $classRegistration = $entityManager->getRepository('ClassBundle:Classe')->find($memberEntranceFees->getClasse()->getId());
             $classRegistration->setBalance($classRegistration->getBalance() + $member->getRegistrationFees());
 
-            $operationRegis = new Operation();
-            $operationRegis->setDateOperation($dateOperation);
-            $operationRegis->setCurrentUser($currentUser);
-            $operationRegis->setTypeOperation(Operation::TYPE_CASH_IN);
-            $operationRegis->setAmount($member->getRegistrationFees());
-            $operationRegis->setMember($member);
-            $operationRegis->setRepresentative($member->getName());
-            $operationRegis->setBalance($memberEntranceFees->getBalance());
-            $entityManager->persist($operationRegis);
+            $operationRegistration = new Operation();
+            $operationRegistration->setDateOperation($dateOperation);
+            $operationRegistration->setCurrentUser($currentUser);
+            $operationRegistration->setTypeOperation(Operation::TYPE_CASH_IN);
+            $operationRegistration->setAmount($member->getRegistrationFees());
+            $operationRegistration->setMember($member);
+            $operationRegistration->setRepresentative($member->getName());
+            $operationRegistration->setBalance($memberEntranceFees->getBalance());
+            $entityManager->persist($operationRegistration);
 
             // first Step
             $ledgerBalanceRegistration = new GeneralLedgerBalance();
@@ -497,8 +497,8 @@ class MemberController extends Controller
             $memberBuildingFees  = $entityManager->getRepository('ClassBundle:InternalAccount')->find(6);
             $memberBuildingFees->setBalance($memberBuildingFees->getBalance() + $member->getBuildingFees());
 
-            $classeBF = $entityManager->getRepository('ClassBundle:Classe')->find($memberBuildingFees->getClasse()->getId());
-            $classeBF->setBalance($classeBF->getBalance() + $member->getBuildingFees());
+            $classBF = $entityManager->getRepository('ClassBundle:Classe')->find($memberBuildingFees->getClasse()->getId());
+            $classBF->setBalance($classBF->getBalance() + $member->getBuildingFees());
 
             $operationFees = new Operation();
             $operationFees->setDateOperation($dateOperation);
@@ -518,8 +518,7 @@ class MemberController extends Controller
             $ledgerBalanceBuildingFees->setDebit($member->getBuildingFees());
             $ledgerBalanceBuildingFees->setCurrentUser($currentUser);
             $latestEntryGBL = $entityManager->getRepository('ReportBundle:GeneralLedgerBalance')->findOneBy(
-                [],
-                ['id' => 'DESC']);
+                [],['id' => 'DESC']);
             if ($latestEntryGBL) {
                 $ledgerBalanceBuildingFees->setBalance($latestEntryGBL->getBalance() + $member->getBuildingFees());
             }else{

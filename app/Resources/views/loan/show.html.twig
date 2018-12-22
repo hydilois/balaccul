@@ -1,161 +1,166 @@
 {% extends 'base.html.twig' %}
-{% block title %}{{parent()}}loan Details{% endblock %}
+{% block title %}{{ parent() }}loan Details{% endblock %}
 {% block contenu %}
-{% set percent = 0 %}
+    {% set percent = 0 %}
     {% if loanHistory %}
         {% set percent = ((loan.loanAmount - loanHistory.remainAmount)*100) / loan.loanAmount %}
     {% else %}
         {% set percent = 0 %}
     {% endif %}
-    
+
     <div class="row">
-            <div class="col-lg-6 fadeInLeft animated ">
-        <fieldset>
-            <legend>Loan {{loan.loanCode}}</legend>
-                                <div class="card-box">
-                                    <h4 class="text-dark pull-left  header-title m-t-0 m-b-30">RATE: {{loan.rate}}%</h4>
-                                    <h4 class="text-dark pull-right header-title m-t-0 m-b-30">
-                                        {% if loan.physicalMember %}
-                                            {{loan.physicalMember}}
-                                        {% else %}
-                                            {{loan.moralMember}}
-                                        {% endif %}
-                                     </h4>
-                                    <div class="widget-chart text-center"><br><br>
-                                            <div class="circliful-chart m-b-30" data-dimension="180" data-text="{{percent | number_format(2, '.', ',')}}%" data-info="Loan Paid" data-width="30" data-fontsize="24" data-percent="{{percent | number_format(2, '.', ',')}}" data-fgcolor="#7266ba" data-bgcolor="#ebeff2"></div>
+        <div class="col-lg-6 fadeInLeft animated ">
+            <fieldset>
+                <legend>Loan {{ loan.loanCode }}</legend>
+                <div class="card-box">
+                    <h4 class="text-dark pull-left  header-title m-t-0 m-b-30">RATE: {{ loan.rate }}%</h4>
+                    <h4 class="text-dark pull-right header-title m-t-0 m-b-30">
+                        {% if loan.physicalMember %}
+                            {{ loan.physicalMember }}
+                        {% else %}
+                            {{ loan.moralMember }}
+                        {% endif %}
+                    </h4>
+                    <div class="widget-chart text-center"><br><br>
+                        <div class="circliful-chart m-b-30" data-dimension="180"
+                             data-text="{{ percent | number_format(2, '.', ',') }}%" data-info="Loan Paid"
+                             data-width="30" data-fontsize="24"
+                             data-percent="{{ percent | number_format(2, '.', ',') }}" data-fgcolor="#7266ba"
+                             data-bgcolor="#ebeff2">
+                        </div>
 
-                                        <h5 class="text-muted m-t-20">Loan Contracted</h5>
-                                        <h2 class="font-600">{{loan.loanAmount |number_format(0, '.', ' ')}}</h2>
-                                        <ul class="list-inline m-t-15">
-                                            <li>
-                                                <h5 class="text-muted m-t-20">Loan Repaid</h5>
-                                                {% if loanHistory %}
-                                                    <h4 class="m-b-0">{{(loan.loanAmount - loanHistory.remainAmount) |number_format(0, '.', ' ')}}</h4>
-                                                {% else %}
-                                                    <h4 class="m-b-0">0</h4>
-                                                {% endif %}
-                                                
-                                            </li>
-                                            <li>
-                                                <h5 class="text-muted m-t-20">Remain Balance</h5>
-                                                {% if loanHistory %}
-                                                    <h4 class="m-b-0">
-                                                        {{loanHistory.remainAmount |number_format(0, '.', ' ')}}
-                                                    </h4>
-                                                {% else %}
-                                                    <h4 class="m-b-0">{{loan.loanAmount |number_format(0, '.', ' ')}}</h4>
-                                                {% endif %} 
-                                            </li>
-                                            <li>
-                                                <h5 class="text-muted m-t-20">Unpaid Interest</h5>
-                                                {% if loanHistory %}
-                                                    <h4 class="m-b-0">
-                                                        {{loanHistory.unpaidInterest |number_format(0, '.', ' ')}}
-                                                    </h4>
-                                                {% else %}
-                                                    <h4 class="m-b-0">0</h4>
-                                                {% endif %}
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                </fieldset>
-                            <div class="col-lg-6">
-                                <fieldset>
-                                    <legend>Complementary Informations</legend>
-                                        <table class="table table-striped">
-                                            <tbody>
-                                                <tr>
-                                                    <th>loan date</th>
-                                                    <td>{% if loan.dateLoan %}{{ loan.dateLoan|date('d-m-Y') }}{% endif %}</td>
-                                                </tr>
-                                                <tr>
-                                                    <th>Deadline</th>
-                                                    <td>{% if loan.deadline %}{{ loan.deadline|date('d-m-Y') }}{% endif %}</td>
-                                                </tr>
-                                                <tr>
-                                                    <th>Rate</th>
-                                                    <td>{{ loan.rate }} %</td>
-                                                </tr>
-                                                <tr>
-                                                    <th>Loan Amount</th>
-                                                    <td>{{ loan.loanAmount |number_format(0, '.', ' ')}}</td>
-                                                </tr>
-                                                <tr>
-                                                    <th>Monthly Paid</th>
-                                                    <td>{{ loan.monthlyPayment |number_format(0, '.', ' ')}}</td>
-                                                </tr>
-                                                <tr>
-                                                    <th>Status</th>
-                                                    <td><a class="btn btn-app document-request">
-                                                                {% if loan.status %}<span class="badge orange">Active</span>{% else %}<span class="badge bg-blue">Close</span>{% endif %}
-                                                                <i class="fa  fa-legal"></i> Loan Status
-                                                            </a></td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                        {% if loan.status %}
-                                            <a class="btn btn-success" name="btn-close-loan" data-loan="{{loan.id}}">Close Loan</a>
-                                        {% else %}        
-                                        {% endif %}
-                                </fieldset>
+                        <h5 class="text-muted m-t-20">Loan Contracted</h5>
+                        <h2 class="font-600">{{ loan.loanAmount |number_format(0, '.', ' ') }}</h2>
+                        <ul class="list-inline m-t-15">
+                            <li>
+                                <h5 class="text-muted m-t-20">Loan Repaid</h5>
+                                {% if loanHistory %}
+                                    <h4 class="m-b-0">{{ (loan.loanAmount - loanHistory.remainAmount) |number_format(0, '.', ' ') }}</h4>
+                                {% else %}
+                                    <h4 class="m-b-0">0</h4>
+                                {% endif %}
 
-                                    <div>
-                                        <div class="portlet">
-                                            <div class="portlet-heading bg-custom">
-                                                <div class="portlet-widgets pull-left">
-                                                    <span class="divider"></span>
-                                                    <a data-toggle="collapse" data-parent="#accordion1" href="#bg-info11" class="collapsed"><i class="ion-minus-round"></i></a>
-                                                    <span class="divider"></span>
-                                                </div>
-                                                    <h3 class="portlet-title">
-                                                        LOAN SITUATION
-                                                    </h3>
-                                                <div class="clearfix"></div>
-                                            </div>
-                                            <div id="bg-info11" class="panel-collapse collapse">
-                                                <div class="portlet-body">
-                                                    <div class="p-20">
-                                                        <table class="table table-striped">
-                                                            <tr>
-                                                                <th>Date</th>
-                                                                <th>Loan Repaid</th>
-                                                                <th>Interest Paid</th>
-                                                                <th>Unpaid Interest</th>
-                                                                <th>Balance</th>
-                                                            </tr>
-                                                            {% if loanHistories %}
-                                                                {% for item in loanHistories %}
-                                                                    <tr>
-                                                                        <td>{{item.dateOperation |date('d-m-Y')}}</td>
-                                                                        <td>{{item.monthlyPayement}}</td>
-                                                                        <td>{{item.interest}}</td>
-                                                                        <td>{{item.unpaidInterest}}</td>
-                                                                        <td>{{item.remainAmount}}</td>
-                                                                    </tr>
-                                                                {% endfor %}
-                                                            {% endif %}
-                                                        </table>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                            </li>
+                            <li>
+                                <h5 class="text-muted m-t-20">Remain Balance</h5>
+                                {% if loanHistory %}
+                                    <h4 class="m-b-0">
+                                        {{ loanHistory.remainAmount |number_format(0, '.', ' ') }}
+                                    </h4>
+                                {% else %}
+                                    <h4 class="m-b-0">{{ loan.loanAmount |number_format(0, '.', ' ') }}</h4>
+                                {% endif %}
+                            </li>
+                            <li>
+                                <h5 class="text-muted m-t-20">Unpaid Interest</h5>
+                                {% if loanHistory %}
+                                    <h4 class="m-b-0">
+                                        {{ loanHistory.unpaidInterest |number_format(0, '.', ' ') }}
+                                    </h4>
+                                {% else %}
+                                    <h4 class="m-b-0">0</h4>
+                                {% endif %}
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+        <div class="col-lg-6">
+            <fieldset>
+                <legend>Complementary Informations</legend>
+                <table class="table table-striped">
+                    <tbody>
+                    <tr>
+                        <th>loan date</th>
+                        <td>{% if loan.dateLoan %}{{ loan.dateLoan|date('d-m-Y') }}{% endif %}</td>
+                    </tr>
+                    <tr>
+                        <th>Deadline</th>
+                        <td>{% if loan.deadline %}{{ loan.deadline|date('d-m-Y') }}{% endif %}</td>
+                    </tr>
+                    <tr>
+                        <th>Rate</th>
+                        <td>{{ loan.rate }} %</td>
+                    </tr>
+                    <tr>
+                        <th>Loan Amount</th>
+                        <td>{{ loan.loanAmount |number_format(0, '.', ' ') }}</td>
+                    </tr>
+                    <tr>
+                        <th>Monthly Paid</th>
+                        <td>{{ loan.monthlyPayment |number_format(0, '.', ' ') }}</td>
+                    </tr>
+                    <tr>
+                        <th>Status</th>
+                        <td><a class="btn btn-app document-request">
+                                {% if loan.status %}<span class="badge orange">Active</span>{% else %}<span
+                                        class="badge bg-blue">Close</span>{% endif %}
+                                <i class="fa  fa-legal"></i> Loan Status
+                            </a></td>
+                    </tr>
+                    </tbody>
+                </table>
+                {% if loan.status %}
+                    <a class="btn btn-success" name="btn-close-loan" data-loan="{{ loan.id }}">Close Loan</a>
+                {% else %}
+                {% endif %}
+            </fieldset>
+
+            <div>
+                <div class="portlet">
+                    <div class="portlet-heading bg-custom">
+                        <div class="portlet-widgets pull-left">
+                            <h3 class="portlet-title">
+                                <a data-toggle="collapse" data-parent="#accordion1" href="#bg-info11" class="collapsed">
+                                    <i class="ion-minus-round"></i></a> LOAN SITUATION
+                            </h3>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div id="bg-info11" class="panel-collapse collapse">
+                        <div class="portlet-body">
+                            <div class="p-20">
+                                <table class="table table-striped">
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Loan Repaid</th>
+                                        <th>Interest Paid</th>
+                                        <th>Unpaid Interest</th>
+                                        <th>Balance</th>
+                                    </tr>
+                                    {% if loanHistories %}
+                                        {% for item in loanHistories %}
+                                            <tr>
+                                                <td>{{ item.dateOperation |date('d-m-Y') }}</td>
+                                                <td>{{ item.monthlyPayement }}</td>
+                                                <td>{{ item.interest }}</td>
+                                                <td>{{ item.unpaidInterest }}</td>
+                                                <td>{{ item.remainAmount }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% endif %}
+                                </table>
                             </div>
                         </div>
-                {# Hidden Input #}
-                {% if loanHistory %}
-                    <input type="hidden" name="remain" value="{{loanHistory.remainAmount}}"/>
-                {% else %}
-                    <input type="hidden" name="remain" value="{{loan.loanAmount}}"/>
-                {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    {# Hidden Input #}
+    {% if loanHistory %}
+        <input type="hidden" name="remain" value="{{ loanHistory.remainAmount }}"/>
+    {% else %}
+        <input type="hidden" name="remain" value="{{ loan.loanAmount }}"/>
+    {% endif %}
 
-                {% if loanHistory %}
-                    <input type="hidden" name="unpaid" value="{{loanHistory.unpaidInterest}}"/>
-                {% else %}
-                    <input type="hidden" name="unpaid" value="0"/>
-                {% endif %}
+    {% if loanHistory %}
+        <input type="hidden" name="unpaid" value="{{ loanHistory.unpaidInterest }}"/>
+    {% else %}
+        <input type="hidden" name="unpaid" value="0"/>
+    {% endif %}
     {% include '/loan/extras.css.html.twig' %}
-    {% include './loanhistory/extras.js.html.twig' %}
+    {% include '/loanhistory/extras.js.html.twig' %}
 {% endblock %}
