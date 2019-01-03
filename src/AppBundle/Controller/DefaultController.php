@@ -13,14 +13,11 @@ use Symfony\Component\Yaml\Yaml;
 class DefaultController extends Controller{
     /**
      * @Route("/", name="homepage")
+     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      * @return Response
      */
-    public function indexAction()
+    public function index()
     {
-        // Test is the user does not have the default role
-        if (!$this->container->get('security.authorization_checker')->isGranted('ROLE_USER')) {
-            return new RedirectResponse($this->container->get ('router')->generate ('fos_user_security_login'));
-        }
         
         $em = $this->getDoctrine()->getManager();
         $agency = $em->getRepository('ConfigBundle:Agency')->find(1);
@@ -147,7 +144,7 @@ class DefaultController extends Controller{
      * @Route("/lock_screen", name="lock_screen")
      * @return Response
      */
-    public function pageGardeAction(){
+    public function lockScreen(){
 
         // replace this example code with whatever you need
         $em = $this->getDoctrine()->getManager();
@@ -162,9 +159,10 @@ class DefaultController extends Controller{
     /**
      * @Route("/dump", name="database_dump")
      * @Method({"GET", "POST"})
+     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      * @return string
      */
-        public function databaseDumpAction(){
+        public function databaseDump(){
             try{
                 $date = date("Y-m-d_H:i:s");
                 $db_user = $this->getParameter('database_user');

@@ -17,10 +17,8 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 class AlertController extends Controller{
 
     /**
-     * 
-     * @param  \Symfony\Component\HttpFoundation\Request  $request  The request
      * @return JSON
-     * 
+     * @internal param $request
      * @Route("/list")
      * @Method("POST")
      */
@@ -88,14 +86,12 @@ class AlertController extends Controller{
 
 
     /**
-     * 
-     * @param  \Symfony\Component\HttpFoundation\Request  $request  The request
      * @return JSON
-     * 
+     * @internal param Request $request The request
      * @Route("/chart")
      * @Method("POST")
      */
-    public function getChart(Request $request){
+    public function getChart(){
 
         $em = $this->getDoctrine()->getManager();
         $subQueryBuilder = $em->createQueryBuilder();

@@ -13,6 +13,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use UserBundle\Entity\Utilisateur;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 /**
  * Loan controller.
@@ -27,6 +28,7 @@ class LoanController extends Controller
      * Lists all loan entities.
      *
      * @Route("/", name="loan_index")
+     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      * @Method("GET")
      */
     public function index()
@@ -47,6 +49,7 @@ class LoanController extends Controller
      * @Route("/{id}/receipt", name="loan_fees_receipt")
      * @Method("GET")
      * @param Loan $loan
+     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      * @return Response
      */
     public function loanReceipt(Loan $loan)
@@ -73,6 +76,7 @@ class LoanController extends Controller
      * @Route("/new", name="loan_new")
      * @Method({"GET", "POST"})
      * @param Request $request
+     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      * @return Response
      */
     public function create(Request $request)
@@ -133,6 +137,7 @@ class LoanController extends Controller
      * @Route("/{id}", name="loan_show")
      * @Method("GET")
      * @param Loan $loan
+     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      * @return Response
      */
     public function show(Loan $loan)
@@ -167,6 +172,7 @@ class LoanController extends Controller
      * @Method({"GET", "POST"})
      * @param Request $request
      * @param Loan $loan
+     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      * @return Response
      */
     public function edit(Request $request, Loan $loan)
@@ -195,6 +201,7 @@ class LoanController extends Controller
      * @Method("DELETE")
      * @param Request $request
      * @param Loan $loan
+     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function delete(Request $request, Loan $loan)
@@ -229,6 +236,7 @@ class LoanController extends Controller
     /**
      * @param Loan $loan
      * @param Member $member
+     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      * @return bool
      */
     private function loanValidation(Loan $loan, Member $member)
