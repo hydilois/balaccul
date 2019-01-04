@@ -14,6 +14,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use UserBundle\Entity\Utilisateur;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 /**
  * Operation controller.
@@ -67,6 +68,7 @@ class ReportController extends Controller{
     /**
      * @Route("/month", name="report_month")
      * @param Request $request
+     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      * @return Response
      */
     public function reportMonthAction(Request $request)
@@ -149,9 +151,10 @@ class ReportController extends Controller{
     /**
      * @param Request $request
      * @Route("/general_ledger", name="report_general_ledger")
+     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      * @return Response
      */
-    public function generalLedgerBalanceAction(Request $request)
+    public function generalLedgerBalance(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
         if ($request->getMethod() =="POST") {
@@ -229,6 +232,7 @@ class ReportController extends Controller{
     /**
      * @param Request $request
      * @Route("/individual_ledger", name="report_individual_ledger")
+     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      * @return Response
      */
     public function individualLedgerBalance(Request $request)
@@ -297,6 +301,7 @@ class ReportController extends Controller{
      *
      * @Route("/memberSituation", name="report_member_situation")
      * @Method("GET")
+     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      * @return Response
      */
     public function memberSituationAction(){
@@ -316,6 +321,7 @@ class ReportController extends Controller{
      *
      * @Route("/{status}/{type}/list", name="report_generate_document")
      * @Method("GET")
+     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      * @return Response
      */
     public function generateDocumentAction($status, $type)
@@ -405,6 +411,7 @@ class ReportController extends Controller{
      * @Route("/saving/{id}", name="member_situation_saving")
      * @Method("GET")
      * @param $id
+     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      * @return Response
      */
     public function savingSituation($id)
@@ -449,6 +456,7 @@ class ReportController extends Controller{
      * @Route("/shares/{id}", name="member_situation_shares")
      * @Method("GET")
      * @param $id
+     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      * @return Response
      */
     public function sharesSituationAction($id){
@@ -492,6 +500,7 @@ class ReportController extends Controller{
      *
      * @Route("/deposit/{id}", name="member_situation_deposit")
      * @Method("GET")
+     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      * @return Response
      */
     public function depositSituation($id){
@@ -536,6 +545,7 @@ class ReportController extends Controller{
      * @Route("/loans/{id}", name="member_situation_loan")
      * @Method("GET")
      * @param $id
+     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      * @return Response
      */
     public function loanSituation($id)
@@ -574,6 +584,7 @@ class ReportController extends Controller{
      * @Route("/generate/trial_balance", name="trialbalance_report")
      * @Method({"GET", "POST"})
      * @param Request $request
+     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      * @return Response
      */
     public function trialBalance(Request $request){
@@ -626,6 +637,7 @@ class ReportController extends Controller{
      * @Route("/account/history", name="accounthistoryreport")
      * @Method({"GET", "POST"})
      * @param Request $request
+     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      * @return Response
      */
         public function accountHistoryAction(Request $request){
@@ -649,7 +661,7 @@ class ReportController extends Controller{
                 $dateStart1  = new \DateTime($newDateStart[2]."-".$newDateStart[0]."-".$newDateStart[1]);
                 $dateEnd1  = new \DateTime($newDateEnd[2]."-".$newDateEnd[0]."-".$newDateEnd[1]);
 
-                $dateEnd11 = $dateEnd1->add(new \DateInterval('P1D'));
+//                $dateEnd11 = $dateEnd1->add(new \DateInterval('P1D'));
 
                 $displayDateStart  = $newDateStart[1]."-".$newDateStart[0]."-".$newDateStart[2];
                 $displayDateEnd  = $newDateEnd[1]."-".$newDateEnd[0]."-".$newDateEnd[2];
@@ -660,12 +672,12 @@ class ReportController extends Controller{
                             ->from('AccountBundle:Operation', 'op')
                             ->innerJoin('AccountBundle:Saving', 'sa','WITH','op.savingAccount = sa.id')
                             ->where('op.dateOperation BETWEEN :date1 AND :date2')
-                            ->andWhere('sa.id =:identifiant')
+                            ->andWhere('sa.id =:identify')
                             ->setParameters(
                                 [
                                 'date1' => $dateStart1->format('Y-m-d'),
                                 'date2' => $dateEnd1->format('Y-m-d'),
-                                'identifiant' => $accountNumber,
+                                'identify' => $accountNumber,
                                 ]
                             );
                         $operations = $qb->getQuery()->getResult();
@@ -677,12 +689,12 @@ class ReportController extends Controller{
                             ->from('AccountBundle:Operation', 'op')
                             ->innerJoin('AccountBundle:Share', 'sa','WITH','op.shareAccount = sa.id')
                             ->where('op.dateOperation BETWEEN :date1 AND :date2')
-                            ->andWhere('sa.id =:identifiant')
+                            ->andWhere('sa.id =:identify')
                             ->setParameters(
                                 [
                                 'date1' => $dateStart1->format('Y-m-d'),
                                 'date2' => $dateEnd1->format('Y-m-d'),
-                                'identifiant' => $accountNumber,
+                                'identify' => $accountNumber,
                                 ]
                             );
                         $operations = $qb->getQuery()->getResult();
@@ -693,12 +705,12 @@ class ReportController extends Controller{
                             ->from('AccountBundle:Operation', 'op')
                             ->innerJoin('AccountBundle:Deposit', 'sa','WITH','op.depositAccount = sa.id')
                             ->where('op.dateOperation BETWEEN :date1 AND :date2')
-                            ->andWhere('sa.id =:identifiant')
+                            ->andWhere('sa.id =:identify')
                             ->setParameters(
                                 [
                                 'date1' => $dateStart1->format('Y-m-d'),
                                 'date2' => $dateEnd1->format('Y-m-d'),
-                                'identifiant' => $accountNumber,
+                                'identify' => $accountNumber,
                                 ]
                             );
                         $operations = $qb->getQuery()->getResult();
@@ -738,6 +750,7 @@ class ReportController extends Controller{
      * @Route("/daily/confirmation", name="operation_confirmation")
      * @Method({"GET", "POST"})
      * @param Request $request
+     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      * @return Response
      */
     public function dailyReportConfirmationAction(Request $request){
@@ -864,6 +877,7 @@ class ReportController extends Controller{
      * 
      * @Route("/validate/operation", name="operation_validation")
      * @Method({"GET", "POST"})
+     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      * @return Response
      */
     function saveOperationFromJSON(Request $request)
@@ -1065,15 +1079,11 @@ class ReportController extends Controller{
 
     /**
      * @Route("/all/situations", name="all_situations_pdf")
+     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      * @return Response
      */
     public function generateAllSituations()
     {
-        // Test is the user does not have the default role
-        if (!$this->container->get('security.authorization_checker')->isGranted('ROLE_USER')) {
-            return new RedirectResponse($this->container->get ('router')->generate ('fos_user_security_login'));
-        }
-
         $em = $this->getDoctrine()->getManager();
         $agency = $em->getRepository('ConfigBundle:Agency')->findOneBy([], ['id' => 'ASC']);
         $members = $em->getRepository('MemberBundle:Member')->findAll();
@@ -1203,6 +1213,7 @@ class ReportController extends Controller{
     /**
      * @Route("/individual/ledger/pdf", name="members_individual_ledger_pdf")
      * @param Request $request
+     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      * @return Response
      */
     public function membersIndividualLedger(Request $request)

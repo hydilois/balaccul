@@ -8,6 +8,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 /**
  * Classe controller.
@@ -20,19 +21,20 @@ class ClasseController extends Controller
      * Lists all classe entities.
      *
      * @Route("/list", name="classe_index")
+     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      * @Method("GET")
      */
-    public function indexAction()
+    public function index()
     {
         $em = $this->getDoctrine()->getManager();
-        $classe = new Classe();
-        $formClasse = $this->createForm('ClassBundle\Form\ClasseType', $classe);
+        $class = new Classe();
+        $formClass = $this->createForm('ClassBundle\Form\ClasseType', $class);
 
-        $classes = $em->getRepository('ClassBundle:Classe')->findAll();
+        $class = $em->getRepository('ClassBundle:Classe')->findAll();
 
         return $this->render('classe/index.html.twig', array(
-            'classes' => $classes,
-            'formClass' => $formClasse->createView(),
+            'classes' => $class,
+            'formClass' => $formClass->createView(),
         ));
     }
 
@@ -41,22 +43,25 @@ class ClasseController extends Controller
      *
      * @Route("/new", name="classe_new")
      * @Method({"GET", "POST"})
+     * @param Request $request
+     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
      */
-    public function newAction(Request $request)
+    public function create(Request $request)
     {
-        $classe = new Classe();
-        $form = $this->createForm('ClassBundle\Form\ClasseType', $classe);
+        $class = new Classe();
+        $form = $this->createForm('ClassBundle\Form\ClasseType', $class);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $em->persist($classe);
+            $em->persist($class);
             $em->flush();
 
             return $this->redirectToRoute('classe_index');
         }
         return $this->render('classe/new.html.twig', array(
-            'classe' => $classe,
+            'classe' => $class,
             'form' => $form->createView(),
         ));
     }
@@ -66,13 +71,16 @@ class ClasseController extends Controller
      *
      * @Route("/{id}", name="classe_show")
      * @Method("GET")
+     * @param Classe $class
+     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
+     * @return Response
      */
-    public function showAction(Classe $classe)
+    public function showAction(Classe $class)
     {
-        $deleteForm = $this->createDeleteForm($classe);
+        $deleteForm = $this->createDeleteForm($class);
 
         return $this->render('classe/show.html.twig', array(
-            'classe' => $classe,
+            'classe' => $class,
             'delete_form' => $deleteForm->createView(),
         ));
     }
@@ -82,21 +90,25 @@ class ClasseController extends Controller
      *
      * @Route("/{id}/edit", name="classe_edit")
      * @Method({"GET", "POST"})
+     * @param Request $request
+     * @param Classe $class
+     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
      */
-    public function editAction(Request $request, Classe $classe)
+    public function editAction(Request $request, Classe $class)
     {
-        $deleteForm = $this->createDeleteForm($classe);
-        $editForm = $this->createForm('ClassBundle\Form\ClasseType', $classe);
+        $deleteForm = $this->createDeleteForm($class);
+        $editForm = $this->createForm('ClassBundle\Form\ClasseType', $class);
         $editForm->handleRequest($request);
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
             $this->getDoctrine()->getManager()->flush();
 
-            return $this->redirectToRoute('classe_edit', array('id' => $classe->getId()));
+            return $this->redirectToRoute('classe_edit', array('id' => $class->getId()));
         }
 
         return $this->render('classe/edit.html.twig', array(
-            'classe' => $classe,
+            'classe' => $class,
             'edit_form' => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
         ));
@@ -107,15 +119,19 @@ class ClasseController extends Controller
      *
      * @Route("/{id}", name="classe_delete")
      * @Method("DELETE")
+     * @param Request $request
+     * @param Classe $class
+     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function deleteAction(Request $request, Classe $classe)
+    public function deleteAction(Request $request, Classe $class)
     {
-        $form = $this->createDeleteForm($classe);
+        $form = $this->createDeleteForm($class);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $em->remove($classe);
+            $em->remove($class);
             $em->flush();
         }
 
@@ -125,14 +141,14 @@ class ClasseController extends Controller
     /**
      * Creates a form to delete a classe entity.
      *
-     * @param Classe $classe The classe entity
+     * @param Classe $class The classe entity
      *
      * @return \Symfony\Component\Form\Form The form
      */
-    private function createDeleteForm(Classe $classe)
+    private function createDeleteForm(Classe $class)
     {
         return $this->createFormBuilder()
-            ->setAction($this->generateUrl('classe_delete', array('id' => $classe->getId())))
+            ->setAction($this->generateUrl('classe_delete', array('id' => $class->getId())))
             ->setMethod('DELETE')
             ->getForm()
         ;
@@ -141,32 +157,31 @@ class ClasseController extends Controller
 
     /**
      * @param Request $request [contains the http request that is passed on]
-     * 
+     *
      * @Route("/new_json", name="classe_new_json")
      * @Method({"GET", "POST"})
+     * @return Response
      */
-    function addNewClasseFromJSON(Request $request){
+    function addNewClassFromJSON(Request $request){
 
         $entityManager = $this->getDoctrine()->getManager();
 
-        $logger = $this->get('logger');
-
-        $classe = new Classe();
+        $class = new Classe();
 
         try{
             //first thing we get the classe with the JSON format
-            $classeJSON = json_decode(json_encode($request->request->get('data')), true);
+            $classJSON = json_decode(json_encode($request->request->get('data')), true);
 
 
-            $classe->setName($classeJSON["name"]);
-            $classe->setDescription($classeJSON["description"]);
-            $classe->setTotalAmount(0);
+            $class->setName($classJSON["name"]);
+            $class->setDescription($classJSON["description"]);
+            $class->setTotalAmount(0);
 
-            if ($classeJSON['classCategory'] == "") {
+            if ($classJSON['classCategory'] == "") {
                 
             }else{
-                $classeMere = $entityManager->getRepository('ClassBundle:Classe')->find($classeJSON["classCategory"]);
-                $classe->setClassCategory($classeMere);
+                $classMere = $entityManager->getRepository('ClassBundle:Classe')->find($classJSON["classCategory"]);
+                $class->setClassCategory($classMere);
             }
 
 
@@ -175,20 +190,19 @@ class ClasseController extends Controller
          * --------------------
          */
         
-        $entityManager->persist($classe);
+        $entityManager->persist($class);
         $entityManager->flush();
        
         
 
         }catch(Exception $ex){
 
-            $logger("AN ERROR OCCURED");
             $response["success"] = false;
         }
 
-        // $reponse["message"]             = 
-        $response["data"]               = $classeJSON;
-        $response["optionalData"]       = json_encode((array)$classe->getName());
+        // $response["message"]             =
+        $response["data"]               = $classJSON;
+        $response["optionalData"]       = json_encode((array)$class->getName());
 
         //we say everything went well
         $response["success"] = true;
