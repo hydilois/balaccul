@@ -24,18 +24,12 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 class ReportController extends Controller{
     /**
      * @Route("/trial_balance", name="report_trial_balance")
+     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      */
     public function index()
     {
-        
-        // Test is the user does not have the default role
-        if (!$this->container->get('security.authorization_checker')->isGranted('ROLE_USER')) {
-            return new RedirectResponse($this->container->get ('router')->generate ('fos_user_security_login'));
-        }
         // replace this example code with whatever you need
-        return $this->render('report/report.html.twig', [
-            'base_dir' => realpath($this->getParameter('kernel.project_dir')).DIRECTORY_SEPARATOR,
-        ]);
+        return $this->render('report/report.html.twig');
     }
 
     /**

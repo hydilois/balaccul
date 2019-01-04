@@ -44,7 +44,7 @@
 							<p class="m-t-30 text-muted cd-text">
 								<a class="btn btn-default text-center" href="{{path('fos_user_security_login')}}">Login</a>
 							</p>
-{# 							<h1 class="text-center">Date</h1>
+ 							<h1 class="text-center">Remain Time to the end of year</h1>
 							<!-- COUNTDOWN -->
 							<div class="row m-t-40">
 								<div class="col-sm-12 u-countdown">
@@ -68,7 +68,7 @@
 									</div>
 								</div>
 							</div>
-							<!-- /COUNTDOWN --> #}
+							<!-- /COUNTDOWN -->
 
 						</div>
 					</div>
@@ -101,9 +101,9 @@
 		        <script src="{{asset('assets/js/jquery.core.js')}}"></script>
 		        <script src="{{asset('assets/js/jquery.app.js')}}"></script>
 
-		<!-- Countdown -->
-		<script src="{{asset('assets/plugins/countdown/dest/jquery.countdown.min.js')}}"></script>
-		<script src="{{asset('assets/plugins/simple-text-rotator/jquery.simple-text-rotator.min.js')}}"></script>
+				<!-- Countdown -->
+				<script src="{{asset('assets/plugins/countdown/dest/jquery.countdown.min.js')}}"></script>
+				<script src="{{asset('assets/plugins/simple-text-rotator/jquery.simple-text-rotator.min.js')}}"></script>
 
 		<script type="text/javascript">
 			$(document).ready(function() {
@@ -111,11 +111,11 @@
 				// Countdown
 				// To change date, simply edit: var endDate = "September 16, 2016 18:16:00";
 				$(function() {
-					var endDate = "July 31, 2018 11:59:59";
+					var endDate = "December 31, 2019 23:59:59";
 					$('.u-countdown .row').countdown({
 						date : endDate,
 						render : function(data) {
-							$(this.el).html('<div><div><span class="text-custom">' + (parseInt(this.leadingZeros(data.years, 2) * 365) + parseInt(this.leadingZeros(data.days, 2))) + '</span><span><b>Jours</b></span></div><div><span class="text-primary">' + this.leadingZeros(data.hours, 2) + '</span><span><b>Heures</b></span></div></div><div class="lj-countdown-ms"><div><span class="text-pink">' + this.leadingZeros(data.min, 2) + '</span><span><b>Minutes</b></span></div><div><span class="text-info">' + this.leadingZeros(data.sec, 2) + '</span><span><b>Secondes</b></span></div></div>');
+							$(this.el).html('<div><div><span class="text-custom">' + (parseInt(this.leadingZeros(data.years, 2) * 365) + parseInt(this.leadingZeros(data.days, 2))) + '</span><span><b>Days</b></span></div><div><span class="text-primary">' + this.leadingZeros(data.hours, 2) + '</span><span><b>Hours</b></span></div></div><div class="lj-countdown-ms"><div><span class="text-pink">' + this.leadingZeros(data.min, 2) + '</span><span><b>Minutes</b></span></div><div><span class="text-info">' + this.leadingZeros(data.sec, 2) + '</span><span><b>Seconds</b></span></div></div>');
 						}
 					});
 				});

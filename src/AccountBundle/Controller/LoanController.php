@@ -7,13 +7,12 @@ use ClassBundle\Entity\Classe;
 use ClassBundle\Entity\InternalAccount;
 use ConfigBundle\Entity\LoanParameter;
 use MemberBundle\Entity\Member;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use UserBundle\Entity\Utilisateur;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 /**
  * Loan controller.
@@ -35,7 +34,7 @@ class LoanController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $loans = $em->getRepository('AccountBundle:Loan')->findAll();
+        $loans = $em->getRepository('AccountBundle:Loan')->findBy([],['loanCode' => 'ASC']);
 
         return $this->render('loan/index.html.twig', array(
             'loans' => $loans,
@@ -88,8 +87,7 @@ class LoanController extends Controller
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
             // Get the current user connected
-            $currentUserId = $this->get('security.token_storage')->getToken()->getUser()->getId();
-            $currentUser = $em->getRepository(Utilisateur::class)->find($currentUserId);
+            $currentUser = $this->get('security.token_storage')->getToken()->getUser();
             $member = $loan->getPhysicalMember();
 
             if ($this->loanValidation($loan, $member)) {

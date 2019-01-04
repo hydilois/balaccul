@@ -1,5 +1,5 @@
 {% extends 'base.html.twig' %}
-{% block title %}{{parent()}} New Account{% endblock %}
+{% block title %}{{parent()}} New Loan{% endblock %}
 
 {% block contenu %}
 
@@ -8,10 +8,10 @@
             <a href="#">HYMIF</a>
         </li>
         <li>
-            <a href="#">Account</a>
+            <a href="#">Cash Out</a>
         </li>
         <li class="active">
-            new Loan
+            New Loan
         </li>
     </ol>
 
@@ -85,15 +85,15 @@
                                           </div>
                                          <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                                               <div class="form-group">
-                                                  {{form_label(form.status, "Active ?")}}
-                                                  {{form_widget(form.status, {'attr' : {'class':'form-control'}})}}
-                                                  {{form_errors(form.status)}}
+                                                  {{ form_label(form.status, "Active ?") }}
+                                                  {{ form_widget(form.status, {'attr' : {'class':'choice'}}) }}
+                                                  {{ form_errors(form.status) }}
                                               </div>
                                           </div>
                                   {# </div> #}
                                 <div class="modal-footer">
                                   <input class="btn btn-default" type="submit" value="Save" />
-                                  <a class="btn btn-primary" href="{{path('loan_index')}}">Back to the list</a>
+                                  <a class="btn btn-white" href="{{path('loan_index')}}">Back to the list</a>
                                 </div>
                                 {{ form_end(form) }}
                     </fieldset>
@@ -104,6 +104,6 @@
     </div>
 
     {% include './loan/extras.css.html.twig' %}
-    {% include './operation/extras_cash_in.js.html.twig' %}
+    {% include 'operation/extras_cash_in.js.html.twig' %}
 
 {% endblock %}
