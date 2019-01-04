@@ -80,8 +80,7 @@ class ReportController extends Controller{
             $agency = $em->getRepository('ConfigBundle:Agency')->findOneBy([], ['id' => 'ASC']);
             $currentDate = new \DateTime('now');
 
-            $currentUserId  = $this->get('security.token_storage')->getToken()->getUser()->getId();
-            $currentUser    = $em->getRepository(Utilisateur::class)->find($currentUserId);
+            $currentUser  = $this->get('security.token_storage')->getToken()->getUser();
 
             $dateDebut = $request->get('start');
             $dateFin = $request->get('end');

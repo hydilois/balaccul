@@ -69,9 +69,9 @@
             {% set totalExpenditure = 0 %}
             {% for operation in incomeOp %} 
                 <tr>
-                    <td class="text-center">{{operation.ia_accountNumber }}</td>
-                    <td class="text-center">{{operation.ia_accountName[:30]}}</td>
-                    <td class="text-center">{{operation.amount |number_format(0, '.', ' ')}}</td>
+                    <td class="text-center">{{ operation.ia_accountNumber }}</td>
+                    <td class="text-center">{{ operation.ia_accountName[:30]}}</td>
+                    <td class="text-center">{{ operation.amount |number_format(0, '.', ' ') }}</td>
                     <td class="text-center"></td>
                 </tr>
                 {% set totalIncome = totalIncome + operation.amount %}
@@ -83,7 +83,7 @@
 
             {% for operation in expenditureOp %} 
                 <tr>
-                    <td class="text-center">{{operation.ia_accountNumber }}</td>
+                    <td class="text-center">{{ operation.ia_accountNumber }}</td>
                     <td class="text-center">{{ operation.ia_accountName[:30] }}</td>
                     <td class="text-center">{{ operation.credit |number_format(0, '.', ' ') }}</td>
                     <td class="text-center"></td>
@@ -92,12 +92,12 @@
             {% endfor %}
             <tr>
                 <td colspan="3" class="p-30 text-center"><b>TOTAL EXPENDITURE FOR THE MONTH</b></td>
-                <td class="p-15 text-center"><b>{{totalExpenditure |number_format(0, '.', ' ')}}</b></td>
+                <td class="p-15 text-center"><b>{{ totalExpenditure |number_format(0, '.', ' ') }}</b></td>
             </tr>
             <tr>
                 <td colspan="3" class="p-30 text-center"><b>NET PROFIT FOR THE MONTH(UNDIVIDED EARNINGS)</b></td>
                 {% set benefit = totalIncome - totalExpenditure %}
-                <td class="p-15 text-center"><b>{{benefit |number_format(0, '.', ' ')}}</b></td>
+                <td class="p-15 text-center"><b>{{ benefit |number_format(0, '.', ' ') }}</b></td>
             </tr>
     </table>
     <br><br>
