@@ -40,3 +40,6 @@
 
 /web/archives/operations/*
 !web/archives/operations/.gitkeep
+
+/web/archives/databases/*
+!web/archives/databases/.gitkeep

@@ -9,37 +9,53 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @ORM\Table(name="backup")
  * @ORM\Entity(repositoryClass="ConfigBundle\Repository\BackupRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Backup
 {
     /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\Id()
+     * @ORM\GeneratedValue()
+     * @ORM\Column(type="integer")
      */
     private $id;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="fileName", type="string", length=255)
+     * @ORM\Column(type="string", length=255)
      */
     private $fileName;
 
     /**
-     * @var \DateTime
+     * @var string
      *
-     * @ORM\Column(name="createdAt", type="datetime")
+     * @ORM\Column(type="string", length=255)
+     */
+    private $path;
+
+    /**
+     * @var \DateTime
+     * @ORM\Column(type="datetime", nullable=true)
      */
     private $createdAt;
 
+    /**
+     * @var \DateTime
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $updatedAt;
 
     /**
-     * Get id
-     *
-     * @return int
+     * @return string
+     */
+    function __toString()
+    {
+        return $this->fileName;
+    }
+
+    /**
+     * @return mixed
      */
     public function getId()
     {
@@ -47,11 +63,16 @@ class Backup
     }
 
     /**
-     * Set fileName
-     *
-     * @param string $fileName
-     *
-     * @return Backup
+     * @return string
+     */
+    public function getFileName()
+    {
+        return $this->fileName;
+    }
+
+    /**
+     * @param $fileName
+     * @return $this
      */
     public function setFileName($fileName)
     {
@@ -61,37 +82,58 @@ class Backup
     }
 
     /**
-     * Get fileName
-     *
      * @return string
      */
-    public function getFileName()
+    public function getPath()
     {
-        return $this->fileName;
+        return $this->path;
     }
 
     /**
-     * Set createdAt
-     *
-     * @param \DateTime $createdAt
-     *
-     * @return Backup
+     * @param $path
+     * @return $this
      */
-    public function setCreatedAt($createdAt)
+    public function setPath($path)
     {
-        $this->createdAt = $createdAt;
+        $this->path = $path;
 
         return $this;
     }
 
     /**
-     * Get createdAt
-     *
      * @return \DateTime
      */
     public function getCreatedAt()
     {
         return $this->createdAt;
+    }
+
+    /**
+     * @ORM\PrePersist
+     */
+    public function setCreatedAt()
+    {
+        $this->createdAt = new \DateTime();
+
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getUpdatedAt()
+    {
+        return $this->updatedAt;
+    }
+
+    /**
+     * @ORM\PreUpdate
+     */
+    public function setUpdatedAt()
+    {
+        $this->updatedAt = new \DateTime();
+
+        return $this;
     }
 }
 

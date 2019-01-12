@@ -2,6 +2,7 @@
 # https://symfony.com/doc/current/service_container.html
 parameters:
     archives_directory: '%kernel.project_dir%/web/archives'
+    db_directory: '%kernel.project_dir%/web/archives/databases'
     #parameter_name: value
 
 services:

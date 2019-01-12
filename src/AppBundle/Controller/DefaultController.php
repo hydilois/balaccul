@@ -160,27 +160,63 @@ class DefaultController extends Controller{
      * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      * @return string
      */
-        public function databaseDump(){
-            try{
-                $date = date("Y-m-d_H:i:s");
-                $db_user = $this->getParameter('database_user');
-                $db_pass = $this->getParameter('database_password');
-                $db_name = $this->getParameter('database_name');
-                exec('mysqldump --skip-add-locks -u '.$db_user.' -p'.$db_pass.' --databases '.$db_name.' > /var/www/html/balaccul/web/assets/database/balacculdb_'.$date.'.sql');
+    public function databaseDump(){
+        try{
+            $date = date("Y-m-d_H:i:s");
+            $db_user = $this->getParameter('database_user');
+            $db_pass = $this->getParameter('database_password');
+            $db_name = $this->getParameter('database_name');
+            exec('mysqldump --skip-add-locks -u '.$db_user.' -p'.$db_pass.' --databases '.$db_name.' > /var/www/html/balaccul/web/assets/database/balacculdb_'.$date.'.sql');
 
-                    return json_encode([
-                    "message" => "The backup of the the system is done successfully", 
-                    "status" => "success",
-                    "optionalDate" => $date
+                return json_encode([
+                "message" => "The backup of the the system is done successfully",
+                "status" => "success",
+                "optionalDate" => $date
+            ]);
+
+            }catch(Exception $ex){
+                return json_encode([
+                    "status" => "failed",
                 ]);
+            }
+    }
 
-                }catch(Exception $ex){
-                    return json_encode([
-                        "status" => "failed",
-                    ]);
-                }
+
+    /**
+     * @Route("/drop", name="database_drop")
+     * @Method({"GET", "POST"})
+     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
+     * @return string
+     */
+    public function databaseDrop()
+    {
+        try {
+            $date = date("Y-m-d_H:i:s");
+            $db_user = $this->getParameter('database_user');
+            $db_pass = $this->getParameter('database_password');
+            $db_name = $this->getParameter('database_name');
+
+            exec(
+        'echo "SET FOREIGN_KEY_CHECKS = 0;" > temp.txt; \
+                mysqldump -uroot -pelsha --add-drop-table --no-data gesbalaccul | grep ^DROP >> temp.txt; \
+                echo "SET FOREIGN_KEY_CHECKS = 1;" >> temp.txt; \
+                mysql -uroot -pelsha gesbalaccul < temp.txt;'
+            );
+
+
+
+            /*    return json_encode([
+                "message" => "The backup of the the system is done successfully",
+                "status" => "success",
+                "optionalDate" => $date
+            ]);*/
+            return $this->redirectToRoute('fos_user_security_login');
+
+            }catch(Exception $ex){
+                return json_encode([
+                    "status" => "failed",
+                ]);
             }
 
-
-
+    }
 }
