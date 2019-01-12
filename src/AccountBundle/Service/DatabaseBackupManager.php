@@ -1,13 +1,12 @@
 <?php
 
-// src/Service/DatabaseBackupManager.php
-namespace App\Service;
+namespace AccountBundle\Service;
 
-use App\Entity\Backup;
+use ConfigBundle\Entity\Backup;
 
 /**
  * Class DbBackupManager
- * @package App\Service
+ * @package AccountBundle\Service
  */
 class DatabaseBackupManager
 {
@@ -36,19 +35,21 @@ class DatabaseBackupManager
      * @param string $user
      * @param string $password
      * @param string $databaseName
+     * @param $operation
      * @return bool
      */
-    public function backup(string $user = null, string $password = null, string $databaseName): bool
+    public function backup($user = null, $password = null, $databaseName, $operation='Manual Backup')
     {
         $date = date("Y-m-d_H:i:s");
-        $filName = 'School-Lab_DB_'.$date;
-        exec('mysqldump --skip-add-locks -u '.$user.' -p'.$password.' --databases '.$databaseName.' > '.$this->getTargetDir().'/School-Lab_DB'.$date.'.sql');
+        $filName = 'HYMIF_DB_'.$date;
 
         $backup = new Backup();
         $backup->setFileName($filName);
-        $backup->setPath('databases/School-Lab_DB'.$date.'.sql');
+        $backup->setPath('archives/databases/HYMIF_DB_'.$date.'.sql');
+        $backup->setOperation($operation);
         $this->getEntityManager()->persist($backup);
         $this->getEntityManager()->flush();
+        exec('mysqldump --skip-add-locks -u '.$user.' -p'.$password.' --databases '.$databaseName.' > '.$this->getTargetDir().'/HYMIF_DB_'.$date.'.sql');
         return true;
     }
 

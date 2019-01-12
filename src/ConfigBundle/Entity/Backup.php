@@ -35,6 +35,13 @@ class Backup
     private $path;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $operation;
+
+    /**
      * @var \DateTime
      * @ORM\Column(type="datetime", nullable=true)
      */
@@ -135,5 +142,25 @@ class Backup
 
         return $this;
     }
+
+    /**
+     * @return string
+     */
+    public function getOperation()
+    {
+        return $this->operation;
+    }
+
+    /**
+     * @param string $operation
+     * @return Backup
+     */
+    public function setOperation($operation)
+    {
+        $this->operation = $operation;
+        return $this;
+    }
+
+
 }
 

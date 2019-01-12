@@ -66,7 +66,7 @@ $(function() {
         MemberEndpoint.prototype.setListeners = function() {
             this.setAddBeneficiaryListener();
             this.setRemoveBeneficiaryListener();
-            this.validatRegisterMemberListener();
+            this.validateRegisterMemberListener();
             this.setCreateFormModalShow();
             this.setEditFormModalShow();
             this.validateCloseAccountListener();
@@ -99,7 +99,7 @@ $(function() {
             });//end on click #removeBenefciary event
         }
 
-        MemberEndpoint.prototype.validatRegisterMemberListener = function(){
+        MemberEndpoint.prototype.validateRegisterMemberListener = function(){
             $('#submit').on('click', function(event){
                 event.preventDefault();
                 console.log("test");

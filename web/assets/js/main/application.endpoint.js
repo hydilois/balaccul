@@ -34,7 +34,6 @@ $(function(){
          * @return {void} nothing
          */
         AppEndpoint.prototype.initializeView = function() {
-            console.log("Hello");
             this.setChartDisplay();
         }
 
@@ -115,6 +114,8 @@ $(function(){
                 }
             });
         }
+
+
 
 
         //this should be at the end

@@ -34,6 +34,7 @@ $(function(){
 			BaseEndpoint.prototype.setListerners = function(){
 				this.setAlertListener();
 				this.validateDatabaseDumpListener();
+				this.databaseDelete();
 			}
 
 			BaseEndpoint.prototype.postActions = function(){
@@ -127,9 +128,7 @@ $(function(){
 			            dataType    : "JSON",
 			            beforeSend  : function(){
 			            },
-			            success     : function(data){
-			                returnedData = JSON.parse(data);
-			                console.log(returnedData);
+			            success     : function(){
 			                baseEndpoint.feedbackHelper.showMessageWithPrompt("System Backup", "The Backup of the system has been done succesfully", "success");
 			            }, 
 			            error : function(){
@@ -137,6 +136,47 @@ $(function(){
 			            },
 			        });
 			    }
+
+
+
+
+            BaseEndpoint.prototype.databaseDelete = function(){
+                $('.ajax-database-delete').on('click', function (e) {
+                    e.preventDefault()
+                    var link = $(this)
+                    $.ajax({
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        method: 'DELETE',
+                        url: link.data('url'),
+                        success: function (response) {
+                            if (response.status === 'success') {
+                                var feedback = JSON.parse(JSON.stringify({
+                                    'title': 'Delete of the database',
+                                    'message': 'The database has been deleted',
+                                    'type': 'success'
+                                }))
+                                baseEndpoint.feedbackHelper.showAutoCloseMessage(feedback.title, feedback.message, feedback.type)
+								location.reload();
+                            } else {
+                                var feedbackError = JSON.parse(JSON.stringify({
+                                    'title': 'Error',
+                                    'message': 'The deletion failed',
+                                    'type': 'error'
+                                }))
+                                baseEndpoint.feedbackHelper.showAutoCloseMessage(feedbackError.title, feedbackError.message, feedbackError.type)
+                            }
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            console.log(jqXHR, textStatus, errorThrown)
+                        }
+                    })
+
+
+                })
+            }
+
 
 			var baseEndpoint = new BaseEndpoint();
 			baseEndpoint.initializeView();

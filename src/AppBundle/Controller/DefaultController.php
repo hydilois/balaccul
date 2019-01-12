@@ -2,6 +2,7 @@
 
 namespace AppBundle\Controller;
 
+use AccountBundle\Service\DatabaseBackupManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -158,15 +159,16 @@ class DefaultController extends Controller{
      * @Route("/dump", name="database_dump")
      * @Method({"GET", "POST"})
      * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
+     * @param DatabaseBackupManager $databaseBackupManager
      * @return string
      */
-    public function databaseDump(){
+    public function databaseDump(DatabaseBackupManager $databaseBackupManager){
         try{
             $date = date("Y-m-d_H:i:s");
             $db_user = $this->getParameter('database_user');
             $db_pass = $this->getParameter('database_password');
             $db_name = $this->getParameter('database_name');
-            exec('mysqldump --skip-add-locks -u '.$db_user.' -p'.$db_pass.' --databases '.$db_name.' > /var/www/html/balaccul/web/assets/database/balacculdb_'.$date.'.sql');
+            $databaseBackupManager->backup($db_user, $db_pass, $db_name);
 
                 return json_encode([
                 "message" => "The backup of the the system is done successfully",

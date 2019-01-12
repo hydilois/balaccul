@@ -73,6 +73,16 @@ services:
             - { name: kernel.event_listener, event: kernel.controller, method: onCoreController }
 
     app.html2pdf:
-            class: AccountBundle\Service\Html2PdfService
-            arguments:
-                $targetDir: '%archives_directory%'
+        class: AccountBundle\Service\Html2PdfService
+        arguments:
+            $targetDir: '%archives_directory%'
+
+    AccountBundle\Service\DatabaseBackupManager:
+        arguments:
+            $targetDir: '%db_directory%'
+            $entityManager: '@doctrine.orm.entity_manager'
+
+    AccountBundle\Service\FileUploader:
+        arguments:
+            $targetDir: '%db_directory%'
+        autowire: true
