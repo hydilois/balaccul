@@ -2,16 +2,8 @@ member_client:
     resource: "@MemberBundle/Controller/ClientController.php"
     type:     annotation
 
-account_report_item:
-    resource: "@AccountBundle/Controller/ReportItemController.php"
-    type:     annotation
-
 user_groupe:
     resource: "@UserBundle/Controller/GroupeController.php"
-    type:     annotation
-
-config_transaction_income:
-    resource: "@ConfigBundle/Controller/TransactionIncomeController.php"
     type:     annotation
 
 config_loan_parameter:

@@ -6,7 +6,6 @@ use AccountBundle\Service\FileUploader;
 use ConfigBundle\Entity\Backup;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -25,7 +24,7 @@ class BackupController extends Controller
      */
     public function index()
     {
-        $databases = $this->getDoctrine()->getManager()->getRepository(Backup::class)->findBy([],['createdAt' => 'ASC']);
+        $databases = $this->getDoctrine()->getManager()->getRepository(Backup::class)->findBy([],['createdAt' => 'DESC']);
         return $this->render('backup/index.html.twig', [
             'databases' => $databases
         ]);
@@ -36,15 +35,17 @@ class BackupController extends Controller
      * @param Request $request
      * @param  Backup $backup
      *
+     * @param FileUploader $fileUploader
      * @return Response
      * @Route("/{id}/delete", name="database_delete")
      * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      */
-    public function delete( Request $request, Backup $backup)
+    public function delete(Request $request, Backup $backup, FileUploader $fileUploader)
     {
         if ($request->isXmlHttpRequest()) {
             try {
                 $entityManager = $this->getDoctrine()->getManager();
+                $fileUploader->removeFile($backup->getPath());
                 $entityManager->remove($backup);
                 $entityManager->flush();
 
@@ -68,7 +69,7 @@ class BackupController extends Controller
      * @Route("/{id}/restore", name="database_restore")
      * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      */
-    public function restoreDatabase(Backup $backup)
+    public function restoreDatabase(Backup $backup, FileUploader $fileUploader)
     {
         $date = date("Y-m-d_H:i:s");
         $db_user = $this->getParameter('database_user');
@@ -83,6 +84,8 @@ class BackupController extends Controller
         );
 
         exec('mysql -u'.$db_user.' -p'.$db_pass.'  '.$db_name.' < '.$backup->getPath());
+
+        $fileUploader->removeFile('archives/databases/temp_'.$date.'.txt');
 
         return $this->redirectToRoute('fos_user_security_login');
     }

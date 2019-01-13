@@ -34,12 +34,38 @@ services:
 
     UserBundle\:
         resource: '../../src/UserBundle/*'
-        # you can exclude directories or files
-        # but if a service is unused, it's removed anyway
         exclude: '../../src/UserBundle/{Entity,Repository,Tests}'
     
     UserBundle\Controller\:
         resource: '../../src/UserBundle/Controller'
+        public: true
+        tags: ['controller.service_arguments']
+
+
+    AccountBundle\:
+        resource: '../../src/AccountBundle/*'
+        exclude: '../../src/AccountBundle/{Entity,Repository,Tests}'
+
+    AccountBundle\Controller\:
+        resource: '../../src/AccountBundle/Controller'
+        public: true
+        tags: ['controller.service_arguments']
+
+    ConfigBundle\:
+        resource: '../../src/ConfigBundle/*'
+        exclude: '../../src/ConfigBundle/{Entity,Repository,Tests}'
+
+    ConfigBundle\Controller\:
+        resource: '../../src/ConfigBundle/Controller'
+        public: true
+        tags: ['controller.service_arguments']
+
+    MemberBundle\:
+        resource: '../../src/MemberBundle/*'
+        exclude: '../../src/MemberBundle/{Entity,Repository,Tests}'
+
+    MemberBundle\Controller\:
+        resource: '../../src/MemberBundle/Controller'
         public: true
         tags: ['controller.service_arguments']
 
@@ -86,3 +112,4 @@ services:
         arguments:
             $targetDir: '%db_directory%'
         autowire: true
+        public: true

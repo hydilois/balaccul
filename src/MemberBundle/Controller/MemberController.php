@@ -2,6 +2,7 @@
 
 namespace MemberBundle\Controller;
 
+use AccountBundle\Service\DatabaseBackupManager;
 use ConfigBundle\Entity\Agency;
 use MemberBundle\Entity\Member;
 use AccountBundle\Entity\Operation;
@@ -226,13 +227,19 @@ class MemberController extends Controller
 
     /**
      * @param Request $request [contains the http request that is passed on]
-     * 
+     *
+     * @param DatabaseBackupManager $databaseBackupManager
+     * @return Response
      * @Route("/new_json", name="member_new_json")
      * @Method({"GET", "POST"})
-     * @return Response
      */
-    function addNewMemberFromJSON(Request $request)
+    function addNewMemberFromJSON(Request $request, DatabaseBackupManager $databaseBackupManager)
     {
+        $db_user = $this->getParameter('database_user');
+        $db_pass = $this->getParameter('database_password');
+        $db_name = $this->getParameter('database_name');
+        $databaseBackupManager->backup($db_user, $db_pass, $db_name, 'Add New Member');
+
 
         $entityManager = $this->getDoctrine()->getManager();
         $logger = $this->get('logger');

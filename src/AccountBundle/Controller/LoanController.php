@@ -3,6 +3,7 @@
 namespace AccountBundle\Controller;
 
 use AccountBundle\Entity\Loan;
+use AccountBundle\Service\DatabaseBackupManager;
 use ClassBundle\Entity\Classe;
 use ClassBundle\Entity\InternalAccount;
 use ConfigBundle\Entity\LoanParameter;
@@ -75,16 +76,22 @@ class LoanController extends Controller
      * @Route("/new", name="loan_new")
      * @Method({"GET", "POST"})
      * @param Request $request
-     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
+     * @param DatabaseBackupManager $databaseBackupManager
      * @return Response
+     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      */
-    public function create(Request $request)
+    public function create(Request $request, DatabaseBackupManager $databaseBackupManager)
     {
         $loan = new Loan();
         $form = $this->createForm('AccountBundle\Form\LoanType', $loan);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $db_user = $this->getParameter('database_user');
+            $db_pass = $this->getParameter('database_password');
+            $db_name = $this->getParameter('database_name');
+            $databaseBackupManager->backup($db_user, $db_pass, $db_name, 'Add New Loan');
+
             $em = $this->getDoctrine()->getManager();
             // Get the current user connected
             $currentUser = $this->get('security.token_storage')->getToken()->getUser();

@@ -9,7 +9,8 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 
-class DefaultController extends Controller{
+class DefaultController extends Controller
+{
     /**
      * @Route("/", name="homepage")
      * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
@@ -181,44 +182,5 @@ class DefaultController extends Controller{
                     "status" => "failed",
                 ]);
             }
-    }
-
-
-    /**
-     * @Route("/drop", name="database_drop")
-     * @Method({"GET", "POST"})
-     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
-     * @return string
-     */
-    public function databaseDrop()
-    {
-        try {
-            $date = date("Y-m-d_H:i:s");
-            $db_user = $this->getParameter('database_user');
-            $db_pass = $this->getParameter('database_password');
-            $db_name = $this->getParameter('database_name');
-
-            exec(
-        'echo "SET FOREIGN_KEY_CHECKS = 0;" > temp.txt; \
-                mysqldump -uroot -pelsha --add-drop-table --no-data gesbalaccul | grep ^DROP >> temp.txt; \
-                echo "SET FOREIGN_KEY_CHECKS = 1;" >> temp.txt; \
-                mysql -uroot -pelsha gesbalaccul < temp.txt;'
-            );
-
-
-
-            /*    return json_encode([
-                "message" => "The backup of the the system is done successfully",
-                "status" => "success",
-                "optionalDate" => $date
-            ]);*/
-            return $this->redirectToRoute('fos_user_security_login');
-
-            }catch(Exception $ex){
-                return json_encode([
-                    "status" => "failed",
-                ]);
-            }
-
     }
 }
