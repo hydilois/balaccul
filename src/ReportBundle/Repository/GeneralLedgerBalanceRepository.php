@@ -158,6 +158,7 @@ class GeneralLedgerBalanceRepository extends EntityRepository
         $ledgerBalance->setMember($member);
 
         $entityManager->persist($ledgerBalance);
+
         $entityManager->flush();
         return true;
     }

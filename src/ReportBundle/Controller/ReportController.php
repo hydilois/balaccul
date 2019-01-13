@@ -25,6 +25,7 @@ class ReportController extends Controller{
     /**
      * @Route("/trial_balance", name="report_trial_balance")
      * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
+     * @return Response
      */
     public function index()
     {
@@ -34,12 +35,11 @@ class ReportController extends Controller{
 
     /**
      * @Route("/situations", name="internal_account_balance")
+     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
+     * @return Response
      */
-    public function internalAccountSituation(){
-        // Test is the user does not have the default role
-        if (!$this->container->get('security.authorization_checker')->isGranted('ROLE_BOARD')) {
-            return new RedirectResponse($this->container->get ('router')->generate ('fos_user_security_login'));
-        }
+    public function internalAccountSituation()
+    {
         $em = $this->getDoctrine()->getManager();
         $internalAccounts = $em->createQueryBuilder()
             ->select('ia')

@@ -25,13 +25,14 @@ $(function(){
 
 			function BaseEndpoint(){
 				this.feedbackHelper  = new FeedbackHelper();
+                this.currentLink = '';
 			}
 
 			BaseEndpoint.prototype.initializeView = function(){
 				console.log("Here stand the base Endpoint file for the whole application");
 			}
 
-			BaseEndpoint.prototype.setListerners = function(){
+			BaseEndpoint.prototype.setListeners = function(){
 				this.setAlertListener();
 				this.validateDatabaseDumpListener();
 				this.databaseDelete();
@@ -144,43 +145,60 @@ $(function(){
                 $('.ajax-database-delete').on('click', function (e) {
                     e.preventDefault()
                     var link = $(this)
-                    $.ajax({
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        },
-                        method: 'DELETE',
-                        url: link.data('url'),
-                        success: function (response) {
-                            if (response.status === 'success') {
-                                var feedback = JSON.parse(JSON.stringify({
-                                    'title': 'Delete of the database',
-                                    'message': 'The database has been deleted',
-                                    'type': 'success'
-                                }))
-                                baseEndpoint.feedbackHelper.showAutoCloseMessage(feedback.title, feedback.message, feedback.type)
-								location.reload();
-                            } else {
-                                var feedbackError = JSON.parse(JSON.stringify({
-                                    'title': 'Error',
-                                    'message': 'The deletion failed',
-                                    'type': 'error'
-                                }))
-                                baseEndpoint.feedbackHelper.showAutoCloseMessage(feedbackError.title, feedbackError.message, feedbackError.type)
-                            }
-                        },
-                        error: function (jqXHR, textStatus, errorThrown) {
-                            console.log(jqXHR, textStatus, errorThrown)
-                        }
-                    })
-
+                    baseEndpoint.currentLink = link;
+                    var feedbackMessage = JSON.parse(JSON.stringify({
+                        'title' : 'Confirmation of the information',
+                        'message' : 'You agree that the information of the member are correct?',
+                        'type' : 'warning',
+                        'confirmeButtonText' : 'Yes I confirm',
+                        'callback' : baseEndpoint.setDeleteListener
+                    }));
+                    baseEndpoint.feedbackHelper.showLoaderMessage(feedbackMessage.title, feedbackMessage.message, feedbackMessage.type, feedbackMessage.confirmeButtonText,
+                        baseEndpoint.setDeleteListener
+                    );
 
                 })
+            }
+
+            BaseEndpoint.prototype.setDeleteListener = function () {
+                $.ajax({
+                 headers: {
+                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                 },
+                 method: 'DELETE',
+                 url: baseEndpoint.currentLink.data('url'),
+                 success: function (response) {
+                 if (response.status === 'success') {
+                 var feedback = JSON.parse(JSON.stringify({
+                 'title': 'Delete of the database',
+                 'message': 'The database has been deleted',
+                 'type': 'success'
+                 }))
+                 baseEndpoint.feedbackHelper.showAutoCloseMessage(feedback.title, feedback.message, feedback.type)
+
+                 } else {
+                 var feedbackError = JSON.parse(JSON.stringify({
+                 'title': 'Error',
+                 'message': 'The deletion failed',
+                 'type': 'error'
+                 }))
+                 baseEndpoint.feedbackHelper.showAutoCloseMessage(feedbackError.title, feedbackError.message, feedbackError.type)
+                 }
+                 },
+                 error: function (jqXHR, textStatus, errorThrown) {
+                 console.log(jqXHR, textStatus, errorThrown)
+                 },
+                 complete: function () {
+                 location.reload();
+                 this.currentLink = ''
+                 }
+                 })
             }
 
 
 			var baseEndpoint = new BaseEndpoint();
 			baseEndpoint.initializeView();
-			baseEndpoint.setListerners();
+			baseEndpoint.setListeners();
 			baseEndpoint.postActions();
 		}
 	);

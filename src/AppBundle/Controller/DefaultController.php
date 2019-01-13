@@ -20,24 +20,32 @@ class DefaultController extends Controller
     {
         
         $em = $this->getDoctrine()->getManager();
-        $agency = $em->getRepository('ConfigBundle:Agency')->find(1);
+        $agency = $em->getRepository('ConfigBundle:Agency')->findOneBy([],['id' => 'ASC']);
         $members = $em->getRepository('MemberBundle:Member')->findAll();
 
         $loans = $em->getRepository('AccountBundle:Loan')->findByStatus(true);
 
-        $totalShares = $em->createQueryBuilder()
+        $fullyPaidShares = $em->createQueryBuilder()
             ->select('SUM(m.share)')
             ->from('MemberBundle:Member', 'm')
+            ->where('m.share >= 20000')
             ->getQuery()
             ->getSingleScalarResult();
 
-        $totalSavings = $em->createQueryBuilder()
+        $partialPaidShares = $em->createQueryBuilder()
+            ->select('SUM(m.share)')
+            ->from('MemberBundle:Member', 'm')
+            ->where('m.share < 20000')
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        $savings = $em->createQueryBuilder()
             ->select('SUM(s.saving)')
             ->from('MemberBundle:Member', 's')
             ->getQuery()
             ->getSingleScalarResult();
 
-        $totalDeposits = $em->createQueryBuilder()
+        $deposits = $em->createQueryBuilder()
             ->select('SUM(s.deposit)')
             ->from('MemberBundle:Member', 's')
             ->getQuery()
@@ -62,7 +70,7 @@ class DefaultController extends Controller
             ->getSingleScalarResult();
 
         //get the number of the daily collectors
-        $totalCollectors = $em->createQueryBuilder()
+        $collectors = $em->createQueryBuilder()
             ->select('COUNT(u)')
             ->from('UserBundle:Utilisateur', 'u')
             ->innerJoin('UserBundle:Groupe', 'g', 'WITH','g.id = u.groupe')
@@ -123,16 +131,17 @@ class DefaultController extends Controller
             'numberNumber' => count($members),
             'agency' => $agency,
             'members' => $members,
-            'totalShares' => $totalShares,
-            'totalSaving' => $totalSavings,
-            'totalDeposit' => $totalDeposits,
+            'fullyPaidShares' => $fullyPaidShares,
+            'partialPaidShares' => $partialPaidShares,
+            'totalSaving' => $savings,
+            'totalDeposit' => $deposits,
             'buildingFees' => $totalBuildingFees,
             'totalRegistration' => $totalRegistrationFeesPM,
             'unpaidInterest' => $unpaidInterest,
             'loans' => $loans,
             'loanUnpaid' => $loanUnpaid,
             'totalDailySavings' => $totalDailySavings,
-            'totaCollectors' => $totalCollectors,
+            'totaCollectors' => $collectors,
             'bayelleBalance' => $bayelleBalance,
             'ubBalance' => $ubBalance,
             'cashOnHand' => $cashOnHand,

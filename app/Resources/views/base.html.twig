@@ -8,7 +8,7 @@
 
         <link rel="shortcut icon" href="{{asset('assets/images/favicon_1.ico')}}">
 
-        <title>{% block title %} HYMIF |  {% endblock %}</title>
+        <title>{% block title %} HYMIF::  {% endblock %}</title>
         
         {% block stylesheets %}
             <!--Form Wizard-->
@@ -192,16 +192,23 @@
                                                 <li><a href="{{path('classe_index')}}">Classes</a></li>
                                                 <li><a href="{{path('internalaccount_index')}}"> Accounts</a></li>
                                                 <li><a href="{{path('loan_index')}}">Loans</a></li>
-                                                <li><a href="{{path('agency_index')}}">Agency</a></li>
-                                                <li><a href="{{path('loanparameter_index')}}">Loan Parameter</a></li>
                                                 <li><a href="{{path('utilisateur_index')}}"> Users</a></li>
-                                                <li><a href="{{path('backup_index')}}"> Databases</a></li>
                                             </ul>
                                         </li>
                                   {% endif %}
-                                    {% if is_granted("ROLE_BOARD")  %}
-                                        <li><a href="{{path('internal_account_balance')}}"><i class="md-timer"></i><span> Accounts Situation</span></a></li>
-                                    {% endif %}
+                                {% if is_granted("ROLE_ADMINISTRATOR") or is_granted("ROLE_BOARD") or is_granted("ROLE_MANAGER")  %}
+                                    <li class="has_sub">
+                                        <a href="javascript:void(0)" class="waves-effect"><i class="ti-alert"></i> <span> Administrators </span> <span class="menu-arrow"></span> </a>
+                                        <ul class="list-unstyled">
+                                            <li><a href="{{path('loanparameter_index')}}">Loan Parameter</a></li>
+                                            <li><a href="{{path('agency_index')}}">Agency</a></li>
+                                            <li><a href="{{path('backup_index')}}"> Databases</a></li>
+                                        </ul>
+                                    </li>
+                                {% endif %}
+                                {% if is_granted("ROLE_BOARD") or  is_granted("ROLE_ADMINISTRATOR")  %}
+                                    <li><a href="{{path('internal_account_balance')}}"><i class="md-timer"></i><span> Accounts Situation</span></a></li>
+                                {% endif %}
                                 </ul>
                                 <div class="clearfix"></div>
                             </div>

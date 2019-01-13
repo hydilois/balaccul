@@ -604,7 +604,8 @@ class OperationController extends Controller
                 $totalTransaction += $data['savings'] ;
             }
             if ($data['savingsCharges'] != 0) {
-                /* Records of the savings withdrawals charges**/
+                /* Records of the savings withdrawals charges **/
+
                 $account = $entityManager->getRepository(InternalAccount::class)->find(142);
                 $account->setBalance($account->getBalance() + $data['savingsCharges']);
                 $class = $entityManager->getRepository(Classe::class)->find($account->getClasse()->getId());

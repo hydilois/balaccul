@@ -77,7 +77,7 @@
                 {% set totalIncome = totalIncome + operation.amount %}
             {% endfor %}
             <tr>
-                <td colspan="3" class="p-30 text-center"><b>TOTAL INCOME FOR THE MONTH</b></td>
+                <td colspan="3" class="p-30 text-center"><b>TOTAL INCOME FOR THE PERIOD</b></td>
                 <td class="p-15 text-center"><b>{{ totalIncome |number_format(0, '.', ' ') }}</b></td>
             </tr>
 
@@ -91,11 +91,11 @@
                 {% set totalExpenditure = totalExpenditure + operation.credit %}
             {% endfor %}
             <tr>
-                <td colspan="3" class="p-30 text-center"><b>TOTAL EXPENDITURE FOR THE MONTH</b></td>
+                <td colspan="3" class="p-30 text-center"><b>TOTAL EXPENDITURE FOR THE PERIOD</b></td>
                 <td class="p-15 text-center"><b>{{ totalExpenditure |number_format(0, '.', ' ') }}</b></td>
             </tr>
             <tr>
-                <td colspan="3" class="p-30 text-center"><b>NET PROFIT FOR THE MONTH(UNDIVIDED EARNINGS)</b></td>
+                <td colspan="3" class="p-30 text-center"><b>NET PROFIT FOR THE PERIOD(UNDIVIDED EARNINGS)</b></td>
                 {% set benefit = totalIncome - totalExpenditure %}
                 <td class="p-15 text-center"><b>{{ benefit |number_format(0, '.', ' ') }}</b></td>
             </tr>

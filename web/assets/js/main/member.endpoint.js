@@ -42,7 +42,6 @@ $(function() {
          * @return {void} nothing
          */
         MemberEndpoint.prototype.initializeView = function() {
-            console.log("Hello Member");
 
             $('#datatable-responsive').DataTable();
             TableManageButtons.init();
@@ -77,7 +76,6 @@ $(function() {
          * listener of beneficiary
          */
         MemberEndpoint.prototype.setAddBeneficiaryListener = function(){
-            console.log("Adding beneficiary");
             $('#addBeneficiary').on('click', function(){
                 $mtmtForm = $("div.template.beneficiary_form").clone().removeClass('template');
                 $mtmtForm.find('legend b').text(++(memberEndpoint.beneficiaryNumber));
@@ -88,7 +86,7 @@ $(function() {
 
         MemberEndpoint.prototype.setRemoveBeneficiaryListener = function(){
             $('#removeBeneficiary').on('click', function(){
-                //check wheter or not we have reached the minimum requirement
+                //check if or not we have reached the minimum requirement
                 if(memberEndpoint.beneficiaryNumber > 1){
                     --memberEndpoint.beneficiaryNumber;
                     $("div.beneficiary_form").not('.template').last().remove();
@@ -96,17 +94,16 @@ $(function() {
                     memberEndpoint.feedbackHelper.showMessageWithPrompt("Sorry", "You have to add at least one beneficiary", "error");
                     // alert('You have to add at least one beneficiary');
                 }
-            });//end on click #removeBenefciary event
+            });//end on click #removeBeneficiary event
         }
 
         MemberEndpoint.prototype.validateRegisterMemberListener = function(){
             $('#submit').on('click', function(event){
                 event.preventDefault();
-                console.log("test");
 
                 var feedbackMessage = JSON.parse(JSON.stringify({
-                    'title' : 'Confirmation of the informations',
-                    'message' : 'You agree that the informations of the member are correct?',
+                    'title' : 'Confirmation of the information',
+                    'message' : 'You agree that the information of the member are correct?',
                     'type' : 'warning',
                     'confirmeButtonText' : 'Yes I confirm',
                     'callback' : memberEndpoint.setRegisterMemberListener
@@ -119,8 +116,7 @@ $(function() {
 
         MemberEndpoint.prototype.setRegisterMemberListener = function(){
                 var data = memberEndpoint.member.getJSONValues();
-                console.log(data);
-                    //We send an ajax requeset to register the mouvement object
+                    //We send an ajax request to register the movement object
                     $.ajax({
                         method      : "POST", 
                         data        : {data : data},

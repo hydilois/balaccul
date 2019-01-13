@@ -65,6 +65,7 @@ class BackupController extends Controller
     /**
      *
      * @param Backup $backup
+     * @param FileUploader $fileUploader
      * @return Response
      * @Route("/{id}/restore", name="database_restore")
      * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
