@@ -21,17 +21,8 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
  *
  * @Route("report")
  */
-class ReportController extends Controller{
-    /**
-     * @Route("/trial_balance", name="report_trial_balance")
-     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
-     * @return Response
-     */
-    public function index()
-    {
-        // replace this example code with whatever you need
-        return $this->render('report/report.html.twig');
-    }
+class ReportController extends Controller
+{
 
     /**
      * @Route("/situations", name="internal_account_balance")
@@ -574,7 +565,7 @@ class ReportController extends Controller{
 
 
     /**
-     * @Route("/generate/trial_balance", name="trialbalance_report")
+     * @Route("/generate/trial_balance", name="trial_balance_report")
      * @Method({"GET", "POST"})
      * @param Request $request
      * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
@@ -623,6 +614,7 @@ class ReportController extends Controller{
                 $html2PdfService->create('P', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 15));
                     return $html2PdfService->generatePdf($template, $title.'.pdf', 'loans',$title, 'I');
             }
+        return $this->render('report/general_statistic.html.twig');
         }
 
 
@@ -1216,6 +1208,7 @@ class ReportController extends Controller{
             return new RedirectResponse($this->container->get ('router')->generate ('fos_user_security_login'));
         }
 
+
         $currentDate  = $request->get('currentDate');
         $date = explode( "/" , substr($currentDate,strrpos($currentDate," ")));
 
@@ -1226,13 +1219,9 @@ class ReportController extends Controller{
         $members = $em->getRepository('MemberBundle:Member')->findBy([],['memberNumber' => 'ASC']);
 
         foreach ($members as $member) {
-            $tmpLoan = $em->getRepository(Loan::class)->findOneBy([
-                'physicalMember' => $member,
-                'status' => true
-            ]);
+            $tmpLoan = $em->getRepository(Loan::class)->getMemberLoans($member, $date);
 
             $member = $em->getRepository(Operation::class)->getSituationAt($member, $date);
-
 
             if ($tmpLoan) {
                 $loan = $em->getRepository(LoanHistory::class)->getActiveLoanPerMember($tmpLoan, $date);
@@ -1250,6 +1239,139 @@ class ReportController extends Controller{
         $title = 'All_Members_General_Situation';
         $html2PdfService = $this->get('app.html2pdf');
         $html2PdfService->create('L', 'A4', 'en', true, 'UTF-8', array(5, 10, 10, 10));
+        return $html2PdfService->generatePdf($template, $title.'.pdf', 'ledgers',$title, 'FI');
+    }
+
+    /**
+     * @Route("/balance/sheet", name="balance_sheet")
+     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
+     * @param Request $request
+     * @return Response
+     */
+    public function balanceSheet(Request $request)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $agency = $em->getRepository('ConfigBundle:Agency')->findOneBy([], ['id' => 'ASC']);
+        $members = $em->getRepository('MemberBundle:Member')->findAll();
+
+        $loans = $em->getRepository('AccountBundle:Loan')->findByStatus(true);
+
+        $totalShares = $em->createQueryBuilder()
+            ->select('SUM(m.share)')
+            ->from('MemberBundle:Member', 'm')
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        $totalSavings = $em->createQueryBuilder()
+            ->select('SUM(s.saving)')
+            ->from('MemberBundle:Member', 's')
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        $totalDeposits = $em->createQueryBuilder()
+            ->select('SUM(s.deposit)')
+            ->from('MemberBundle:Member', 's')
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        $ds1 = $em->getRepository('ClassBundle:InternalAccount')->find(38);
+        $ds2 = $em->getRepository('ClassBundle:InternalAccount')->find(39);
+        $ds3 = $em->getRepository('ClassBundle:InternalAccount')->find(40);
+        $ds4 = $em->getRepository('ClassBundle:InternalAccount')->find(41);
+        $totalDailySavings = $ds1->getBalance() + $ds2->getBalance() + $ds3->getBalance() + $ds4->getBalance() ;
+
+        $totalRegistrationFeesPM = $em->createQueryBuilder()
+            ->select('SUM(m.registrationFees)')
+            ->from('MemberBundle:Member', 'm')
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        $totalBuildingFees = $em->createQueryBuilder()
+            ->select('SUM(m.buildingFees)')
+            ->from('MemberBundle:Member', 'm')
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        //get the number of the daily collectors
+        $totalCollectors = $em->createQueryBuilder()
+            ->select('COUNT(u)')
+            ->from('UserBundle:Utilisateur', 'u')
+            ->innerJoin('UserBundle:Groupe', 'g', 'WITH','g.id = u.groupe')
+            ->where('g.name = :name')
+            ->orWhere('g.name = :name2')
+            ->setParameters([
+                'name' => 'COLLECTOR',
+                'name2' => 'CASHER'
+            ])
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        $unpaidInterest = 0;
+        $loanUnpaid = 0;
+        $loanPaid = 0;
+        foreach ($loans as $loan) {
+            //get the last element in loan history
+            $lowest_remain_amount_LoanHistory = $em->createQueryBuilder()
+                ->select('MIN(lh.remainAmount)')
+                ->from('AccountBundle:LoanHistory', 'lh')
+                ->innerJoin('AccountBundle:Loan', 'l', 'WITH','lh.loan = l.id')
+                ->where('l.id = :loan')
+                ->orderBy('lh.id', 'DESC')
+                ->setParameter('loan', $loan)
+                ->getQuery()
+                ->getSingleScalarResult();
+
+            if ($lowest_remain_amount_LoanHistory) {
+                $latestLoanHistory = $em->getRepository('AccountBundle:LoanHistory')->findOneBy(
+                    [
+                        'remainAmount' => $lowest_remain_amount_LoanHistory,
+                        'loan' => $loan
+                    ],
+                    ['id' => 'DESC']
+                );
+                $unpaidInterest += $latestLoanHistory->getUnpaidInterest();
+                $loanUnpaid += $latestLoanHistory->getRemainAmount();
+
+                $loanPaid += + ($loan->getLoanAmount() - $latestLoanHistory->getRemainAmount());
+            }else{
+                $loanUnpaid += $loan->getLoanAmount();
+            }
+        }
+
+        $bayelleBalance = $em->getRepository('ClassBundle:InternalAccount')->find(82)->getBalance();
+
+        $ubBalance = $em->getRepository('ClassBundle:InternalAccount')->find(76)->getBalance();
+        /*Get the total cash on hand*/
+        $cashOnHand= $em->getRepository('ReportBundle:GeneralLedgerBalance')
+            ->findOneBy(
+                [], ['id' => 'DESC' ]
+            )->getBalance();
+        /*total loan Interest*/
+        $loanInterest = $em->getRepository('ClassBundle:InternalAccount')->find(136)->getBalance();
+
+        $template =  $this->renderView('pdf_files/general_situation_file.html.twig', [
+            'numberNumber' => count($members),
+            'agency' => $agency,
+            'members' => $members,
+            'totalShares' => $totalShares,
+            'totalSaving' => $totalSavings,
+            'totalDeposit' => $totalDeposits,
+            'buildingFees' => $totalBuildingFees,
+            'totalRegistration' => $totalRegistrationFeesPM,
+            'unpaidInterest' => $unpaidInterest,
+            'loans' => count($loans),
+            'loanUnpaid' => $loanUnpaid,
+            'totalDailySavings' => $totalDailySavings,
+            'totaCollectors' => $totalCollectors,
+            'bayelleBalance' => $bayelleBalance,
+            'ubBalance' => $ubBalance,
+            'cashOnHand' => $cashOnHand,
+            'loanInterest' => $loanInterest,
+        ]);
+
+        $title = 'General_Situation';
+        $html2PdfService = $this->get('app.html2pdf');
+        $html2PdfService->create('P', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 10));
         return $html2PdfService->generatePdf($template, $title.'.pdf', 'ledgers',$title, 'FI');
     }
 }

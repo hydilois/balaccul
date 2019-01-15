@@ -35,6 +35,30 @@ class LoanRepository extends EntityRepository
             ->getResult();
         return $loans;
     }
+
+    /**
+     * @param Member $member
+     * @param $date
+     * @return array
+     */
+    public function getMemberLoans(Member $member, $date)
+    {
+        $loans = $this->createQueryBuilder('l')
+            ->innerJoin(Member::class, 'm', 'WITH', 'l.physicalMember = m.id')
+            ->where('l.status = :status')
+            ->andWhere('l.dateLoan <= :date')
+            ->andWhere('l.physicalMember = :member')
+            ->setParameters([
+                    'status' => true,
+                    'date' => $date,
+                    'member' => $member,
+                ]
+            )
+            ->getQuery()
+            ->getOneOrNullResult();
+        return $loans;
+    }
+
     /**
      * @param Utilisateur $currentUser
      * @param Loan $loan

@@ -226,21 +226,6 @@ class LoanController extends Controller
     }
 
     /**
-     * Creates a form to delete a loan entity.
-     *
-     * @param Loan $loan The loan entity
-     *
-     * @return \Symfony\Component\Form\Form The form
-     */
-    private function createDeleteForm(Loan $loan)
-    {
-        return $this->createFormBuilder()
-            ->setAction($this->generateUrl('loan_delete', array('id' => $loan->getId())))
-            ->setMethod('DELETE')
-            ->getForm();
-    }
-
-    /**
      * @param Loan $loan
      * @param Member $member
      * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
