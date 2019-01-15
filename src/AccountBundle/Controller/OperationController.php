@@ -5,6 +5,7 @@ namespace AccountBundle\Controller;
 use AccountBundle\Entity\Loan;
 use AccountBundle\Entity\Operation;
 use AccountBundle\Service\DatabaseBackupManager;
+use AccountBundle\Service\FileUploader;
 use ClassBundle\Entity\Classe;
 use ClassBundle\Entity\InternalAccount;
 use ConfigBundle\Entity\Agency;
@@ -202,7 +203,7 @@ class OperationController extends Controller
      * @Route("/cash_in/save", name="operation_cash_in_save")
      * @Method({"GET", "POST"})
      */
-    function saveCashInOperation(Request $request, DatabaseBackupManager $databaseBackupManager)
+    function saveCashInOperation(Request $request, DatabaseBackupManager $databaseBackupManager, FileUploader $fileUploader)
     {
         $entityManager = $this->getDoctrine()->getManager();
         $agency = $entityManager->getRepository(Agency::class)->findOneBy([],['id' => 'ASC']);
@@ -213,7 +214,7 @@ class OperationController extends Controller
             $db_user = $this->getParameter('database_user');
             $db_pass = $this->getParameter('database_password');
             $db_name = $this->getParameter('database_name');
-            $databaseBackupManager->backup($db_user, $db_pass, $db_name, 'Member CASH IN');
+            $databaseBackupManager->backup($db_user, $db_pass, $db_name, $fileUploader,  'Member CASH IN');
 
 
             /*Getting the principal information data from the form*/
@@ -487,11 +488,12 @@ class OperationController extends Controller
      * @param Request $request [contains the http request that is passed on]
      *
      * @param DatabaseBackupManager $databaseBackupManager
+     * @param FileUploader $fileUploader
      * @return Response
      * @Route("/other/cash_in/save", name="other_operation_cash_in_save")
      * @Method({"GET", "POST"})
      */
-    function saveOtherCashInOperation(Request $request, DatabaseBackupManager $databaseBackupManager)
+    function saveOtherCashInOperation(Request $request, DatabaseBackupManager $databaseBackupManager, FileUploader $fileUploader)
     {
         $entityManager = $this->getDoctrine()->getManager();
         $agency = $entityManager->getRepository('ConfigBundle:Agency')->findAll()[0];
@@ -506,7 +508,7 @@ class OperationController extends Controller
             $db_user = $this->getParameter('database_user');
             $db_pass = $this->getParameter('database_password');
             $db_name = $this->getParameter('database_name');
-            $databaseBackupManager->backup($db_user, $db_pass, $db_name, 'Other Cash IN');
+            $databaseBackupManager->backup($db_user, $db_pass, $db_name, $fileUploader,  'Other Cash IN');
 
             $balanceStatus = $request->get('balance-display');
             $accountId = $request->get('accountNumber');
@@ -566,11 +568,12 @@ class OperationController extends Controller
      * @param Request $request [contains the http request that is passed on]
      *
      * @param DatabaseBackupManager $databaseBackupManager
+     * @param FileUploader $fileUploader
      * @return Response
      * @Route("/cash_out/save", name="operation_cash_out_save")
      * @Method({"GET", "POST"})
      */
-    function saveCashOutOperation(Request $request, DatabaseBackupManager $databaseBackupManager)
+    function saveCashOutOperation(Request $request, DatabaseBackupManager $databaseBackupManager, FileUploader $fileUploader)
     {
         $entityManager = $this->getDoctrine()->getManager();
         $agency = $entityManager->getRepository(Agency::class)->findAll()[0];
@@ -582,7 +585,7 @@ class OperationController extends Controller
             $db_user = $this->getParameter('database_user');
             $db_pass = $this->getParameter('database_password');
             $db_name = $this->getParameter('database_name');
-            $databaseBackupManager->backup($db_user, $db_pass, $db_name, 'Member CASH OUT');
+            $databaseBackupManager->backup($db_user, $db_pass, $db_name, $fileUploader,  'Member CASH OUT');
             $data = $this->hydrateCashOut($request);
             $operations = [];
             $totalTransaction = 0;
@@ -674,11 +677,12 @@ class OperationController extends Controller
      * @param Request $request [contains the http request that is passed on]
      *
      * @param DatabaseBackupManager $databaseBackupManager
+     * @param FileUploader $fileUploader
      * @return Response
      * @Route("/other/cash_out/save", name="other_operation_cash_out_save")
      * @Method({"GET", "POST"})
      */
-    function saveOtherCashOutOperation(Request $request, DatabaseBackupManager $databaseBackupManager) {
+    function saveOtherCashOutOperation(Request $request, DatabaseBackupManager $databaseBackupManager, FileUploader $fileUploader) {
 
         $entityManager = $this->getDoctrine()->getManager();
         $agency = $entityManager->getRepository('ConfigBundle:Agency')->findAll()[0];
@@ -690,7 +694,7 @@ class OperationController extends Controller
             $db_user = $this->getParameter('database_user');
             $db_pass = $this->getParameter('database_password');
             $db_name = $this->getParameter('database_name');
-            $databaseBackupManager->backup($db_user, $db_pass, $db_name, 'Other Cash OUT');
+            $databaseBackupManager->backup($db_user, $db_pass, $db_name, $fileUploader,  'Other Cash OUT');
 
             $accountId = $request->get('accountNumber');
             $balanceStatus = $request->get('balance-display');

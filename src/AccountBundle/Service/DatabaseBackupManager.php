@@ -35,10 +35,11 @@ class DatabaseBackupManager
      * @param string $user
      * @param string $password
      * @param string $databaseName
-     * @param $operation
+     * @param string $operation
+     * @param FileUploader $fileUploader
      * @return bool
      */
-    public function backup($user = null, $password = null, $databaseName, $operation='Manual Backup')
+    public function backup($user = null, $password = null, $databaseName, FileUploader $fileUploader, $operation='Manual Backup')
     {
         $date = date("Y-m-d_H:i:s");
         $filName = 'HYMIF_DB_'.$date;
@@ -50,6 +51,14 @@ class DatabaseBackupManager
         $this->getEntityManager()->persist($backup);
         $this->getEntityManager()->flush();
         exec('mysqldump --skip-add-locks -u '.$user.' -p'.$password.' --databases '.$databaseName.' > '.$this->getTargetDir().'/HYMIF_DB_'.$date.'.sql');
+
+        $databases = $this->getEntityManager()->getRepository(Backup::class)->findAll();
+        if (count($databases) > 20) {
+            $databaseTmp = $this->getEntityManager()->getRepository(Backup::class)->findOneBy([], ['id' => 'ASC']);
+            $fileUploader->removeFile($databaseTmp->getPath());
+            $this->getEntityManager()->remove($databaseTmp);
+            $this->getEntityManager()->flush();
+        }
         return true;
     }
 

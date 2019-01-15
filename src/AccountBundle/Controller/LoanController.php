@@ -4,6 +4,7 @@ namespace AccountBundle\Controller;
 
 use AccountBundle\Entity\Loan;
 use AccountBundle\Service\DatabaseBackupManager;
+use AccountBundle\Service\FileUploader;
 use ClassBundle\Entity\Classe;
 use ClassBundle\Entity\InternalAccount;
 use ConfigBundle\Entity\LoanParameter;
@@ -77,10 +78,11 @@ class LoanController extends Controller
      * @Method({"GET", "POST"})
      * @param Request $request
      * @param DatabaseBackupManager $databaseBackupManager
+     * @param FileUploader $fileUploader
      * @return Response
      * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      */
-    public function create(Request $request, DatabaseBackupManager $databaseBackupManager)
+    public function create(Request $request, DatabaseBackupManager $databaseBackupManager, FileUploader $fileUploader)
     {
         $loan = new Loan();
         $form = $this->createForm('AccountBundle\Form\LoanType', $loan);
@@ -90,7 +92,7 @@ class LoanController extends Controller
             $db_user = $this->getParameter('database_user');
             $db_pass = $this->getParameter('database_password');
             $db_name = $this->getParameter('database_name');
-            $databaseBackupManager->backup($db_user, $db_pass, $db_name, 'Add New Loan');
+            $databaseBackupManager->backup($db_user, $db_pass, $db_name, $fileUploader, 'Add New Loan');
 
             $em = $this->getDoctrine()->getManager();
             // Get the current user connected

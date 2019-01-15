@@ -13,7 +13,7 @@
                     <a href="{{path('member_index')}}"><i class="fa fa-info-circle text-muted pull-right inform" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="More Details"></i></a>
                     <h4 class="text-dark">Fully Paid Shares</h4>
                     <h2 class="text-primary text-center"><span data-plugin="counterup">{{ fullyPaidShares }}</span> F</h2>
-                    <p class="text-muted">Total Members: {{members|length }} <span class="pull-right"></span></p>
+                    <p class="text-muted">Total Members: {{ fullyPaidSharesMembers }} <span class="pull-right"></span></p>
                 </div>
             </div>
              <div class="col-md-6 col-sm-6 col-lg-3">
@@ -21,7 +21,7 @@
                     <a href="{{path('member_index')}}"><i class="fa fa-info-circle text-muted pull-right inform" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="More Details"></i></a>
                     <h4 class="text-dark">Partial Paid Shares</h4>
                     <h2 class="text-primary text-center"><span data-plugin="counterup">{{ partialPaidShares }}</span> F</h2>
-                    <p class="text-muted">Total Members: {{members|length }} <span class="pull-right"></span></p>
+                    <p class="text-muted">Total Members: {{ partialPaidSharesMembers }} <span class="pull-right"></span></p>
                 </div>
             </div>
              <div class="col-md-6 col-sm-6 col-lg-3">
@@ -29,7 +29,7 @@
                     <a href="{{path('member_index')}}"><i class="fa fa-info-circle text-muted pull-right inform" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="More Details"></i></a>
                     <h4 class="text-dark">Total Shares</h4>
                     <h2 class="text-primary text-center"><span data-plugin="counterup">{{ fullyPaidShares + partialPaidShares }}</span> F</h2>
-                    <p class="text-muted">Total Members: {{members|length }} <span class="pull-right"></span></p>
+                    <p class="text-muted">Total Members: {{ members|length }} <span class="pull-right"></span></p>
                 </div>
             </div>
             <div class="col-md-6 col-sm-6 col-lg-3">
@@ -37,7 +37,7 @@
                     <a href="{{path('member_index')}}"><i class="fa fa-info-circle text-muted pull-right inform" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="More Details"></i></a>
                     <h4 class="text-dark">Total Savings</h4>
                     <h2 class="text-pink text-center"><span data-plugin="counterup">{{ totalSaving }}</span> F</h2>
-                    <p class="text-muted">Total Account: {{members|length }} <span class="pull-right"></span></p>
+                    <p class="text-muted">Total Account: {{ members|length }} <span class="pull-right"></span></p>
                 </div>
             </div>
             <div class="col-md-6 col-sm-6 col-lg-3">
@@ -45,7 +45,7 @@
                     <a href="{{path('member_index')}}"><i class="fa fa-info-circle text-muted pull-right inform" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="More details"></i></a>
                     <h4 class="text-dark">Deposit</h4>
                     <h2 class="text-warning text-center"><span data-plugin="counterup">{{ totalDeposit }}</span> F</h2>
-                    <p class="text-muted">Total Account: {{members|length }} <span class="pull-right"></span></p>
+                    <p class="text-muted">Total Account: {{ depositMembers }} <span class="pull-right"></span></p>
                 </div>
             </div>
             <div class="col-md-6 col-sm-6 col-lg-3">
@@ -53,7 +53,7 @@
                     <a href="{{path('member_index')}}"><i class="fa fa-info-circle text-muted pull-right inform" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="More Details"></i></a>
                     <h4 class="text-dark">Building fees</h4>
                     <h2 class="text-dark text-center"><span data-plugin="counterup">{{ buildingFees }}</span> F</h2>
-                    <p class="text-muted">Total Accounts: {{members|length }} <span class="pull-right"></span></p>
+                    <p class="text-muted">Total Accounts: {{ members|length }} <span class="pull-right"></span></p>
                 </div>
             </div>
             <div class="col-md-6 col-sm-6 col-lg-3">

@@ -3,6 +3,7 @@
 namespace AppBundle\Controller;
 
 use AccountBundle\Service\DatabaseBackupManager;
+use AccountBundle\Service\FileUploader;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -32,12 +33,26 @@ class DefaultController extends Controller
             ->getQuery()
             ->getSingleScalarResult();
 
+        $fullyPaidSharesMembers = $em->createQueryBuilder()
+            ->select('m')
+            ->from('MemberBundle:Member', 'm')
+            ->where('m.share >= 20000')
+            ->getQuery()
+            ->getResult();
+
         $partialPaidShares = $em->createQueryBuilder()
             ->select('SUM(m.share)')
             ->from('MemberBundle:Member', 'm')
             ->where('m.share < 20000')
             ->getQuery()
             ->getSingleScalarResult();
+
+        $partialPaidSharesMembers = $em->createQueryBuilder()
+            ->select('m')
+            ->from('MemberBundle:Member', 'm')
+            ->where('m.share < 20000')
+            ->getQuery()
+            ->getResult();
 
         $savings = $em->createQueryBuilder()
             ->select('SUM(s.saving)')
@@ -50,6 +65,13 @@ class DefaultController extends Controller
             ->from('MemberBundle:Member', 's')
             ->getQuery()
             ->getSingleScalarResult();
+
+        $depositsMembers = $em->createQueryBuilder()
+            ->select('m')
+            ->from('MemberBundle:Member', 'm')
+            ->where('m.deposit >= 10000')
+            ->getQuery()
+            ->getResult();
             
         $ds1 = $em->getRepository('ClassBundle:InternalAccount')->find(38);
         $ds2 = $em->getRepository('ClassBundle:InternalAccount')->find(39);
@@ -135,6 +157,7 @@ class DefaultController extends Controller
             'partialPaidShares' => $partialPaidShares,
             'totalSaving' => $savings,
             'totalDeposit' => $deposits,
+            'depositMembers' => count($depositsMembers),
             'buildingFees' => $totalBuildingFees,
             'totalRegistration' => $totalRegistrationFeesPM,
             'unpaidInterest' => $unpaidInterest,
@@ -146,6 +169,8 @@ class DefaultController extends Controller
             'ubBalance' => $ubBalance,
             'cashOnHand' => $cashOnHand,
             'loanInterest' => $loanInterest,
+            'fullyPaidSharesMembers' => count($fullyPaidSharesMembers),
+            'partialPaidSharesMembers' => count($partialPaidSharesMembers),
         ]);
     }
 
@@ -170,15 +195,16 @@ class DefaultController extends Controller
      * @Method({"GET", "POST"})
      * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      * @param DatabaseBackupManager $databaseBackupManager
+     * @param FileUploader $fileUploader
      * @return string
      */
-    public function databaseDump(DatabaseBackupManager $databaseBackupManager){
+    public function databaseDump(DatabaseBackupManager $databaseBackupManager, FileUploader $fileUploader){
         try{
             $date = date("Y-m-d_H:i:s");
             $db_user = $this->getParameter('database_user');
             $db_pass = $this->getParameter('database_password');
             $db_name = $this->getParameter('database_name');
-            $databaseBackupManager->backup($db_user, $db_pass, $db_name);
+            $databaseBackupManager->backup($db_user, $db_pass, $db_name, $fileUploader);
 
                 return json_encode([
                 "message" => "The backup of the the system is done successfully",
