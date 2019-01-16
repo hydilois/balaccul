@@ -1304,6 +1304,13 @@ class ReportController extends Controller
         $ds4 = $em->getRepository('ClassBundle:InternalAccount')->find(41);
         $ds4Balance = $em->getRepository('ReportBundle:GeneralLedgerBalance')->getGLBHistoryInternalAccount($endDate, $ds4);
 
+
+        $openingAccountBayelle = $em->getRepository('ClassBundle:InternalAccount')->find(18);
+        $openingAccountBayelleBalance = $em->getRepository('ReportBundle:GeneralLedgerBalance')->getGLBHistoryInternalAccount($endDate, $openingAccountBayelle);
+
+        $openingAccountUB = $em->getRepository('ClassBundle:InternalAccount')->find(21);
+        $openingAccountUBBalance = $em->getRepository('ReportBundle:GeneralLedgerBalance')->getGLBHistoryInternalAccount($endDate, $openingAccountUB);
+
         $totalDailySavings = $ds1Balance + $ds2Balance + $ds3Balance + $ds4Balance ;
 
         /* Get the cash at Bayelle */
@@ -1345,6 +1352,8 @@ class ReportController extends Controller
             'start' => $startDate,
             'end' => $endDate,
             'undividedEarnings' => $this->undividedEarnings($startDate, $endDate),
+            'openingAccountBayelleBalance' => $openingAccountBayelleBalance,
+            'openingAccountUBBalance' => $openingAccountUBBalance,
         ]);
 
         $title = 'Balance_Sheet_'.$endDate->format('Y');

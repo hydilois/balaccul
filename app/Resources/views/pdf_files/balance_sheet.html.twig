@@ -79,6 +79,16 @@
             {% set assets = assets + cashOnHand %}
         </tr>
         <tr>
+            <td>Opening of Account at Bayelle</td>
+            <td>{{ openingAccountBayelleBalance |number_format(0, '.', ' ') }}</td>
+            {% set assets = assets + openingAccountBayelleBalance %}
+        </tr>
+        <tr>
+            <td>Opening of Account at UB</td>
+            <td>{{ openingAccountUBBalance |number_format(0, '.', ' ') }}</td>
+            {% set assets = assets + openingAccountUBBalance %}
+        </tr>
+        <tr>
             <td><b>Total</b></td>
             <td><b>{{ assets |number_format(0, '.', ' ') }}</b></td>
         </tr>
