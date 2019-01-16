@@ -162,4 +162,117 @@ class GeneralLedgerBalanceRepository extends EntityRepository
         $entityManager->flush();
         return true;
     }
+
+    /**
+     * @param $dateOperation
+     * @return int
+     */
+    public function getGLBHistoryCashOnHand($dateOperation)
+    {
+        $em = $this->getEntityManager();
+        $operationCashOnHand = $em->createQueryBuilder()
+            ->select('gl')
+            ->from('ReportBundle:GeneralLedgerBalance', 'gl')
+            ->where('gl.dateOperation <= :date')
+            ->setParameters([
+                'date' => $dateOperation,
+            ])
+            ->getQuery()
+            ->getResult();
+
+        if ($operationCashOnHand) {
+            $lastElement = array_values(array_slice($operationCashOnHand, -1))[0];
+            return $lastElement->getBalance();
+        } else {
+            return 0;
+        }
+    }
+
+    /**
+     * @param $dateOperation
+     * @param InternalAccount $account
+     * @return int
+     */
+    public function getGLBHistoryUB($dateOperation, InternalAccount $account)
+    {
+        $em = $this->getEntityManager();
+        $operationCashUB = $em->createQueryBuilder()
+            ->select('gl')
+            ->from('ReportBundle:GeneralLedgerBalance', 'gl')
+            ->innerJoin('ClassBundle:InternalAccount', 'ia', 'WITH', 'ia.id = gl.account')
+            ->where('gl.dateOperation <= :date')
+            ->andWhere('ia.id = :accountId')
+            ->setParameters([
+                'date' => $dateOperation,
+                'accountId' => $account->getId(),
+            ])
+            ->getQuery()
+            ->getResult();
+
+        if ($operationCashUB) {
+            $lastElement = array_values(array_slice($operationCashUB, -1))[0];
+            return $lastElement->getBalance();
+        } else {
+            return $account->getBalance();
+        }
+    }
+
+
+    /**
+     * @param $dateOperation
+     * @param InternalAccount $account
+     * @return int
+     */
+    public function getGLBHistoryBayelle($dateOperation, InternalAccount $account)
+    {
+        $em = $this->getEntityManager();
+        $operationCashBayelle = $em->createQueryBuilder()
+            ->select('gl')
+            ->from('ReportBundle:GeneralLedgerBalance', 'gl')
+            ->innerJoin('ClassBundle:InternalAccount', 'ia', 'WITH', 'ia.id = gl.account')
+            ->where('gl.dateOperation <= :date')
+            ->andWhere('ia.id = :accountId')
+            ->setParameters([
+                'date' => $dateOperation,
+                'accountId' => $account->getId(),
+            ])
+            ->getQuery()
+            ->getResult();
+
+        if ($operationCashBayelle) {
+            $lastElement = array_values(array_slice($operationCashBayelle, -1))[0];
+            return $lastElement->getAccountBalance();
+        } else {
+            return $account->getBalance();
+        }
+    }
+
+    /**
+     * @param $dateOperation
+     * @param InternalAccount $account
+     * @return int
+     */
+    public function getGLBHistoryInternalAccount($dateOperation, InternalAccount $account)
+    {
+        $em = $this->getEntityManager();
+        $operationGeneralReserve = $em->createQueryBuilder()
+            ->select('gl')
+            ->from('ReportBundle:GeneralLedgerBalance', 'gl')
+            ->innerJoin('ClassBundle:InternalAccount', 'ia', 'WITH', 'ia.id = gl.account')
+            ->where('gl.dateOperation <= :date')
+            ->andWhere('ia.id = :accountId')
+            ->setParameters([
+                'date' => $dateOperation,
+                'accountId' => $account->getId(),
+            ])
+            ->getQuery()
+            ->getResult();
+
+        if ($operationGeneralReserve) {
+            $lastElement = array_values(array_slice($operationGeneralReserve, -1))[0];
+            return $lastElement->getAccountBalance();
+        } else {
+            return $account->getBalance();
+        }
+    }
 }

@@ -52,7 +52,7 @@ class LoanHistoryRepository extends EntityRepository
     /**
      * @param $loan
      * @param $dateOperation
-     * @return array
+     * @return  Loan|null
      */
     public function getActiveLoanPerMember($loan, $dateOperation)
     {

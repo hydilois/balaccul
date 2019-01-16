@@ -1252,126 +1252,158 @@ class ReportController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
         $agency = $em->getRepository('ConfigBundle:Agency')->findOneBy([], ['id' => 'ASC']);
-        $members = $em->getRepository('MemberBundle:Member')->findAll();
 
-        $loans = $em->getRepository('AccountBundle:Loan')->findByStatus(true);
+        $start = $request->get('start');
+        $end = $request->get('end');
 
-        $totalShares = $em->createQueryBuilder()
-            ->select('SUM(m.share)')
-            ->from('MemberBundle:Member', 'm')
-            ->getQuery()
-            ->getSingleScalarResult();
+        $startParsed = explode( "/" , substr($start,strrpos($start," ")));
+        $endParsed = explode( "/" , substr($end,strrpos($end," ")));
 
-        $totalSavings = $em->createQueryBuilder()
-            ->select('SUM(s.saving)')
-            ->from('MemberBundle:Member', 's')
-            ->getQuery()
-            ->getSingleScalarResult();
+        $startDate  = new \DateTime($startParsed[2]."-".$startParsed[1]."-".$startParsed[0]);
+        $endDate  = new \DateTime($endParsed[2]."-".$endParsed[1]."-".$endParsed[0]);
+        $members = $em->getRepository('MemberBundle:Member')->getMemberRegisteredBefore($endDate);
 
-        $totalDeposits = $em->createQueryBuilder()
-            ->select('SUM(s.deposit)')
-            ->from('MemberBundle:Member', 's')
-            ->getQuery()
-            ->getSingleScalarResult();
+        $shares = 0;
+        $savings = 0;
+        $deposit = 0;
+        $buildingFees = 0;
+        $remainLoan = 0;
+        foreach ($members as $member) {
+            $tmpLoan = $em->getRepository(Loan::class)->getMemberLoans($member, $endDate);
 
-        $ds1 = $em->getRepository('ClassBundle:InternalAccount')->find(38);
-        $ds2 = $em->getRepository('ClassBundle:InternalAccount')->find(39);
-        $ds3 = $em->getRepository('ClassBundle:InternalAccount')->find(40);
-        $ds4 = $em->getRepository('ClassBundle:InternalAccount')->find(41);
-        $totalDailySavings = $ds1->getBalance() + $ds2->getBalance() + $ds3->getBalance() + $ds4->getBalance() ;
+            $member = $em->getRepository(Operation::class)->getSituationAt($member, $endDate);
+            $shares += $member->getShare();
+            $savings += $member->getSaving();
+            $deposit += $member->getDeposit();
+            $buildingFees += $member->getBuildingFees();
 
-        $totalRegistrationFeesPM = $em->createQueryBuilder()
-            ->select('SUM(m.registrationFees)')
-            ->from('MemberBundle:Member', 'm')
-            ->getQuery()
-            ->getSingleScalarResult();
-
-        $totalBuildingFees = $em->createQueryBuilder()
-            ->select('SUM(m.buildingFees)')
-            ->from('MemberBundle:Member', 'm')
-            ->getQuery()
-            ->getSingleScalarResult();
-
-        //get the number of the daily collectors
-        $totalCollectors = $em->createQueryBuilder()
-            ->select('COUNT(u)')
-            ->from('UserBundle:Utilisateur', 'u')
-            ->innerJoin('UserBundle:Groupe', 'g', 'WITH','g.id = u.groupe')
-            ->where('g.name = :name')
-            ->orWhere('g.name = :name2')
-            ->setParameters([
-                'name' => 'COLLECTOR',
-                'name2' => 'CASHER'
-            ])
-            ->getQuery()
-            ->getSingleScalarResult();
-
-        $unpaidInterest = 0;
-        $loanUnpaid = 0;
-        $loanPaid = 0;
-        foreach ($loans as $loan) {
-            //get the last element in loan history
-            $lowest_remain_amount_LoanHistory = $em->createQueryBuilder()
-                ->select('MIN(lh.remainAmount)')
-                ->from('AccountBundle:LoanHistory', 'lh')
-                ->innerJoin('AccountBundle:Loan', 'l', 'WITH','lh.loan = l.id')
-                ->where('l.id = :loan')
-                ->orderBy('lh.id', 'DESC')
-                ->setParameter('loan', $loan)
-                ->getQuery()
-                ->getSingleScalarResult();
-
-            if ($lowest_remain_amount_LoanHistory) {
-                $latestLoanHistory = $em->getRepository('AccountBundle:LoanHistory')->findOneBy(
-                    [
-                        'remainAmount' => $lowest_remain_amount_LoanHistory,
-                        'loan' => $loan
-                    ],
-                    ['id' => 'DESC']
-                );
-                $unpaidInterest += $latestLoanHistory->getUnpaidInterest();
-                $loanUnpaid += $latestLoanHistory->getRemainAmount();
-
-                $loanPaid += + ($loan->getLoanAmount() - $latestLoanHistory->getRemainAmount());
-            }else{
-                $loanUnpaid += $loan->getLoanAmount();
+            if ($tmpLoan) {
+                $loan = $em->getRepository(LoanHistory::class)->getActiveLoanPerMember($tmpLoan, $endDate);
+                if ($loan) {
+                    if ($loan->getLoanHistory()) {
+                        $remainLoan += $loan->getLoanHistory()->getRemainAmount();
+                    } else {
+                        $remainLoan += $loan->getLoanAmount();
+                    }
+                }
             }
         }
 
-        $bayelleBalance = $em->getRepository('ClassBundle:InternalAccount')->find(82)->getBalance();
 
-        $ubBalance = $em->getRepository('ClassBundle:InternalAccount')->find(76)->getBalance();
+
+        /* Get the cash at Bayelle */
+        $ds1 = $em->getRepository('ClassBundle:InternalAccount')->find(38);
+        $ds1Balance = $em->getRepository('ReportBundle:GeneralLedgerBalance')->getGLBHistoryInternalAccount($endDate, $ds1);
+
+        $ds2 = $em->getRepository('ClassBundle:InternalAccount')->find(39);
+        $ds2Balance = $em->getRepository('ReportBundle:GeneralLedgerBalance')->getGLBHistoryInternalAccount($endDate, $ds2);
+
+        $ds3 = $em->getRepository('ClassBundle:InternalAccount')->find(40);
+        $ds3Balance = $em->getRepository('ReportBundle:GeneralLedgerBalance')->getGLBHistoryInternalAccount($endDate, $ds3);
+
+        $ds4 = $em->getRepository('ClassBundle:InternalAccount')->find(41);
+        $ds4Balance = $em->getRepository('ReportBundle:GeneralLedgerBalance')->getGLBHistoryInternalAccount($endDate, $ds4);
+
+        $totalDailySavings = $ds1Balance + $ds2Balance + $ds3Balance + $ds4Balance ;
+
+        /* Get the cash at Bayelle */
+        $bayelleAccount = $em->getRepository('ClassBundle:InternalAccount')->find(82);
+        $bayelleBalance = $em->getRepository('ReportBundle:GeneralLedgerBalance')->getGLBHistoryBayelle($endDate, $bayelleAccount);
+
+
+        /* Get the cash the UB bank */
+        $ubAccount = $em->getRepository('ClassBundle:InternalAccount')->find(76);
+        $ubBalance = $em->getRepository('ReportBundle:GeneralLedgerBalance')->getGLBHistoryUB($endDate, $ubAccount);
+
         /*Get the total cash on hand*/
-        $cashOnHand= $em->getRepository('ReportBundle:GeneralLedgerBalance')
-            ->findOneBy(
-                [], ['id' => 'DESC' ]
-            )->getBalance();
-        /*total loan Interest*/
-        $loanInterest = $em->getRepository('ClassBundle:InternalAccount')->find(136)->getBalance();
+        $cashOnHand= $em->getRepository('ReportBundle:GeneralLedgerBalance')->getGLBHistoryCashOnHand($endDate);
 
-        $template =  $this->renderView('pdf_files/general_situation_file.html.twig', [
+        /* Get the cash in the General Reserve */
+        $internalGeneralReserve = $em->getRepository('ClassBundle:InternalAccount')->find(3);
+        $internalGeneralReserveBalance = $em->getRepository('ReportBundle:GeneralLedgerBalance')->getGLBHistoryInternalAccount($endDate, $internalGeneralReserve);
+
+
+
+        /* Get the cash the UB bank */
+        $otherReserveAccount = $em->getRepository('ClassBundle:InternalAccount')->find(10);
+        $otherReserveAccountBalance  = $em->getRepository('ReportBundle:GeneralLedgerBalance')->getGLBHistoryInternalAccount($endDate, $otherReserveAccount);
+
+        $template =  $this->renderView('pdf_files/balance_sheet.html.twig', [
             'numberNumber' => count($members),
             'agency' => $agency,
             'members' => $members,
-            'totalShares' => $totalShares,
-            'totalSaving' => $totalSavings,
-            'totalDeposit' => $totalDeposits,
-            'buildingFees' => $totalBuildingFees,
-            'totalRegistration' => $totalRegistrationFeesPM,
-            'unpaidInterest' => $unpaidInterest,
-            'loans' => count($loans),
-            'loanUnpaid' => $loanUnpaid,
+            'shares' => $shares,
+            'savings' => $savings,
+            'deposit' => $deposit,
+            'buildingFees' => $buildingFees,
+            'reserves' => $internalGeneralReserveBalance + $otherReserveAccountBalance,
+            'remainLoan' => $remainLoan,
             'totalDailySavings' => $totalDailySavings,
-            'totaCollectors' => $totalCollectors,
             'bayelleBalance' => $bayelleBalance,
             'ubBalance' => $ubBalance,
             'cashOnHand' => $cashOnHand,
-            'loanInterest' => $loanInterest,
+            'start' => $startDate,
+            'end' => $endDate,
+            'undividedEarnings' => $this->undividedEarnings($startDate, $endDate),
         ]);
 
-        $title = 'General_Situation';
+        $title = 'Balance_Sheet_'.$endDate->format('Y');
         $html2PdfService = $this->get('app.html2pdf');
         $html2PdfService->create('P', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 10));
         return $html2PdfService->generatePdf($template, $title.'.pdf', 'ledgers',$title, 'FI');
+    }
+
+    /**
+     * @param $start
+     * @param $end
+     * @return int
+     */
+    public function undividedEarnings($start, $end) {
+        $em = $this->getDoctrine()->getManager();
+        $incomeOperations = $em->createQueryBuilder()
+            ->select('SUM(op.debit)')
+            ->from('ReportBundle:GeneralLedgerBalance', 'op')
+            ->innerJoin('ClassBundle:InternalAccount', 'ia','WITH','ia.id = op.account')
+            ->innerJoin('ClassBundle:Classe', 'cl','WITH','cl.id = ia.classe')
+            ->where('op.dateOperation BETWEEN :date1 AND :date2')
+            ->andWhere('cl.id =:income')
+            ->groupBy('op.account')
+            ->setParameters(
+                [
+                    'date1' => $start,
+                    'date2' => $end,
+                    'income' => 7,
+                ]
+            )
+            ->getQuery()->getScalarResult();
+
+        $incomes = 0;
+        foreach ($incomeOperations as $operation){;
+            $incomes += intval($operation[1]);
+        }
+
+
+        $expenditureOperations = $em->createQueryBuilder()
+            ->select('SUM(op.credit)')
+            ->from('ReportBundle:GeneralLedgerBalance', 'op')
+            ->innerJoin('ClassBundle:InternalAccount', 'ia','WITH','ia.id = op.account')
+            ->innerJoin('ClassBundle:Classe', 'cl','WITH','cl.id = ia.classe')
+            ->where('op.dateOperation BETWEEN :date1 AND :date2')
+            ->andWhere('cl.id = :expenditure')
+            ->groupBy('op.account')
+            ->setParameters(
+                [
+                    'date1' => $start,
+                    'date2' => $end,
+                    'expenditure' => 6,
+                ]
+            )
+            ->getQuery()->getScalarResult();
+
+        $expenditures = 0;
+        foreach ($expenditureOperations as $operation){
+            $expenditures += intval($operation[1]);
+        }
+        return ($incomes - $expenditures);
     }
 }

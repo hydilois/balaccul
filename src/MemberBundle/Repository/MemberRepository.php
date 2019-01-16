@@ -33,6 +33,24 @@ class MemberRepository extends EntityRepository
     }
 
     /**
+     * @param $date
+     * @return array
+     */
+    public function getMemberRegisteredBefore($date)
+    {
+        $members = $this->createQueryBuilder('m')
+            ->where('m.membershipDateCreation <= :date')
+            ->orderBy('m.memberNumber', 'ASC')
+            ->setParameters([
+                'date' => $date
+            ])
+            ->getQuery()
+            ->getResult();
+
+        return $members;
+    }
+
+    /**
      * @return array
      */
     public function getAllInActiveMembers()

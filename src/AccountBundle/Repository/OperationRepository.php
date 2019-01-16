@@ -126,7 +126,7 @@ class OperationRepository extends EntityRepository
     /**
      * @param $member
      * @param $dateOperation
-     * @return mixed
+     * @return Member
      */
     public function getSituationAt($member, $dateOperation)
     {

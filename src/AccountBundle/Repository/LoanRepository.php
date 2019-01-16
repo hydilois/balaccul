@@ -43,7 +43,7 @@ class LoanRepository extends EntityRepository
      */
     public function getMemberLoans(Member $member, $date)
     {
-        $loans = $this->createQueryBuilder('l')
+        $loan = $this->createQueryBuilder('l')
             ->innerJoin(Member::class, 'm', 'WITH', 'l.physicalMember = m.id')
             ->where('l.status = :status')
             ->andWhere('l.dateLoan <= :date')
@@ -56,7 +56,7 @@ class LoanRepository extends EntityRepository
             )
             ->getQuery()
             ->getOneOrNullResult();
-        return $loans;
+        return $loan;
     }
 
     /**

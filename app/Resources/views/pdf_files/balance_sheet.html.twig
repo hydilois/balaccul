@@ -1,0 +1,140 @@
+<style type="text/css">
+    table {
+        width: 100%;
+        line-height: 5mm;
+        border-collapse: collapse;
+    }
+
+    .p-50{ width: 50%;}
+    .p-60{ width: 60%;}
+    .p-40{width: 40%}
+    .p-100{width: 100%;}
+
+    .balance_sheet td, .balance_sheet th {
+        border: 1px solid black;
+        height: 25px;
+        font-size: 22px;
+    }
+
+    .balance_sheet td {
+        width: 50%;
+    }
+
+    .balance_sheet th {
+        background: gray; text-align:center;
+    }
+    .text-center {
+        text-align: center;
+    }
+</style>
+
+<page footer="page;" backbottom="5mm">
+    <page_footer>
+        <hr>
+        <span>{{agency.abreviation}}</span> <span style="margin-left:300px;"><b>HYMIF</b> made by GreenSoft-Group Technologies</span>
+    </page_footer>
+    <table>
+        <tr>
+            <td class="p-60" style="font-size: 14px">
+                <b>{{ agency.name }}</b> <br/>
+                <b>HEAD OFFICE: {{ agency.town }}</b><br/>
+                <b>TEL: {{ agency.phoneNumber }}</b><br>
+                <b>POX BOX: {{ agency.poBox }}</b>
+            </td>
+            <td  style="text-align: right;" class="p-40">
+                <img style="height:80px;" src="./assets/images/users/logo_cu1.jpg"  alt="logo">
+            </td>
+        </tr>
+    </table>
+    <table>
+        <tr>
+            <td class="p-100">
+                <h3 class="text-center"><strong>FINANCIAL AFFAIRS AS {{ start | date('d-m-Y') }} to {{ end | date('d-m-Y') }}</strong></h3>
+            </td>
+        </tr>
+    </table>
+    {% set assets = 0 %}
+    {% set liabilities = 0 %}
+    <table class="balance_sheet">
+        <tr>
+            <th colspan="2" class="text-center">ASSETS</th>
+        </tr>
+        <tr>
+            <td>Loans</td>
+            <td>{{ remainLoan |number_format(0, '.', ' ') }}</td>
+            {% set assets = assets + remainLoan %}
+        </tr>
+        <tr>
+            <td>Cash at Bayelle Credit Union</td>
+            <td>{{ bayelleBalance |number_format(0, '.', ' ') }}</td>
+            {% set assets = assets + bayelleBalance %}
+        </tr>
+        <tr>
+            <td>Cash at UB</td>
+            <td>{{ ubBalance |number_format(0, '.', ' ') }}</td>
+        </tr>
+        <tr>
+            <td>Cash in hand</td>
+            <td>{{ cashOnHand |number_format(0, '.', ' ') }}</td>
+            {% set assets = assets + cashOnHand %}
+        </tr>
+        <tr>
+            <td><b>Total</b></td>
+            <td><b>{{ assets |number_format(0, '.', ' ') }}</b></td>
+        </tr>
+        <tr>
+            <th colspan="2" class="text-center">LIABILITIES</th>
+
+        </tr>
+        <tr>
+            <td>Shares</td>
+            <td>{{ shares |number_format(0, '.', ' ') }}</td>
+            {% set liabilities = liabilities + shares %}
+        </tr>
+        <tr>
+            <td>Savings</td>
+            <td>{{ savings |number_format(0, '.', ' ') }}</td>
+            {% set liabilities = liabilities + savings %}
+        </tr>
+        <tr>
+            <td>Deposit</td>
+            <td>{{ deposit |number_format(0, '.', ' ') }}</td>
+            {% set liabilities = liabilities + deposit %}
+        </tr>
+        <tr>
+            <td>Building fees</td>
+            <td>{{ buildingFees |number_format(0, '.', ' ') }}</td>
+            {% set liabilities = liabilities + buildingFees %}
+        </tr>
+        <tr>
+            <td>Daily Savings</td>
+            <td>{{ totalDailySavings |number_format(0, '.', ' ') }}</td>
+            {% set liabilities = liabilities + totalDailySavings %}
+        </tr>
+        <tr>
+            <td>Reserves</td>
+            <td>{{ reserves |number_format(0, '.', ' ') }}</td>
+            {% set liabilities = liabilities + reserves %}
+        </tr>
+        <tr>
+            <td>Undivided Earnings</td>
+            <td>{{ undividedEarnings |number_format(0, '.', ' ') }}</td>
+            {% set liabilities = liabilities + undividedEarnings %}
+        </tr>
+        <tr>
+            <td><b>Total</b></td>
+            <td><b>{{ liabilities |number_format(0, '.', ' ') }}</b></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td><b>{{ (assets - liabilities) |number_format(0, '.', ' ') }}</b></td>
+        </tr>
+    </table>
+    <br><br>
+    <table>
+        <tr>
+            <td class="p-50" style="text-align: center; font-size: 15px; font-weight: bold;">MANAGER</td>
+            <td class="p-50" style="text-align: center; font-size: 15px; font-weight: bold;">PRESIDENT</td>
+        </tr>
+    </table>
+</page>

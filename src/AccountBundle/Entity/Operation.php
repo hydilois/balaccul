@@ -102,6 +102,9 @@ class Operation{
     private $representative;
 
 
+    /**
+     * Operation constructor.
+     */
     public function __construct(){
         $this->amount = 0;
         $this->balance = 0;
