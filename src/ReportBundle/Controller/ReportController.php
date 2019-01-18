@@ -416,7 +416,7 @@ class ReportController extends Controller
             'isSaving' => true],
             ['id' => 'ASC',]);
 
-        $MemberName = str_replace(' ', '_', $member->getName());
+        $memberAccountName = str_replace(' ', '_', $member->getName());
         $type = "Savings";
         $template =  $this->renderView('situation/accounts_situation_file.html.twig', array(
             'agency' => $agency,
@@ -427,7 +427,7 @@ class ReportController extends Controller
             'operations' => $operations,
         ));
 
-        $title = 'Situation_'.$type.'_'.$MemberName;
+        $title = 'Situation_'.$type.'_'.$memberAccountName;
         $html2PdfService = $this->get('app.html2pdf');
         $html2PdfService->create('P', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 10));
         return $html2PdfService->generatePdf($template, $title.'.pdf', 'savings',$title, 'FI');
@@ -461,7 +461,7 @@ class ReportController extends Controller
             ['id' => 'ASC',]
             );
 
-        $MemberName = str_replace(' ', '_', $member->getName());
+        $memberAccountName = str_replace(' ', '_', $member->getName());
         $type = "Shares";
         $template =  $this->renderView('situation/accounts_situation_file.html.twig', array(
             'agency' => $agency,
@@ -472,10 +472,10 @@ class ReportController extends Controller
             'operations' => $operations,
         ));
 
-        $title = 'Situation_'.$type.'_'.$MemberName;
+        $title = 'Situation_'.$type.'_'.$memberAccountName;
         $html2PdfService = $this->get('app.html2pdf');
         $html2PdfService->create('P', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 10));
-        return $html2PdfService->generatePdf($template, $title.'.pdf', 'shares',$title, 'FI');
+        return $html2PdfService->generatePdf($template, $title.'.pdf', 'shares', $title, 'FI');
     }
 
     /**
@@ -505,7 +505,7 @@ class ReportController extends Controller
             );
 
 
-        $MemberName = str_replace(' ', '_', $member->getName());
+        $memberAccountName = str_replace(' ', '_', $member->getName());
         $type = "Deposits";
         $template =  $this->renderView('situation/accounts_situation_file.html.twig', array(
             'agency' => $agency,
@@ -516,7 +516,7 @@ class ReportController extends Controller
             'operations' => $operations,
         ));
 
-        $title = 'Situation_'.$type.'_'.$MemberName;
+        $title = 'Situation_'.$type.'_'.$memberAccountName;
         $html2PdfService = $this->get('app.html2pdf');
         $html2PdfService->create('P', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 10));
         return $html2PdfService->generatePdf($template, $title.'.pdf', 'deposits',$title, 'FI');
@@ -543,7 +543,7 @@ class ReportController extends Controller
 
         $loanSituations = $entityManager->getRepository(LoanHistory::class)->findBy(['loan' => $loan]);
 
-        $MemberName = str_replace(' ', '_', $member->getName());
+        $memberAccountName = str_replace(' ', '_', $member->getName());
         $type = "Loans";
         $template =  $this->renderView('situation/loan_situation_file.html.twig', [
             'agency' => $agency,
@@ -553,7 +553,7 @@ class ReportController extends Controller
             'currentDate' => $currentDate,
             'loanSituations' => $loanSituations,
         ]);
-        $title = 'Situation_'.$type.'_'.$MemberName;
+        $title = 'Situation_'.$type.'_'.$memberAccountName;
         $html2PdfService = $this->get('app.html2pdf');
         $html2PdfService->create('P', 'A4', 'en', true, 'UTF-8', array(5, 10, 5, 10));
         if ($loanSituations){

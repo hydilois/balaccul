@@ -152,14 +152,9 @@
                     </div>
                     <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12" >
                         <div class="form-group">
-                            <a  class="btn btn-default" type="submit"><i class="fa fa-plus-circle"></i> Register the modification</a>
+                            <button  class="btn btn-default" type="submit"><i class="fa fa-plus-circle"></i> Register the modification</button>
                         </div>
                     {{form_end(edit_form)}}
-                        <div class="form-group">
-                            {{ form_start(delete_form) }}
-                                <input class="btn btn-danger" type="submit" value="Delete the member">
-                            {{ form_end(delete_form) }}
-                        </div>
                         <div class="form-group">
                             <a class="btn btn-primary" href="{{ path('member_index') }}"><i class="fa fa-backward"></i> Back to the list</a>
                         </div>

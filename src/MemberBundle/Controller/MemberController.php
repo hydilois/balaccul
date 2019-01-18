@@ -171,8 +171,8 @@ class MemberController extends Controller
      * @param Member $member
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
      */
-    public function update(Request $request, Member $member){
-        $deleteForm = $this->createDeleteForm($member);
+    public function update(Request $request, Member $member)
+    {
         $editForm = $this->createForm('MemberBundle\Form\MemberEditType', $member);
         $editForm->handleRequest($request);
 
@@ -184,7 +184,6 @@ class MemberController extends Controller
         return $this->render('member/edit.html.twig', array(
             'member' => $member,
             'edit_form' => $editForm->createView(),
-            'delete_form' => $deleteForm->createView(),
         ));
     }
 

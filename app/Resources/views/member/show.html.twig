@@ -1,167 +1,173 @@
 {% extends 'base.html.twig' %}
-{% block title %} {{parent()}}Detail on Member {% endblock %}
+{% block title %}Member Account Detail{{ parent() }}{% endblock %}
 {% block contenu %}
-    <div class="card-box">
-        
-<div class="row">
-    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-    <h2 class="text-center">Detail on a Member</h2>
-    <table class=" table table-striped table-bordered">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ member.id }}</td>
-            </tr>
-            <tr>
-                <th>Name</th>
-                <td>{{ member.name }}</td>
-            </tr>
-            <tr>
-                <th>Sex</th>
-                <td>{{ member.sex }}</td>
-            </tr>
-            <tr>
-                <th>Dateofbirth</th>
-                <td>{% if member.dateOfBirth %}{{ member.dateOfBirth|date('d-m-Y') }}{% endif %}</td>
-            </tr>
-            <tr>
-                <th>Placeofbirth</th>
-                <td>{{ member.placeOfBirth }}</td>
-            </tr>
-            <tr>
-                <th>Occupation</th>
-                <td>{{ member.occupation }}</td>
-            </tr>
-            <tr>
-                <th>Address</th>
-                <td>{{ member.address }}</td>
-            </tr>
-            <tr>
-                <th>Nicnumber</th>
-                <td>{{ member.nicNumber }}</td>
-            </tr>
-            <tr>
-                <th>Issuedon</th>
-                <td>{% if member.issuedOn %}{{ member.issuedOn|date('d-m-Y') }}{% endif %}</td>
-            </tr>
-            <tr>
-                <th>Issuedat</th>
-                <td>{{ member.issuedAt }}</td>
-            </tr>
-            <tr>
-                <th>Proposedby</th>
-                <td>{{ member.proposedBy }}</td>
-            </tr>
-            <tr>
-                <th>Isaproved</th>
-                <td>{% if member.isAproved %}Yes{% else %}No{% endif %}</td>
-            </tr>
-            <tr>
-                <th>Aprovedby</th>
-                <td>{{ member.aprovedBy }}</td>
-            </tr>
-            <tr>
-                <th>Membernumber</th>
-                <td>{{ member.memberNumber }}</td>
-            </tr>
-            <tr>
-                <th>Doneat</th>
-                <td>{{ member.doneAt }}</td>
-            </tr>
-            <tr>
-                <th>Membershipdatecreation</th>
-                <td>{% if member.membershipDateCreation %}{{ member.membershipDateCreation|date('d-m-Y') }}{% endif %}</td>
-            </tr>
-            <tr>
-                <th>Witnessname</th>
-                <td>{{ member.witnessName }}</td>
-            </tr>
-            <tr>
-                <th>Phonenumber</th>
-                <td>{{ member.phoneNumber }}</td>
-            </tr>
-        </tbody>
-    </table>
-    <table>
-        <tr>
-            <td>
-                <a class="btn btn-primary" href="{{ path('member_index') }}">Back to the list</a>
-            </td>
-            <td>
-                &nbsp;
-            </td>
-            <td>
-                <a data-member={{member.id}} class="btn btn-default edit-btn" href="{{ path('member_edit', { 'id': member.id }) }}">Edit</a>
-            </td>
-            <td>&nbsp;</td>
-            <td>
-                {% if member.isAproved %}
-                    <a class="btn btn-warning member" data-choice="1" name="account-status" href="#">Close Account</a>
-                {% else %}
-                    <a class="btn btn-success member" data-choice="2" name="account-status" href="#">Reopen Account</a>
-                {% endif %}
-            </td>
-        </tr>
-    </table>
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <ol class="breadcrumb pull-right">
+                <li>
+                    <a href="{{ path('homepage') }}">HYMIF</a>
+                </li>
+                <li>
+                    <a href="{{ path('member_index') }}">Members</a>
+                </li>
+                <li class="active">
+                    <b>{{ member.name }}</b>
+                </li>
+            </ol>
         </div>
-        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-            <h2 class="text-center">List of the beneficiaries</h2>
-            <table class="table table-striped table-bordered">
-                <tr>
-                    <th>Actions</th>
-                    <th>Name</th>
-                    <th>Relation</th>
-                    <th>Ratio <span style="color:red">*</span></th>
-                </tr>
-                {% set totalRatio = 0 %}
-                {% for beneficiary in beneficiaries %}
-                    <tr>
-                        <td><a class="btn btn-success" href="#">Edit</a></td>
-                        <td>{{beneficiary.name}}</td>
-                        <td>{{beneficiary.relation}}</td>
-                        <td>{{beneficiary.ratio}}</td>
-                    </tr>
-                        {% set totalRatio = totalRatio + beneficiary.ratio %}
-                {% endfor %}
-            </table>
-            {% if totalRatio < 100 %}
-            <a name="add-beneficiary" data-value = {{member.id}} class="btn btn-default" href="#">New Beneficiary</a>
-            {% endif %}
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <section class="panel">
+                <header class="panel-heading text-center">
+                    <h1 class="page__title">Détail on a Member Account</h1>
+                </header>
+                <div class="panel-body">
+                    <div class="adv-table">
+                        <fieldset>
+                            <legend>Informations on the account</legend>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <table class="table table-bordered table-striped">
+                                        <tbody>
+                                        <tr>
+                                            <th>Account Number</th>
+                                            <td>{{ member.memberNumber }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Account Name</th>
+                                            <td>{{ member.name }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Sex</th>
+                                            <td>{{ member.sex }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Date of Birth</th>
+                                            <td>{{ member.dateOfBirth | date('d-m-Y') }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Place of Birth</th>
+                                            <td>{{ member.placeOfBirth }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Occupation</th>
+                                            <td>{{ member.occupation }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Address</th>
+                                            <td>{{ member.address }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>NIC Number</th>
+                                            <td>{{ member.nicNumber }}</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="col-md-6">
+                                    <table class="table table-bordered table-striped">
+                                        <tbody>
+                                        <tr>
+                                            <th>Issue on</th>
+                                            <td>{{ member.issuedOn | date('d-m-Y') }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Issue at</th>
+                                            <td>{{ member.issuedAt }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Proposed By</th>
+                                            <td>{{ member.proposedBy }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Done at </th>
+                                            <td>{{ member.doneAt }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Membership Creation </th>
+                                            <td>{{ member.membershipDateCreation | date('d-m-Y') }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Witness Name </th>
+                                            <td>{{ member.witnessName }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Phone Number </th>
+                                            <td>{{ member.phoneNumber }}</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </fieldset>
+                        <br>
+                        <fieldset class="col-md-12">
+                            <legend>Beneficiary</legend>
+                            <table class="table table-bordered table-responsive">
+                                <thead class="alert-success">
+                                <tr>
+                                    <th>N°</th>
+                                    <th>Name</th>
+                                    <th>Relation</th>
+                                    <th>Ratio</th>
+                                    <th>Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% set totalRatio = 0 %}
+                                {% for beneficiary in beneficiaries %}
+                                    <tr>
+                                        <td>{{ loop.index }}</td>
+                                        <td>{{ beneficiary.name }}</td>
+                                        <td>{{ beneficiary.relation }}</td>
+                                        <td>{{ beneficiary.ratio }}</td>
+                                        <td>{{ beneficiary.ratio }}</td>
+                                        {% set totalRatio = totalRatio + beneficiary.ratio  %}
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                            {% if totalRatio < 100 %}
+                                <a name="add-beneficiary" data-value ="{{member.id}}" class="btn btn-default" href="#">New Beneficiary</a>
+                            {% endif %}
+                        </fieldset>
+                    </div>
+                </div>
+            </section>
         </div>
-</div>
-</div>
-
-<!-- modal window to add a new paiement -->
-<div class="modal fade modal-add-beneficiary" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-  <div class="modal-dialog modal-lg" role="document">
-<div class="col-md-offset-2 col-md-8">
-    <div class="modal-content">
-      <div class="modal-header">
-            <h3 class="text-center">New Beneficiciary or Representant</h3>
-      </div>
-      <div class="modal-body" id="beneficiary-form">
-
-      </div>
     </div>
-  </div>
-    </div>
-</div>
 
-<!-- modal window to add a new paiement -->
-<div class="modal fade modal-edit-beneficiary" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-  <div class="modal-dialog modal-lg" role="document">
-<div class="col-md-offset-2 col-md-8">
-    <div class="modal-content">
-      <div class="modal-header">
-            <h3 class="text-center">Edit Beneficiciary or Representant</h3>
-      </div>
-      <div class="modal-body" id="beneficiary-editform">
+    <!-- modal window to add a new paiement -->
+    <div class="modal fade modal-add-beneficiary" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="col-md-offset-2 col-md-8">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="text-center">New Beneficiary or Representant</h3>
+                    </div>
+                    <div class="modal-body" id="beneficiary-form">
 
-      </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
-    </div>
-</div>
 
-{% include './member/extras.js.html.twig' %}
+    <!-- modal window to add a new paiement -->
+    <div class="modal fade modal-edit-beneficiary" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="col-md-offset-2 col-md-8">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="text-center">Edit Beneficiary or Representant</h3>
+                    </div>
+                    <div class="modal-body" id="beneficiary-editform">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% include 'member/extras.js.html.twig' %}
 {% endblock %}
