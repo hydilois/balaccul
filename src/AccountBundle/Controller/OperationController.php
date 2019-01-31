@@ -120,7 +120,8 @@ class OperationController extends Controller
      * @Route("/cash_out", name="cash_out_operations")
      * @Method("GET")
      */
-    public function cashOutAction(){
+    public function cashOutAction()
+    {
         // Test is the user does not have the default role
         if (!$this->container->get('security.authorization_checker')->isGranted('ROLE_USER')) {
             return new RedirectResponse($this->container->get ('router')->generate ('fos_user_security_login'));
@@ -178,7 +179,7 @@ class OperationController extends Controller
     public function operationReceiptAction(Operation $operation) {
 
         $em = $this->getDoctrine()->getManager();
-        $agency = $em->getRepository('ConfigBundle:Agency')->find(1);
+        $agency = $em->getRepository('ConfigBundle:Agency')->findOneBy([],['id' => 'ASC']);
 
         $template =  $this->renderView('operation/operation_receipt_file.html.twig', [
             'agency' => $agency,
@@ -923,7 +924,7 @@ class OperationController extends Controller
         $dateExplode = explode( "/" , substr($date,strrpos($date," ")));
         $dateStart  = new \DateTime($dateExplode[2]."-".$dateExplode[1]."-".$dateExplode[0]);
         $currentDate = new \DateTime('now');
-        $dateConcatenate = new \DateTime($dateStart->format('Y-m-d') .' ' .$currentDate->format('H:m:s'));
+        $dateConcatenate = new \DateTime($dateStart->format('Y-m-d') .' ' .$currentDate->format('00:00:00'));
         return $dateConcatenate;
     }
 

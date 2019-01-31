@@ -7,6 +7,7 @@ use AccountBundle\Entity\LoanHistory;
 use AccountBundle\Entity\Operation;
 use ConfigBundle\Entity\Agency;
 use MemberBundle\Entity\Member;
+use ReportBundle\Entity\GeneralLedgerBalance;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
@@ -131,7 +132,6 @@ class ReportController extends Controller
         ]);
     }
 
-
     /**
      * @param Request $request
      * @Route("/general_ledger", name="report_general_ledger")
@@ -145,8 +145,7 @@ class ReportController extends Controller
             $agency = $em->getRepository(Agency::class)->findOneBy([], ['id' => 'ASC']);
             $currentDate = new \DateTime('now');
 
-            $currentUserId  = $this->get('security.token_storage')->getToken()->getUser()->getId();
-            $currentUser    = $em->getRepository(Utilisateur::class)->find($currentUserId);
+            $currentUser  = $this->get('security.token_storage')->getToken()->getUser();
             $date  = $request->get('currentDate');
             $date = explode( "/" , substr($date,strrpos($date," ")));
 
@@ -157,15 +156,19 @@ class ReportController extends Controller
             $day_before = date( 'Y-m-d', strtotime( $date->format('Y-m-d') . ' -1 day' ) );
             $dayBefore_endDatetime = \DateTime::createFromFormat("Y-m-d H:i:s", $day_before." 23:59:59");
 
-                /*Get the balance brod*ad forward for the new day*/
+                /* Get the balance brougth forward for the new day */
             $totalGLBDayBefore = $em->createQueryBuilder()
                 ->select('glb')
-                ->from('ReportBundle:GeneralLedgerBalance', 'glb')
+                ->from(GeneralLedgerBalance::class, 'glb')
                 ->where('glb.dateOperation <= :date')
                 ->setParameters(['date' => $dayBefore_endDatetime])
+                ->orderBy('glb.dateOperation', 'ASC')
                 ->getQuery()
                  ->getResult();
+
+//            dump($totalGLBDayBefore);die;
                  $lastElement = end($totalGLBDayBefore);
+
                  if ($lastElement) {
                      $lastOperation = $lastElement;
                      $lastElement = $lastElement->getBalance();

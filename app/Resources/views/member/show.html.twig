@@ -20,12 +20,12 @@
         <div class="col-sm-12">
             <section class="panel">
                 <header class="panel-heading text-center">
-                    <h1 class="page__title">Détail on a Member Account</h1>
+                    <h1 class="page__title">Detail of a Member Account</h1>
                 </header>
                 <div class="panel-body">
                     <div class="adv-table">
                         <fieldset>
-                            <legend>Informations on the account</legend>
+                            <legend>Detail of the account</legend>
                             <div class="row">
                                 <div class="col-md-6">
                                     <table class="table table-bordered table-striped">
@@ -119,9 +119,27 @@
                                 {% for beneficiary in beneficiaries %}
                                     <tr>
                                         <td>{{ loop.index }}</td>
-                                        <td>{{ beneficiary.name }}</td>
-                                        <td>{{ beneficiary.relation }}</td>
-                                        <td>{{ beneficiary.ratio }}</td>
+                                        <td>
+                                            {% if beneficiary.name %}
+                                                {{ beneficiary.name }}
+                                            {% else %}
+                                                //
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if beneficiary.relation %}
+                                            {{ beneficiary.relation }}
+                                            {% else %}
+                                                //
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if beneficiary.ratio %}
+                                                {{ beneficiary.ratio }}
+                                            {% else %}
+                                                //
+                                            {% endif %}
+                                        </td>
                                         <td>{{ beneficiary.ratio }}</td>
                                         {% set totalRatio = totalRatio + beneficiary.ratio  %}
                                     </tr>
