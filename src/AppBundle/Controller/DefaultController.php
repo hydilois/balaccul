@@ -120,18 +120,19 @@ class DefaultController extends Controller
             ->getQuery()
             ->getSingleScalarResult();
 
-        if ($lowest_remain_amount_LoanHistory) {
+        if (intval($lowest_remain_amount_LoanHistory) >= 0 && $lowest_remain_amount_LoanHistory != null) {
             $latestLoanHistory = $em->getRepository('AccountBundle:LoanHistory')->findOneBy(
                 [
-                    'remainAmount' => $lowest_remain_amount_LoanHistory,
+                    'remainAmount' => intval($lowest_remain_amount_LoanHistory),
                     'loan' => $loan
                 ],
                 ['id' => 'DESC']
             );
-                $unpaidInterest += $latestLoanHistory->getUnpaidInterest();    
+            if ($latestLoanHistory){
+                $unpaidInterest += $latestLoanHistory->getUnpaidInterest();
                 $loanUnpaid += $latestLoanHistory->getRemainAmount();
-
-                $loanPaid += + ($loan->getLoanAmount() - $latestLoanHistory->getRemainAmount());
+                $loanPaid += ($loan->getLoanAmount() - $latestLoanHistory->getRemainAmount());
+            }
             }else{
                 $loanUnpaid += $loan->getLoanAmount();
             }

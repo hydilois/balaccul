@@ -403,7 +403,6 @@ class ReportController extends Controller
      */
     public function savingSituation($id)
     {
-
         $entityManager = $this->getDoctrine()->getManager();
         $member  = $entityManager->getRepository('MemberBundle:Member')->find($id);
         $agency = $entityManager->getRepository('ConfigBundle:Agency')->findOneBy([], ['id' => 'ASC']);
