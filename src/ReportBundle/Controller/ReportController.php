@@ -14,7 +14,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use UserBundle\Entity\Utilisateur;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 /**
@@ -1142,18 +1141,21 @@ class ReportController extends Controller
                 ->getQuery()
                 ->getSingleScalarResult();
 
-            if ($lowest_remain_amount_LoanHistory) {
+            if (intval($lowest_remain_amount_LoanHistory) >= 0 && $lowest_remain_amount_LoanHistory != null) {
                 $latestLoanHistory = $em->getRepository('AccountBundle:LoanHistory')->findOneBy(
                     [
-                        'remainAmount' => $lowest_remain_amount_LoanHistory,
+                        'remainAmount' => intval($lowest_remain_amount_LoanHistory),
                         'loan' => $loan
                     ],
                     ['id' => 'DESC']
                 );
-                $unpaidInterest += $latestLoanHistory->getUnpaidInterest();
-                $loanUnpaid += $latestLoanHistory->getRemainAmount();
+                if ($latestLoanHistory) {
+                    $unpaidInterest += $latestLoanHistory->getUnpaidInterest();
+                    $loanUnpaid += $latestLoanHistory->getRemainAmount();
 
-                $loanPaid += + ($loan->getLoanAmount() - $latestLoanHistory->getRemainAmount());
+                    $loanPaid += ($loan->getLoanAmount() - $latestLoanHistory->getRemainAmount());
+                }
+
             }else{
                 $loanUnpaid += $loan->getLoanAmount();
             }

@@ -29,7 +29,7 @@
 <page footer="page;" backbottom="5mm">
     <page_footer>
         <hr>
-        <span>{{agency.abreviation}}</span> <span style="margin-left:400px;">GreenSoft-Group Technologies</span>
+        <span>{{agency.abreviation}}</span> <span style="margin-left:200px;">&copy; <b>HYMIF</b> made by GreenSoft-Group Technologies</span>
     </page_footer>
     <table>
         <tr>
@@ -47,16 +47,16 @@
     <table>
         <tr>
             <td class="p-100">
-                <h3 class="text-center"><strong>GENERAL SITUATION</strong></h3>
+                <h3 class="text-center"><strong>GENERAL SITUATION AT {{ "now" | date('d-m-Y') }}</strong></h3>
             </td>
         </tr>
     </table>
         <table class="trial_balance">
             <tr>
-                <th class="p-5 text-center">N°</th>
+                <th class="p-5 text-center">S/N</th>
                 <th class="p-45">ITEMS</th>
                 <th class="p-30">AMOUNT / NUMBER</th>
-                <th class="p-20">OBSERVATION</th>
+                <th class="p-20">REMARKS</th>
             </tr>
             <tr>
                 <td class="text-center">1</td>
@@ -66,25 +66,25 @@
             </tr>
             <tr>
                 <td class="text-center">2</td>
-                <td>Shares</td>
+                <td>Members Shares</td>
                 <td class="text-center">{{ totalShares |number_format(0, '.', ' ') }}</td>
                 <td></td>
             </tr>
             <tr>
                 <td class="text-center">3</td>
-                <td>Savings</td>
+                <td>Members Savings</td>
                 <td class="text-center">{{ totalSaving |number_format(0, '.', ' ') }}</td>
                 <td></td>
             </tr>
             <tr>
                 <td class="text-center">4</td>
-                <td>Deposits</td>
+                <td>Members Deposits</td>
                 <td class="text-center">{{ totalDeposit |number_format(0, '.', ' ') }}</td>
                 <td></td>
             </tr>
             <tr>
                 <td class="text-center">5</td>
-                <td>Building fees</td>
+                <td>Building Fees</td>
                 <td class="text-center">{{ buildingFees |number_format(0, '.', ' ') }}</td>
                 <td></td>
             </tr>

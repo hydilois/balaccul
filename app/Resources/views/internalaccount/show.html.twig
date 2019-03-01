@@ -19,26 +19,8 @@
                 <th>Account Number</th>
                 <td>{{ internalAccount.accountNumber }}</td>
             </tr>
-            <tr>
-                <th>Begining Balance</th>
-                <td>{{ internalAccount.beginingBalance }}</td>
-            </tr>
         </tbody>
     </table>
-
-{#     <ul>
-        <li>
-            <a href="{{ path('internalaccount_index') }}">Back to the list</a>
-        </li>
-        <li>
-            <a href="{{ path('internalaccount_edit', { 'id': internalAccount.id }) }}">Edit</a>
-        </li>
-        <li>
-            {{ form_start(delete_form) }}
-                <input type="submit" value="Delete">
-            {{ form_end(delete_form) }}
-        </li>
-    </ul> #}
 
     </div>
         

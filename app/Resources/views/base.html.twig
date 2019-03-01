@@ -175,7 +175,6 @@
                                          <a href="javascript:void(0)" class="waves-effect"><i class="ti-files"></i> <span> Reports </span> <span class="menu-arrow"></span> </a>
                                          <ul class="list-unstyled">
                                              <li><a href="{{path('report_member_situation')}}">Member Situation</a></li>
-                                             <li><a href="{{path('trial_balance_report')}}">Trial Balance</a></li>
                                              <li><a href="{{path('report_general_ledger')}}">General Ledger Balance</a></li>
                                              <li><a href="{{path('report_month')}}">Generate</a></li>
                                          </ul>
@@ -198,11 +197,15 @@
                                   {% endif %}
                                 {% if is_granted("ROLE_ADMINISTRATOR") or is_granted("ROLE_BOARD") or is_granted("ROLE_MANAGER")  %}
                                     <li class="has_sub">
-                                        <a href="javascript:void(0)" class="waves-effect"><i class="ti-alert"></i> <span> Administrators </span> <span class="menu-arrow"></span> </a>
+                                        <a href="javascript:void(0)" class="waves-effect"><i class="ti-alert"></i> <span> Administrations </span> <span class="menu-arrow"></span> </a>
                                         <ul class="list-unstyled">
-                                            <li><a href="{{path('loanparameter_index')}}">Loan Parameter</a></li>
-                                            <li><a href="{{path('agency_index')}}">Agency</a></li>
-                                            <li><a href="{{path('backup_index')}}"> Databases</a></li>
+                                            <li><a href="{{ path('loanparameter_index') }}">Loan Parameter</a></li>
+                                            <li><a href="{{path('trial_balance_report')}}">Trial Balance</a></li>
+                                            <li><a href="{{ path('agency_index') }}">Agency</a></li>
+                                            <li><a href="{{ path('backup_index') }}"> Databases</a></li>
+                                            {% if is_granted("ROLE_ADMINISTRATOR") %}
+                                                <li><a href="{{ path('account_tranfer') }}"> Account to Account Transfer</a></li>
+                                            {% endif %}
                                         </ul>
                                     </li>
                                 {% endif %}

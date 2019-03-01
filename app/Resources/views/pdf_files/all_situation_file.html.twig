@@ -85,6 +85,42 @@
             {% set totalRemainAmount = 0 %}
             {% set totalInterestToPayAt = 0 %}
             {% for member in members  %}
+                {% if loop.index == 23 %}
+                    <tr>
+                        <th class="p-3 text-center">S/N</th>
+                        <th class="p-12">Name of Members</th>
+                        <th class="p-6">A/C N°</th>
+                        <th class="p-8">Shares</th>
+                        <th class="p-8">Savings</th>
+                        <th class="p-8">Deposit</th>
+                        <th class="p-8">Loan Amount</th>
+                        <th class="p-8">Date of Loan</th>
+                        <th class="p-8">Loan Balance</th>
+                        <th class="p-8">Total interest Accrute</th>
+                        <th class="p-8">Delinquent installment</th>
+                        <th class="p-5">N° Days delinquent</th>
+                        <th class="p-5">Remarks</th>
+                    </tr>
+                {% endif %}
+
+                {% if loop.index > 23 and (loop.index - 23) % 28 == 0 %}
+                    <tr>
+                        <th class="p-3 text-center">S/N</th>
+                        <th class="p-12">Name of Members</th>
+                        <th class="p-6">A/C N°</th>
+                        <th class="p-8">Shares</th>
+                        <th class="p-8">Savings</th>
+                        <th class="p-8">Deposit</th>
+                        <th class="p-8">Loan Amount</th>
+                        <th class="p-8">Date of Loan</th>
+                        <th class="p-8">Loan Balance</th>
+                        <th class="p-8">Total interest Accrute</th>
+                        <th class="p-8">Delinquent installment</th>
+                        <th class="p-5">N° Days delinquent</th>
+                        <th class="p-5">Remarks</th>
+                    </tr>
+                {% endif %}
+
                 <tr>
                     <td class="text-center">{{ loop.index }}</td>
                     <td>
@@ -153,13 +189,13 @@
             {% endfor %}
             <tr>
                 <td class="text-center" colspan="3"><b>Total</b></td>
-                <td class="text-center"><b>{{ totalShares }}</b></td>
-                <td class="text-center"><b>{{ totalSavings }}</b></td>
-                <td class="text-center"><b>{{ totalDeposits }}</b></td>
-                <td class="text-center"><b>{{ totalLoans }}</b></td>
+                <td class="text-center"><b>{{ totalShares |number_format(0, '.', ' ') }}</b></td>
+                <td class="text-center"><b>{{ totalSavings |number_format(0, '.', ' ') }}</b></td>
+                <td class="text-center"><b>{{ totalDeposits |number_format(0, '.', ' ') }}</b></td>
+                <td class="text-center"><b>{{ totalLoans |number_format(0, '.', ' ') }}</b></td>
                 <td></td>
-                <td class="text-center"><b>{{ totalRemainAmount }}</b></td>
-                <td class="text-center"><b>{{ totalInterestToPayAt }}</b></td>
+                <td class="text-center"><b>{{ totalRemainAmount |number_format(0, '.', ' ') }}</b></td>
+                <td class="text-center"><b>{{ totalInterestToPayAt |number_format(0, '.', ' ') }}</b></td>
                 <td></td>
                 <td></td>
                 <td></td>

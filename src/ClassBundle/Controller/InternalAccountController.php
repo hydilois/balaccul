@@ -3,7 +3,6 @@
 namespace ClassBundle\Controller;
 
 use ClassBundle\Entity\InternalAccount;
-use AccountBundle\Entity\InternalOperation;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -24,7 +23,8 @@ class InternalAccountController extends Controller
      * @Route("/list", name="internalaccount_index")
      * @Method("GET")
      */
-    public function index(){
+    public function index()
+    {
         $em = $this->getDoctrine()->getManager();
 
         $internalAccounts = $em->getRepository('ClassBundle:InternalAccount')->findBy([], ['accountName' => 'ASC']);
@@ -76,7 +76,7 @@ class InternalAccountController extends Controller
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
      */
-    public function newAction(Request $request)
+    public function create(Request $request)
     {
         $internalAccount = new Internalaccount();
         $form = $this->createForm('ClassBundle\Form\InternalAccountType', $internalAccount);
@@ -104,13 +104,11 @@ class InternalAccountController extends Controller
      * @param InternalAccount $internalAccount
      * @return Response
      */
-    public function showAction(InternalAccount $internalAccount)
+    public function show(InternalAccount $internalAccount)
     {
-        $deleteForm = $this->createDeleteForm($internalAccount);
 
         return $this->render('internalaccount/show.html.twig', array(
             'internalAccount' => $internalAccount,
-            'delete_form' => $deleteForm->createView(),
         ));
     }
 
@@ -123,8 +121,8 @@ class InternalAccountController extends Controller
      * @param InternalAccount $internalAccount
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
      */
-    public function editAction(Request $request, InternalAccount $internalAccount){
-        // $deleteForm = $this->createDeleteForm($internalAccount);
+    public function update(Request $request, InternalAccount $internalAccount)
+    {
         $editForm = $this->createForm('ClassBundle\Form\InternalAccountEditType', $internalAccount);
         $editForm->handleRequest($request);
 
@@ -140,53 +138,14 @@ class InternalAccountController extends Controller
         ));
     }
 
-    /**
-     * Deletes a internalAccount entity.
-     *
-     * @Route("/{id}", name="internalaccount_delete")
-     * @Method("DELETE")
-     * @param Request $request
-     * @param InternalAccount $internalAccount
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
-     */
-    public function deleteAction(Request $request, InternalAccount $internalAccount)
-    {
-        $form = $this->createDeleteForm($internalAccount);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->remove($internalAccount);
-            $em->flush();
-        }
-
-        return $this->redirectToRoute('internalaccount_index');
-    }
 
     /**
-     * Creates a form to delete a internalAccount entity.
-     *
-     * @param InternalAccount $internalAccount The internalAccount entity
-     *
-     * @return \Symfony\Component\Form\Form The form
-     */
-    private function createDeleteForm(InternalAccount $internalAccount)
-    {
-        return $this->createFormBuilder()
-            ->setAction($this->generateUrl('internalaccount_delete', array('id' => $internalAccount->getId())))
-            ->setMethod('DELETE')
-            ->getForm()
-        ;
-    }
-
-
-    /**
-     * Get informations related to one subclasse
+     * Get information related to one subclasse
      * @param  Request $request - the request paramemter HTTP one
-     * @return JSON           - a json representation of the classe
+     * @return Response           - a json representation of the classe
      * @Route("/subclass/list", name="get_list_subclass")
      */
-    public function getlistSubClass(Request $request){
+    public function getListSubClass(Request $request){
         $requestParsed  = json_decode(json_encode($request->request->get("data")));
 
         $idClass    = $requestParsed->idClasse;
@@ -212,7 +171,7 @@ class InternalAccountController extends Controller
                 ->getQuery();
 
             $classes = $query->getResult(\Doctrine\ORM\AbstractQuery::HYDRATE_ARRAY);
-        }catch(Exception $ex){
+        }catch(\Exception $ex){
 
             return json_encode([
                 "message" => "Error while pulling informations", 
@@ -222,7 +181,7 @@ class InternalAccountController extends Controller
             ]);
         }
 
-        $response ['message'] = 'Entite InternalAccount';
+        $response ['message'] = 'Entity InternalAccount';
         $response ['status'] = 'success';
         $response ['data'] = json_decode(json_encode($classes));
 
@@ -239,8 +198,6 @@ class InternalAccountController extends Controller
     function addNewInternalAccountFromJSON(Request $request){
 
         $entityManager = $this->getDoctrine()->getManager();
-
-        $logger = $this->get('logger');
 
         $internalAccount = new InternalAccount();
 
@@ -267,7 +224,7 @@ class InternalAccountController extends Controller
         $entityManager->persist($internalAccount);
         $entityManager->flush();
        
-        }catch(Exception $ex){
+        }catch(\Exception $ex){
             $response["success"] = false;
         }
 
@@ -280,110 +237,24 @@ class InternalAccountController extends Controller
         return new Response(json_encode($response));
     }
 
-
     /**
-     * @param Request $request [contains the http request that is passed on]
+     * member situation.
      *
-     * @Route("/operation/save", name="internaaccounnt_operation_save")
+     * @Route("/transfert", name="account_tranfer")
      * @Method({"GET", "POST"})
+     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
+     * @param Request $request
      * @return Response
      */
-    function InternalAccountOperationFromJSON(Request $request)
-    {
-        $entityManager = $this->getDoctrine()->getManager();
-
-        // Get the current user connected
-        $currentUser  = $this->get('security.token_storage')->getToken()->getUser();
-
-        try{
-            //first thing we get the classe with the JSON format
-            $accountJSON = json_decode(json_encode($request->request->get('data')), true);
-
-            $operation = new InternalOperation();
-            $operation->setCurrentUser($currentUser);
-            $operation->setDateOperation(new \DateTime('now'));
-            $operation->setAmount($accountJSON["amount"]);
-            $internalAccount = $entityManager->getRepository('ClassBundle:InternalAccount')->find($accountJSON["idAccount"]);
-            $operation->setInternalAccount($internalAccount);
-
-            $operation->setCurrentBalance($internalAccount->getAmount()  + $accountJSON["amount"]);
-            $operation->setTypeOperation(InternalOperation::TYPE_CREDIT);
-            $internalAccount->setAmount($internalAccount->getAmount()  + $accountJSON["amount"]);
-
-            /**
-            *** Making record here
-            **/
-            // Update the current Account accord to the amount that had been added
-            
-            $entityManager->persist($operation);
-            $entityManager->persist($internalAccount);
-            $entityManager->flush();
-
-
-            $response["data"]               = $accountJSON;
-            $response["optionalData"]       = json_encode($operation->getId());
-            $response["success"] = true;
-
-            return new Response(json_encode($response));
-       
-        }catch(Exception $ex){
-            $response["success"] = false;
-            return new Response(json_encode($response));
-        }
-    }
-
-
-    /**
-     * @param Request $request [contains the http request that is passed on]
-     *
-     * @Route("/debit/save", name="internalaccounnt_debit_save")
-     * @Method({"GET", "POST"})
-     * @return Response
-     */
-    function InternalAccountCashOutOperationFromJSON(Request $request)
+    public function accountTransfer(Request $request)
     {
 
         $entityManager = $this->getDoctrine()->getManager();
 
-        // Get the current user connected
-        $currentUserId  = $this->get('security.token_storage')->getToken()->getUser()->getId();
-        $currentUser    = $entityManager->getRepository('UserBundle:Utilisateur')->find($currentUserId);
+        $accounts = $entityManager->getRepository(InternalAccount::class)->findBy([], ['accountNumber' => 'ASC']);
 
-
-        try{
-            //first thing we get the class with the JSON format
-            $accountJSON = json_decode(json_encode($request->request->get('data')), true);
-
-            $operation = new InternalOperation();
-            $operation->setCurrentUser($currentUser);
-            $operation->setDateOperation(new \DateTime('now'));
-            $operation->setAmount($accountJSON["amount"]);
-            $internalAccount = $entityManager->getRepository('ClassBundle:InternalAccount')->find($accountJSON["idAccount"]);
-            $operation->setInternalAccount($internalAccount);
-
-            $operation->setCurrentBalance($internalAccount->getAmount()  - $accountJSON["amount"]);
-            $operation->setTypeOperation(InternalOperation::TYPE_WITHDRAWAL);
-            $internalAccount->setAmount($internalAccount->getAmount()  - $accountJSON["amount"]);
-
-            /**
-            *** Making record here
-            **/
-            // Update the current Account accord to the amount that had been added
-            
-            $entityManager->persist($operation);
-            $entityManager->persist($internalAccount);
-            $entityManager->flush();
-
-
-            $response["data"]               = $accountJSON;
-            $response["optionalData"]       = json_encode($operation->getId());
-            $response["success"] = true;
-
-            return new Response(json_encode($response));
-       
-        }catch(Exception $ex){
-            $response["success"] = false;
-            return new Response(json_encode($response));
-        }
+        return $this->render('internalaccount/accounts_transfer.html.twig', array(
+            'accounts' => $accounts,
+        ));
     }
 }
