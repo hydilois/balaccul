@@ -240,7 +240,7 @@ class InternalAccountController extends Controller
     /**
      * member situation.
      *
-     * @Route("/transfert", name="account_tranfer")
+     * @Route("/transfer", name="account_transfer")
      * @Method({"GET", "POST"})
      * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      * @param Request $request

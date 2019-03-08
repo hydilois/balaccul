@@ -116,7 +116,7 @@ class MemberRepository extends EntityRepository
         $ledgerBalance->setDebit($savings);
         $ledgerBalance->setCurrentUser($currentUser);
         $ledgerBalance->setDateOperation($dateOperation);
-        $latestEntryGBL = $entityManager->getRepository(GeneralLedgerBalance::class)->findOneBy([],['id' => 'DESC']);
+        $latestEntryGBL = $this->findLastRecord($dateOperation);
         if ($latestEntryGBL) {
             $ledgerBalance->setBalance($latestEntryGBL->getBalance() + $savings);
         }else{
@@ -169,7 +169,7 @@ class MemberRepository extends EntityRepository
         $ledgerBalanceSha->setDebit($shares);
         $ledgerBalanceSha->setCurrentUser($currentUser);
         $ledgerBalanceSha->setDateOperation($dateOperation);
-        $latestEntryGBL = $entityManager->getRepository('ReportBundle:GeneralLedgerBalance')->findOneBy([],['id' => 'DESC']);
+        $latestEntryGBL = $this->findLastRecord($dateOperation);
         if ($latestEntryGBL) {
             $ledgerBalanceSha->setBalance($latestEntryGBL->getBalance() + $shares);
         }else{
@@ -222,7 +222,7 @@ class MemberRepository extends EntityRepository
         $ledgerBalanceDep->setDebit($deposits);
         $ledgerBalanceDep->setCurrentUser($currentUser);
         $ledgerBalanceDep->setDateOperation($dateOperation);
-        $latestEntryGBL = $entityManager->getRepository('ReportBundle:GeneralLedgerBalance')->findOneBy([],['id' => 'DESC']);
+        $latestEntryGBL = $this->findLastRecord($dateOperation);
         if ($latestEntryGBL) {
             $ledgerBalanceDep->setBalance($latestEntryGBL->getBalance() + $deposits);
         }else{
@@ -294,7 +294,7 @@ class MemberRepository extends EntityRepository
         $ledgerBalanceInterest->setDebit($loanInterest);
         $ledgerBalanceInterest->setCurrentUser($currentUser);
         $ledgerBalanceInterest->setDateOperation($dateOperation);
-        $latestEntryGBL = $entityManager->getRepository('ReportBundle:GeneralLedgerBalance')->findOneBy([],['id' => 'DESC']);
+        $latestEntryGBL = $this->findLastRecord($dateOperation);
         if ($latestEntryGBL) {
             $ledgerBalanceInterest->setBalance($latestEntryGBL->getBalance() + $loanInterest);
         }else{
@@ -324,7 +324,7 @@ class MemberRepository extends EntityRepository
         $ledgerBalanceLoan->setDebit($mainLoan);
         $ledgerBalanceLoan->setCurrentUser($currentUser);
         $ledgerBalanceLoan->setDateOperation($dateOperation);
-        $latestEntryGBL = $entityManager->getRepository(GeneralLedgerBalance::class)->findOneBy([],['id' => 'DESC']);
+        $latestEntryGBL = $this->findLastRecord($dateOperation);
         if ($latestEntryGBL) {
             $ledgerBalanceLoan->setBalance($latestEntryGBL->getBalance() + $mainLoan);
         }else{
@@ -375,7 +375,7 @@ class MemberRepository extends EntityRepository
         $ledgerBalanceCharges->setDebit($charges);
         $ledgerBalanceCharges->setCurrentUser($currentUser);
         $ledgerBalanceCharges->setDateOperation($dateOperation);
-        $latestEntryGBL = $entityManager->getRepository(GeneralLedgerBalance::class)->findOneBy([],['id' => 'DESC']);
+        $latestEntryGBL = $this->findLastRecord($dateOperation);
         if ($latestEntryGBL) {
             $ledgerBalanceCharges->setBalance($latestEntryGBL->getBalance() + $charges);
         }else{
@@ -428,7 +428,7 @@ class MemberRepository extends EntityRepository
         $ledgerBalanceBuildingFees->setDebit($buildingFees);
         $ledgerBalanceBuildingFees->setCurrentUser($currentUser);
         $ledgerBalanceBuildingFees->setDateOperation($dateOperation);
-        $latestEntryGBL = $entityManager->getRepository(GeneralLedgerBalance::class)->findOneBy([],['id' => 'DESC']);
+        $latestEntryGBL = $this->findLastRecord($dateOperation);
         if ($latestEntryGBL) {
             $ledgerBalanceBuildingFees->setBalance($latestEntryGBL->getBalance() + $buildingFees);
         }else{
@@ -479,7 +479,7 @@ class MemberRepository extends EntityRepository
         $ledgerBalanceRegistration->setDebit($registration);
         $ledgerBalanceRegistration->setCurrentUser($currentUser);
         $ledgerBalanceRegistration->setDateOperation($dateOperation);
-        $latestEntryGBL = $entityManager->getRepository(GeneralLedgerBalance::class)->findOneBy([], ['id' => 'DESC']);
+        $latestEntryGBL = $this->findLastRecord($dateOperation);
         if ($latestEntryGBL) {
             $ledgerBalanceRegistration->setBalance($latestEntryGBL->getBalance() + $registration);
         }else{
@@ -493,5 +493,47 @@ class MemberRepository extends EntityRepository
         $ledgerBalanceRegistration->setAccountTitle($memberEntranceFees->getAccountName()." A/C_".$member->getMemberNumber());
         $ledgerBalanceRegistration->setMember($member);
         $entityManager->persist($ledgerBalanceRegistration);
+    }
+
+    /**
+     * @param $dateOperation
+     * @return mixed
+     */
+    private function findLastRecord($dateOperation)
+    {
+        $today_start_datetime = new \DateTime($dateOperation->format('Y-m-d') .' 00:00:00');
+        $today_end_datetime = new \DateTime($dateOperation->format('Y-m-d') .' 23:59:59');
+        $operations = $this->getEntityManager()->createQueryBuilder()
+            ->select('glb')
+            ->from('ReportBundle:GeneralLedgerBalance', 'glb')
+            ->where('glb.dateOperation >= :date')
+            ->andWhere('glb.dateOperation <= :date_end')
+            ->setParameters([
+                'date' => $today_start_datetime,
+                'date_end' => $today_end_datetime
+            ])
+            ->getQuery()
+            ->getResult();
+
+        if ($operations){
+            $lastOperation = end($operations);
+            return $lastOperation;
+        }else{
+            $operations1 = $this->getEntityManager()->createQueryBuilder()
+                ->select('glb')
+                ->from('ReportBundle:GeneralLedgerBalance', 'glb')
+                ->andWhere('glb.dateOperation <= :date_end')
+                ->setParameters([
+                    'date_end' => $today_end_datetime
+                ])
+                ->orderBy('glb.dateOperation', 'ASC')
+                ->getQuery()
+                ->getResult();
+            if ($operations1){
+                $lastOperation = end($operations1);
+                return $lastOperation;
+            }
+        }
+        return null;
     }
 }

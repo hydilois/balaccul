@@ -42,7 +42,7 @@ class OperationController extends Controller
         $em = $this->getDoctrine()->getManager();
         $members  = $em->getRepository(Member::class)->findBy([],['memberNumber' => 'ASC',]);
 
-        return $this->render('operation/cash_in_operation.html.twig', [
+        return $this->render('operation/cash_in/cash_in_operation.html.twig', [
             'members' => $members,
         ]);
     }
@@ -77,7 +77,7 @@ class OperationController extends Controller
             ->getQuery()
             ->getResult();
 
-        return $this->render('operation/other_cash_in_operation.html.twig', array(
+        return $this->render('operation/cash_in/other_cash_in_operation.html.twig', array(
             'members' => $members,
             'internalAccounts' => $internalAccounts,
         ));
@@ -108,7 +108,7 @@ class OperationController extends Controller
             ->orWhere('c.id = 6')
             ->getQuery()
             ->getResult();
-        return $this->render('operation/other_cash_out_operation.html.twig', array(
+        return $this->render('operation/cash_out/other_cash_out_operation.html.twig', array(
             'internalAccounts' => $internalAccounts,
         ));
     }
@@ -129,7 +129,7 @@ class OperationController extends Controller
         $entityManager = $this->getDoctrine()->getManager();
         $members  = $entityManager->getRepository('MemberBundle:Member')->findBy([],['memberNumber' => 'ASC',]);
 
-        return $this->render('operation/cash_out_operation.html.twig', array(
+        return $this->render('operation/cash_out/cash_out_operation.html.twig', array(
             'members' => $members,
         ));
     }
@@ -181,7 +181,7 @@ class OperationController extends Controller
         $em = $this->getDoctrine()->getManager();
         $agency = $em->getRepository('ConfigBundle:Agency')->findOneBy([],['id' => 'ASC']);
 
-        $template =  $this->renderView('operation/operation_receipt_file.html.twig', [
+        $template =  $this->renderView('operation/files/operation_receipt_file.html.twig', [
             'agency' => $agency,
             'operation' => $operation,
         ]);
@@ -200,6 +200,7 @@ class OperationController extends Controller
      * @param Request $request [contains the http request that is passed on]
      *
      * @param DatabaseBackupManager $databaseBackupManager
+     * @param FileUploader $fileUploader
      * @return Response
      * @Route("/cash_in/save", name="operation_cash_in_save")
      * @Method({"GET", "POST"})
@@ -461,7 +462,7 @@ class OperationController extends Controller
                 $entityManager->getRepository(Member::class)->saveMemberRegistrationFeesInGeneralLedger($registration, $currentUser, $dateOperation, $memberEntranceFees, $member, $representative);
             }
             $entityManager->flush();
-            $template = $this->renderView('operation/cash_in_receipt_file.html.twig', [
+            $template = $this->renderView('operation/cash_in/cash_in_receipt_file.html.twig', [
                 'agency' => $agency,
                 'member' => $member,
                 'loanhistory' => $loan_history,
@@ -541,7 +542,7 @@ class OperationController extends Controller
 
             $entityManager->flush();
 
-            $template =  $this->renderView('operation/other_in_receipt_file.html.twig', [
+            $template =  $this->renderView('operation/cash_in/other_in_receipt_file.html.twig', [
                 'agency' => $agency,
                 'member' => $member,
                 'balanceStatus' => $balanceStatus,
@@ -649,7 +650,7 @@ class OperationController extends Controller
             $others = [];
         }
         $entityManager->flush();
-        $template =  $this->renderView('operation/cash_out_receipt_file.html.twig', [
+        $template =  $this->renderView('operation/cash_out/cash_out_receipt_file.html.twig', [
                 'agency' => $agency,
                 'member' => $member,
                 'analytics' => $analytics,
@@ -688,8 +689,7 @@ class OperationController extends Controller
         $entityManager = $this->getDoctrine()->getManager();
         $agency = $entityManager->getRepository('ConfigBundle:Agency')->findAll()[0];
         // Get the current user connected
-        $currentUserId  = $this->get('security.token_storage')->getToken()->getUser()->getId();
-        $currentUser    = $entityManager->getRepository(Utilisateur::class)->find($currentUserId);
+        $currentUser  = $this->get('security.token_storage')->getToken()->getUser();
 
         if ($request->getMethod() == 'POST') {
             $db_user = $this->getParameter('database_user');
@@ -721,12 +721,11 @@ class OperationController extends Controller
             $totalTransaction += $amount;
             $operations[] = $ledgerBalance;
 
-            $analytics = $this->analyticsArray($request->get('10000'), $request->get('5000'), $request->get('2000'),$request->get('1000'), $request->get('500'), $request->get('100'), $request->get('50'), $request->get('25'), $request->get('10'), $request->get('5'), $request->get('1')
-                );
+            $analytics = $this->analyticsArray($request->get('10000'), $request->get('5000'), $request->get('2000'),$request->get('1000'), $request->get('500'), $request->get('100'), $request->get('50'), $request->get('25'), $request->get('10'), $request->get('5'), $request->get('1'));
 
             $entityManager->flush();
 
-            $template =  $this->renderView('operation/other_out_receipt_file.html.twig', array(
+            $template =  $this->renderView('operation/cash_out/other_out_receipt_file.html.twig', array(
                 'agency' => $agency,
                 'analytics' => $analytics,
                 'numberInWord' => $this->convertNumberToWord($totalTransaction),
@@ -948,4 +947,91 @@ class OperationController extends Controller
 
         return $data;
     }
+
+    /**
+     * other cash in operation.
+     *
+     * @Route("/special/transactions", name="special_transactions")
+     * @Method("GET|POST")
+     * @param Request $request
+     * @param DatabaseBackupManager $databaseBackupManager
+     * @param FileUploader $fileUploader
+     * @return RedirectResponse|Response
+     */
+    public function specialTransactions(Request $request, DatabaseBackupManager $databaseBackupManager, FileUploader $fileUploader)
+    {
+        if (!$this->container->get('security.authorization_checker')->isGranted('ROLE_ADMINISTRATOR')) {
+            $this->addFlash('warning', 'You are not authorize to access to the page');
+            return  $this->redirectToRoute('homepage');
+        }
+        $entityManager = $this->getDoctrine()->getManager();
+        if ($request->getMethod() == 'POST'){
+            $agency = $entityManager->getRepository('ConfigBundle:Agency')->findAll()[0];
+            // Get the current user connected
+            $currentUser  = $this->get('security.token_storage')->getToken()->getUser();
+            $db_user = $this->getParameter('database_user');
+            $db_pass = $this->getParameter('database_password');
+            $db_name = $this->getParameter('database_name');
+            $databaseBackupManager->backup($db_user, $db_pass, $db_name, $fileUploader,  'Special Transaction');
+
+            $data = $request->request->all();
+            $operations = [];
+            $totalTransaction = 0;
+
+            /*Get the account by ID*/
+            $account = $entityManager->getRepository(InternalAccount::class)->find(intval($data['account_number']));
+            $class = $entityManager->getRepository(Classe::class)->find($account->getClasse()->getId());
+            if (intval($data['account_number']) == 82 || intval($data['account_number']) == 76){
+                $account->setBalance($account->getBalance() + $data['amount']);
+                $class->setBalance($class->getBalance() + $data['amount']);
+            }else{
+                $account->setBalance($account->getBalance() - $data['amount']);
+                $class->setBalance($class->getBalance() - $data['amount']);
+            }
+            $ledgerBalance = $entityManager->getRepository(GeneralLedgerBalance::class)->registerSpecialGBLTransaction($data['amount'] ,$currentUser, $data['date_operation'], $account, $data['representative'], $data['type']);
+            $totalTransaction += $data['amount'];
+            $operations[] = $ledgerBalance;
+            $entityManager->flush();
+//            dump($ledgerBalance);die();
+
+            $entityManager->getRepository(GeneralLedgerBalance::class)->updateGLB($data['amount'], $data['date_operation'],$data['type']);
+
+            $template =  $this->renderView('operation/files/special_transaction_file.html.twig', array(
+                'agency' => $agency,
+                'analytics' => null,
+                'numberInWord' => $this->convertNumberToWord($totalTransaction),
+                'totalTransaction' => $totalTransaction,
+                'representative' => $data['representative'],
+                'balanceStatus' => null,
+                'type' => $data['type'],
+                'currentDate' => $this->dateConcatenation($data['date_operation']),
+                'accountOperations' => $operations,
+            ));
+
+            $operationType = str_replace(' ', '_', $ledgerBalance->getTypeOperation());
+            $accountName = str_replace(' ', '_', $account->getAccountName());
+
+            $title = 'Receipt_'.$operationType.'_'.$accountName.'_'.$ledgerBalance->getDateOperation()->format('d-m-Y_H:i:s');
+            $html2PdfService = $this->get('app.html2pdf');
+            $html2PdfService->create('P', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 10));
+            if ($operations){
+                return $html2PdfService->generatePdf($template, $title.'.pdf', 'operations',$title, 'FI');
+            }
+            return $html2PdfService->generatePdf($template, $title.'.pdf', 'operations',$title, 'I');
+        }
+
+
+        $internalAccounts = $entityManager->createQueryBuilder()
+            ->select('ia')
+            ->from('ClassBundle:InternalAccount', 'ia')
+            ->innerJoin('ClassBundle:Classe', 'c', 'WITH','ia.classe = c.id')
+            ->where('c.id = 1')->orWhere('c.id = 2')->orWhere('c.id = 3')->orWhere('c.id = 4')->orWhere('c.id = 5')->orWhere('c.id = 6')
+            ->getQuery()
+            ->getResult();
+        return $this->render('operation/admin/special_transactions.html.twig', [
+            'internalAccounts' => $internalAccounts,
+        ]);
+    }
+
+
 }

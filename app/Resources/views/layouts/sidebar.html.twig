@@ -1,0 +1,78 @@
+<!-- ========== Left Sidebar Start ========== -->
+
+<div class="left side-menu">
+    <div class="sidebar-inner slimscrollleft">
+        <!--- Divider -->
+        <div id="sidebar-menu">
+            <ul>
+                <li>
+                    <a href="{{path('homepage')}}" class="waves-effect"><i class="ti-home"></i> <span> Home </span></a>
+                </li>
+                {% if is_granted("ROLE_MANAGER") or is_granted("ROLE_ADMINISTRATOR") or is_granted("ROLE_CASHER") %}
+                    <li class="has_sub">
+                        <a href="javascript:void(0)" class="waves-effect"><i class="ti-angle-double-right"></i> <span> Cash IN</span> <span class="menu-arrow"></span></a>
+                        <ul class="list-unstyled">
+                            <li><a href="{{path('new_cash_in_operation')}}">From members</a></li>
+                            <li><a href="{{path('other_cash_in_operations')}}">Other Cash IN</a></li>
+                            <li><a href="{{path('member_new')}}">New Member</a></li>
+                        </ul>
+                    </li>
+                    <li class="has_sub">
+                        <a href="javascript:void(0)" class="waves-effect"><i class="ti-angle-double-left"></i> <span> Cash OUT</span> <span class="menu-arrow"></span></a>
+                        <ul class="list-unstyled">
+                            <li><a href="{{path('cash_out_operations')}}">For members</a></li>
+                            <li><a href="{{path('other_cash_out_operations')}}">Other Cash Out</a></li>
+                            <li><a href="{{path('loan_new')}}"><span>New Loan</span></a></li>
+                        </ul>
+                    </li>
+                {% endif %}
+                {% if is_granted("ROLE_MANAGER") or is_granted("ROLE_ADMINISTRATOR") or is_granted("ROLE_CASHER") or is_granted("ROLE_BOARD") %}
+                    <li class="has_sub">
+                        <a href="javascript:void(0)" class="waves-effect"><i class="ti-files"></i> <span> Reports </span> <span class="menu-arrow"></span> </a>
+                        <ul class="list-unstyled">
+                            <li><a href="{{path('report_member_situation')}}">Member Situation</a></li>
+                            <li><a href="{{path('report_general_ledger')}}">General Ledger Balance</a></li>
+                            <li><a href="{{path('report_month')}}">Generate</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="{{path('loanhistory_new_payement')}}"><i class="md-timer"></i><span> Loans Situation</span></a></li>
+
+                    <li><a href="{{path('member_index')}}"><i class="ti-view-list-alt"></i><span> Members</span></a></li>
+                {% endif %}
+
+                {% if is_granted("ROLE_ADMINISTRATOR") or is_granted("ROLE_BOARD") or is_granted("ROLE_MANAGER")  %}
+                    <li class="has_sub">
+                        <a href="javascript:void(0)" class="waves-effect"><i class="ti-settings"></i> <span> Settings </span> <span class="menu-arrow"></span> </a>
+                        <ul class="list-unstyled">
+                            <li><a href="{{path('classe_index')}}">Classes</a></li>
+                            <li><a href="{{path('internalaccount_index')}}"> Accounts</a></li>
+                            <li><a href="{{path('loan_index')}}">Loans</a></li>
+                            <li><a href="{{path('utilisateur_index')}}"> Users</a></li>
+                        </ul>
+                    </li>
+                {% endif %}
+                {% if is_granted("ROLE_ADMINISTRATOR") or is_granted("ROLE_BOARD") or is_granted("ROLE_MANAGER")  %}
+                    <li class="has_sub">
+                        <a href="javascript:void(0)" class="waves-effect"><i class="ti-alert"></i> <span> Administrations </span> <span class="menu-arrow"></span> </a>
+                        <ul class="list-unstyled">
+                            <li><a href="{{ path('loanparameter_index') }}">Loan Parameter</a></li>
+                            <li><a href="{{path('trial_balance_report')}}">Trial Balance</a></li>
+                            <li><a href="{{ path('agency_index') }}">Agency</a></li>
+                            <li><a href="{{ path('backup_index') }}"> Databases</a></li>
+                            {% if is_granted("ROLE_ADMINISTRATOR") %}
+                                <li><a href="{{ path('account_transfer') }}"> Account to Account Transfer</a></li>
+                                <li><a href="{{ path('special_transactions') }}"> Special Transactions</a></li>
+                            {% endif %}
+                        </ul>
+                    </li>
+                {% endif %}
+                {% if is_granted("ROLE_BOARD") or  is_granted("ROLE_ADMINISTRATOR")  %}
+                    <li><a href="{{path('internal_account_balance')}}"><i class="md-timer"></i><span> Accounts Situation</span></a></li>
+                {% endif %}
+            </ul>
+            <div class="clearfix"></div>
+        </div>
+    </div>
+</div>
+<!-- Left Sidebar End -->
+<!-- ============================================================== -->

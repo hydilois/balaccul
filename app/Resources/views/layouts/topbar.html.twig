@@ -1,0 +1,80 @@
+<!-- Top Bar Start -->
+<div class="topbar">
+
+    <!-- LOGO -->
+    <div class="topbar-left">
+        <div class="text-center">
+            <a href="{{path('homepage')}}" class="logo"><i class=" icon-diamond icon-c-logo"></i><span>HY<i class=" icon-diamond"></i>MIF</span></a>
+        </div>
+    </div>
+
+    <!-- Button mobile view to collapse sidebar menu -->
+    <div class="navbar navbar-default" role="navigation">
+        <div class="container">
+            <div class="">
+                <div class="pull-left">
+                    <button class="button-menu-mobile open-left waves-effect waves-light">
+                        <i class="md md-menu"></i>
+                    </button>
+                    <span class="clearfix"></span>
+                </div>
+                <ul class="nav navbar-nav navbar-right pull-right">
+                    {# ti-face-smile #}
+                    <li class="hidden-xs">
+                        <a href="#" data-target="#" class="dropdown-toggle waves-effect waves-light" data-toggle="dropdown" aria-expanded="true">
+                            <i class="icon-people"></i> <span class="badge badge-xs badge-info">{{ render(controller('UserBundle:User:whoIsOnline')) }}</span>
+                        </a>
+                    </li>
+
+                    <li class="dropdown top-menu-item-xs">
+                        <a href="#" data-target="#" class="dropdown-toggle waves-effect waves-light" data-toggle="dropdown" aria-expanded="true">
+                            <i class="icon-bell"></i> <span id="numberNotif" class="badge badge-xs badge-warning">0</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-lg">
+                            <li class="list-group slimscroll-noti notification-list">
+                                <!-- list item-->
+                                <a href="javascript:void(0);" class="list-group-item template hide">
+                                    <div class="media">
+                                        <div class="pull-left p-r-10">
+                                            <em class="fa fa-bell-o noti-warning"></em>
+                                        </div>
+                                        <div class="media-body">
+                                            <h5 id="info" class="media-heading"></h5>
+                                            <p class="m-0">
+                                                <small class="detail"></small>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0);" class="list-group-item text-right">
+                                    <small class="font-600">See all notifications</small>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="hidden-xs">
+                        <a href="#" id="btn-dump" class="waves-effect waves-light"><i class="icon-support"></i></a>
+                    </li>
+                    <li class="hidden-xs">
+                        <a href="#" id="btn-fullscreen" class="waves-effect waves-light"><i class="icon-size-fullscreen"></i></a>
+                    </li>
+                    {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
+                        <li class="dropdown top-menu-item-xs">
+                            <a href="" class="dropdown-toggle profile waves-effect waves-light" data-toggle="dropdown" aria-expanded="true">{{ app.user.nom }} &nbsp; <img src="{{asset('assets/images/users/avatar.png')}}" alt="user-img" class="img-circle"> </a>
+                            <ul class="dropdown-menu">
+                                <li><a href="{{path('user_profile')}}"><i class="ti-user m-r-10 text-custom"></i> Profile</a></li>
+                                <li><a href="{{path('fos_user_change_password')}}"><i class="ti-settings m-r-10 text-custom"></i> Settings</a></li>
+                                <li class="divider"></li>
+                                <li><a href="{{path('fos_user_security_logout')}}"><i class="ti-power-off m-r-10 text-danger"></i> Logout</a></li>
+                            </ul>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+            <!--/.nav-collapse -->
+        </div>
+    </div>
+</div>
+<!-- Top Bar End -->

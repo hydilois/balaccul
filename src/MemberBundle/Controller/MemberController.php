@@ -353,9 +353,7 @@ class MemberController extends Controller
             $ledgerBalanceSha->setDateOperation($dateOperation);
             $ledgerBalanceSha->setDebit($member->getShare());
             $ledgerBalanceSha->setCurrentUser($currentUser);
-            $latestEntryGBL = $entityManager->getRepository('ReportBundle:GeneralLedgerBalance')->findOneBy(
-                [],
-                ['id' => 'DESC']);
+            $latestEntryGBL = $this->findLastGBLRecordOfDay($dateOperation);
             if ($latestEntryGBL) {
                 $ledgerBalanceSha->setBalance($latestEntryGBL->getBalance() + $member->getShare());
             }else{
@@ -396,9 +394,7 @@ class MemberController extends Controller
             $ledgerBalance->setDateOperation($dateOperation);
             $ledgerBalance->setDebit($member->getSaving());
             $ledgerBalance->setCurrentUser($currentUser);
-            $latestEntryGBL = $entityManager->getRepository('ReportBundle:GeneralLedgerBalance')->findOneBy(
-                [],
-                ['id' => 'DESC']);
+            $latestEntryGBL = $this->findLastGBLRecordOfDay($dateOperation);
             if ($latestEntryGBL) {
                 $ledgerBalance->setBalance($latestEntryGBL->getBalance() + $member->getSaving());
             }else{
@@ -439,9 +435,7 @@ class MemberController extends Controller
             $ledgerBalanceDep->setDateOperation($dateOperation);
             $ledgerBalanceDep->setDebit($member->getDeposit());
             $ledgerBalanceDep->setCurrentUser($currentUser);
-            $latestEntryGBL = $entityManager->getRepository('ReportBundle:GeneralLedgerBalance')->findOneBy(
-                [],
-                ['id' => 'DESC']);
+            $latestEntryGBL = $this->findLastGBLRecordOfDay($dateOperation);
             if ($latestEntryGBL) {
                 $ledgerBalanceDep->setBalance($latestEntryGBL->getBalance() + $member->getDeposit());
             }else{
@@ -482,9 +476,7 @@ class MemberController extends Controller
             $ledgerBalanceRegistration->setDateOperation($dateOperation);
             $ledgerBalanceRegistration->setDebit($member->getRegistrationFees());
             $ledgerBalanceRegistration->setCurrentUser($currentUser);
-            $latestEntryGBL = $entityManager->getRepository('ReportBundle:GeneralLedgerBalance')->findOneBy(
-                [],
-                ['id' => 'DESC']);
+            $latestEntryGBL = $this->findLastGBLRecordOfDay($dateOperation);
             if ($latestEntryGBL) {
                 $ledgerBalanceRegistration->setBalance($latestEntryGBL->getBalance() + $member->getRegistrationFees());
             }else{
@@ -525,8 +517,7 @@ class MemberController extends Controller
             $ledgerBalanceBuildingFees->setTypeOperation(Operation::TYPE_CASH_IN);
             $ledgerBalanceBuildingFees->setDebit($member->getBuildingFees());
             $ledgerBalanceBuildingFees->setCurrentUser($currentUser);
-            $latestEntryGBL = $entityManager->getRepository('ReportBundle:GeneralLedgerBalance')->findOneBy(
-                [],['id' => 'DESC']);
+            $latestEntryGBL = $this->findLastGBLRecordOfDay($dateOperation);
             if ($latestEntryGBL) {
                 $ledgerBalanceBuildingFees->setBalance($latestEntryGBL->getBalance() + $member->getBuildingFees());
             }else{
@@ -636,5 +627,49 @@ class MemberController extends Controller
             $commas = $commas - 1;
         }
         return implode(' ', $words);
+    }
+
+    /**
+     * @param $dateOperation
+     * @return mixed
+     */
+    private function findLastGBLRecordOfDay($dateOperation) {
+        $date = explode("/", substr($dateOperation, strrpos($dateOperation, " ")));
+
+        $em = $this->getDoctrine()->getManager();
+        $today_start_datetime = \DateTime::createFromFormat("Y-m-d H:i:s", date($date[2] . "-" . $date[1] . "-" . $date[0] . " 00:00:00"));
+        $today_end_datetime = \DateTime::createFromFormat("Y-m-d H:i:s", date($date[2] . "-" . $date[1] . "-" . $date[0] . " 23:59:59"));
+        $operations = $em->createQueryBuilder()
+            ->select('glb')
+            ->from('ReportBundle:GeneralLedgerBalance', 'glb')
+            ->where('glb.dateOperation >= :date')
+            ->andWhere('glb.dateOperation <= :date_end')
+            ->setParameters([
+                'date' => $today_start_datetime,
+                'date_end' => $today_end_datetime
+            ])
+            ->getQuery()
+            ->getResult();
+
+        if ($operations){
+            $lastOperation = end($operations);
+            return $lastOperation;
+        }else{
+            $operations1 = $em->createQueryBuilder()
+                ->select('glb')
+                ->from('ReportBundle:GeneralLedgerBalance', 'glb')
+                ->andWhere('glb.dateOperation <= :date_end')
+                ->setParameters([
+                    'date_end' => $today_end_datetime
+                ])
+                ->orderBy('glb.dateOperation', 'ASC')
+                ->getQuery()
+                ->getResult();
+            if ($operations1){
+                $lastOperation = end($operations1);
+                return $lastOperation;
+            }
+        }
+        return null;
     }
 }
