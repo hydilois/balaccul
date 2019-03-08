@@ -253,6 +253,11 @@ class InternalAccountController extends Controller
 
         $accounts = $entityManager->getRepository(InternalAccount::class)->findBy([], ['accountNumber' => 'ASC']);
 
+        if ($request->getMethod() == 'POST'){
+            $data = $request->request->all();
+            dump($data);die;
+        }
+
         return $this->render('internalaccount/accounts_transfer.html.twig', array(
             'accounts' => $accounts,
         ));

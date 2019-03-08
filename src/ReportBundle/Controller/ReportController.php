@@ -49,7 +49,6 @@ class ReportController extends Controller
     }
 
 
-
     /**
      * @Route("/month", name="report_month")
      * @param Request $request
@@ -65,52 +64,52 @@ class ReportController extends Controller
             $agency = $em->getRepository('ConfigBundle:Agency')->findOneBy([], ['id' => 'ASC']);
             $currentDate = new \DateTime('now');
 
-            $currentUser  = $this->get('security.token_storage')->getToken()->getUser();
+            $currentUser = $this->get('security.token_storage')->getToken()->getUser();
 
             $dateDebut = $request->get('start');
             $dateFin = $request->get('end');
 
-            $newDateStart = explode( "/" , substr($dateDebut,strrpos($dateDebut," ")));
-            $newDateEnd = explode( "/" , substr($dateFin,strrpos($dateFin," ")));
+            $newDateStart = explode("/", substr($dateDebut, strrpos($dateDebut, " ")));
+            $newDateEnd = explode("/", substr($dateFin, strrpos($dateFin, " ")));
 
-            $dateStart = \DateTime::createFromFormat("Y-m-d H:i:s", date($newDateStart[2]."-".$newDateStart[1]."-".$newDateStart[0]." 00:00:00"));
-            $dateEnd = \DateTime::createFromFormat("Y-m-d H:i:s", date($newDateEnd[2]."-".$newDateEnd[1]."-".$newDateEnd[0]." 23:59:59"));
+            $dateStart = \DateTime::createFromFormat("Y-m-d H:i:s", date($newDateStart[2] . "-" . $newDateStart[1] . "-" . $newDateStart[0] . " 00:00:00"));
+            $dateEnd = \DateTime::createFromFormat("Y-m-d H:i:s", date($newDateEnd[2] . "-" . $newDateEnd[1] . "-" . $newDateEnd[0] . " 23:59:59"));
 
             $incomeOperations = $em->createQueryBuilder()
                 ->select('op, SUM(op.debit) as amount, SUM(op.credit) as credit, ia')
                 ->from('ReportBundle:GeneralLedgerBalance', 'op')
-                ->innerJoin('ClassBundle:InternalAccount', 'ia','WITH','ia.id = op.account')
-                ->innerJoin('ClassBundle:Classe', 'cl','WITH','cl.id = ia.classe')
+                ->innerJoin('ClassBundle:InternalAccount', 'ia', 'WITH', 'ia.id = op.account')
+                ->innerJoin('ClassBundle:Classe', 'cl', 'WITH', 'cl.id = ia.classe')
                 ->where('op.dateOperation BETWEEN :date1 AND :date2')
                 ->andWhere('cl.id =:income')
                 ->groupBy('op.account')
                 ->setParameters(
                     [
-                    'date1' => $dateStart,
-                    'date2' => $dateEnd,
-                    'income' => 7,
+                        'date1' => $dateStart,
+                        'date2' => $dateEnd,
+                        'income' => 7,
                     ]
                 )
-                ->getQuery()->getScalarResult(); 
+                ->getQuery()->getScalarResult();
 
             $expenditureOperations = $em->createQueryBuilder()
-                    ->select('op, SUM(op.debit) as amount, SUM(op.credit) as credit, ia')
-                    ->from('ReportBundle:GeneralLedgerBalance', 'op')
-                    ->innerJoin('ClassBundle:InternalAccount', 'ia','WITH','ia.id = op.account')
-                    ->innerJoin('ClassBundle:Classe', 'cl','WITH','cl.id = ia.classe')
-                    ->where('op.dateOperation BETWEEN :date1 AND :date2')
-                    ->andWhere('cl.id = :expenditure')
-                    ->groupBy('op.account')
-                    ->setParameters(
-                        [
+                ->select('op, SUM(op.debit) as amount, SUM(op.credit) as credit, ia')
+                ->from('ReportBundle:GeneralLedgerBalance', 'op')
+                ->innerJoin('ClassBundle:InternalAccount', 'ia', 'WITH', 'ia.id = op.account')
+                ->innerJoin('ClassBundle:Classe', 'cl', 'WITH', 'cl.id = ia.classe')
+                ->where('op.dateOperation BETWEEN :date1 AND :date2')
+                ->andWhere('cl.id = :expenditure')
+                ->groupBy('op.account')
+                ->setParameters(
+                    [
                         'date1' => $dateStart,
                         'date2' => $dateEnd,
                         'expenditure' => 6,
-                        ]
-                    )
-                    ->getQuery()->getScalarResult();
+                    ]
+                )
+                ->getQuery()->getScalarResult();
 
-            $template =  $this->renderView('pdf_files/monthly_report_file.html.twig', [
+            $template = $this->renderView('pdf_files/monthly_report_file.html.twig', [
                 'displayDateStart' => $dateDebut,
                 'displayDateEnd' => $dateFin,
                 'currentUser' => $currentUser,
@@ -120,10 +119,10 @@ class ReportController extends Controller
                 'incomeOp' => $incomeOperations,
             ]);
 
-            $title = 'Monthly_Report_'.$dateStart->format('d-m-Y').'_'.$dateEnd->format('d-m-Y');
+            $title = 'Monthly_Report_' . $dateStart->format('d-m-Y') . '_' . $dateEnd->format('d-m-Y');
             $html2PdfService = $this->get('app.html2pdf');
             $html2PdfService->create('P', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 10));
-            return $html2PdfService->generatePdf($template, $title.'.pdf', 'ledgers',$title, 'FI');
+            return $html2PdfService->generatePdf($template, $title . '.pdf', 'ledgers', $title, 'FI');
 
         }
         return $this->render('report/report_month.html.twig', [
@@ -140,22 +139,22 @@ class ReportController extends Controller
     public function generalLedgerBalance(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
-        if ($request->getMethod() =="POST") {
+        if ($request->getMethod() == "POST") {
             $agency = $em->getRepository(Agency::class)->findOneBy([], ['id' => 'ASC']);
             $currentDate = new \DateTime('now');
 
-            $currentUser  = $this->get('security.token_storage')->getToken()->getUser();
-            $date  = $request->get('currentDate');
-            $date = explode( "/" , substr($date,strrpos($date," ")));
+            $currentUser = $this->get('security.token_storage')->getToken()->getUser();
+            $date = $request->get('currentDate');
+            $date = explode("/", substr($date, strrpos($date, " ")));
 
-            $today_start_datetime = \DateTime::createFromFormat("Y-m-d H:i:s", date($date[2]."-".$date[1]."-".$date[0]." 00:00:00"));
-            $today_end_datetime = \DateTime::createFromFormat("Y-m-d H:i:s", date($date[2]."-".$date[1]."-".$date[0]." 23:59:59"));
+            $today_start_datetime = \DateTime::createFromFormat("Y-m-d H:i:s", date($date[2] . "-" . $date[1] . "-" . $date[0] . " 00:00:00"));
+            $today_end_datetime = \DateTime::createFromFormat("Y-m-d H:i:s", date($date[2] . "-" . $date[1] . "-" . $date[0] . " 23:59:59"));
 
-            $date  = new \DateTime($date[2]."-".$date[1]."-".$date[0]);
-            $day_before = date( 'Y-m-d', strtotime( $date->format('Y-m-d') . ' -1 day' ) );
-            $dayBefore_endDatetime = \DateTime::createFromFormat("Y-m-d H:i:s", $day_before." 23:59:59");
+            $date = new \DateTime($date[2] . "-" . $date[1] . "-" . $date[0]);
+            $day_before = date('Y-m-d', strtotime($date->format('Y-m-d') . ' -1 day'));
+            $dayBefore_endDatetime = \DateTime::createFromFormat("Y-m-d H:i:s", $day_before . " 23:59:59");
 
-                /* Get the balance brougth forward for the new day */
+            /* Get the balance brougth forward for the new day */
             $totalGLBDayBefore = $em->createQueryBuilder()
                 ->select('glb')
                 ->from(GeneralLedgerBalance::class, 'glb')
@@ -163,18 +162,17 @@ class ReportController extends Controller
                 ->setParameters(['date' => $dayBefore_endDatetime])
                 ->orderBy('glb.dateOperation', 'ASC')
                 ->getQuery()
-                 ->getResult();
+                ->getResult();
 
-//            dump($totalGLBDayBefore);die;
-                 $lastElement = end($totalGLBDayBefore);
+            $lastElement = end($totalGLBDayBefore);
 
-                 if ($lastElement) {
-                     $lastOperation = $lastElement;
-                     $lastElement = $lastElement->getBalance();
-                    }else{
-                        $lastElement = 0;
-                        $lastOperation = NULL;
-                 }
+            if ($lastElement) {
+                $lastOperation = $lastElement;
+                $lastElement = $lastElement->getBalance();
+            } else {
+                $lastElement = 0;
+                $lastOperation = NULL;
+            }
 
             $operations = $em->createQueryBuilder()
                 ->select('glb')
@@ -184,7 +182,7 @@ class ReportController extends Controller
                 ->setParameters([
                     'date' => $today_start_datetime,
                     'date_end' => $today_end_datetime
-                    ])
+                ])
                 ->getQuery()
                 ->getResult();
 
@@ -199,13 +197,13 @@ class ReportController extends Controller
                 'dayBefore' => $dayBefore_endDatetime,
             ]);
 
-            $title = 'General_Ledger_'.$date->format('d-m-Y');
+            $title = 'General_Ledger_' . $date->format('d-m-Y');
             $html2PdfService = $this->get('app.html2pdf');
             $html2PdfService->create('P', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 10));
-            if ($operations){
-                return $html2PdfService->generatePdf($template, $title.'.pdf', 'ledgers',$title, 'FI');
+            if ($operations) {
+                return $html2PdfService->generatePdf($template, $title . '.pdf', 'ledgers', $title, 'FI');
             }
-            return $html2PdfService->generatePdf($template, $title.'.pdf', 'ledgers',$title, 'I');
+            return $html2PdfService->generatePdf($template, $title . '.pdf', 'ledgers', $title, 'I');
         }
 
         $accounts = $em->getRepository('ClassBundle:InternalAccount')->findAll();
@@ -223,21 +221,21 @@ class ReportController extends Controller
      */
     public function individualLedgerBalance(Request $request)
     {
-        
+
         $em = $this->getDoctrine()->getManager();
-        if ($request->getMethod() =="POST") {
+        if ($request->getMethod() == "POST") {
             $agency = $em->getRepository('ConfigBundle:Agency')->findOneBy([], ['id' => 'ASC']);
             $currentDate = new \DateTime('now');
 
-            $currentUserId  = $this->get('security.token_storage')->getToken()->getUser()->getId();
-            $currentUser    = $em->getRepository('UserBundle:Utilisateur')->find($currentUserId);
+            $currentUserId = $this->get('security.token_storage')->getToken()->getUser()->getId();
+            $currentUser = $em->getRepository('UserBundle:Utilisateur')->find($currentUserId);
 
             $data = $request->request->all();
-            $start = explode( "/" , substr($data['start'],strrpos($data['start']," ")));
-            $end = explode( "/" , substr($data['end'],strrpos($data['end']," ")));
+            $start = explode("/", substr($data['start'], strrpos($data['start'], " ")));
+            $end = explode("/", substr($data['end'], strrpos($data['end'], " ")));
 
-            $start_datetime = \DateTime::createFromFormat("Y-m-d H:i:s", date($start[2]."-".$start[1]."-".$start[0]." 00:00:00"));
-            $end_datetime = \DateTime::createFromFormat("Y-m-d H:i:s", date($end[2]."-".$end[1]."-".$end[0]." 23:59:59"));
+            $start_datetime = \DateTime::createFromFormat("Y-m-d H:i:s", date($start[2] . "-" . $start[1] . "-" . $start[0] . " 00:00:00"));
+            $end_datetime = \DateTime::createFromFormat("Y-m-d H:i:s", date($end[2] . "-" . $end[1] . "-" . $end[0] . " 23:59:59"));
 
             $operations = $em->createQueryBuilder()
                 ->select('glb')
@@ -250,7 +248,7 @@ class ReportController extends Controller
                     'date' => $start_datetime,
                     'date_end' => $end_datetime,
                     'accountId' => $data['account_number']
-                    ])
+                ])
                 ->getQuery()
                 ->getResult();
 
@@ -266,13 +264,13 @@ class ReportController extends Controller
             ]);
 
             $accountName = str_replace(' ', '_', $account->getAccountName());
-            $title = 'Individual_Ledger_'.$accountName.'_'.$currentDate->format('d-m-Y');
+            $title = 'Individual_Ledger_' . $accountName . '_' . $currentDate->format('d-m-Y');
             $html2PdfService = $this->get('app.html2pdf');
             $html2PdfService->create('P', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 10));
-            if ($operations){
-                return $html2PdfService->generatePdf($template, $title.'.pdf', 'ledgers',$title, 'FI');
+            if ($operations) {
+                return $html2PdfService->generatePdf($template, $title . '.pdf', 'ledgers', $title, 'FI');
             }
-            return $html2PdfService->generatePdf($template, $title.'.pdf', 'ledgers',$title, 'I');
+            return $html2PdfService->generatePdf($template, $title . '.pdf', 'ledgers', $title, 'I');
         }
 
         $accounts = $em->getRepository('ClassBundle:InternalAccount')->findAll();
@@ -290,10 +288,11 @@ class ReportController extends Controller
      * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      * @return Response
      */
-    public function memberSituationAction(){
+    public function memberSituationAction()
+    {
 
         $entityManager = $this->getDoctrine()->getManager();
-        $members  = $entityManager->getRepository('MemberBundle:Member')->findBy([],['memberNumber' => 'ASC',]);
+        $members = $entityManager->getRepository('MemberBundle:Member')->findBy([], ['memberNumber' => 'ASC',]);
 
         return $this->render('report/member_situation.html.twig', array(
             'members' => $members,
@@ -320,19 +319,19 @@ class ReportController extends Controller
         $listLoanWithOutHistory = [];
         switch ($status) {
             case "allMembers":
-                $lists  = $entityManager->getRepository(Member::class)->findBy([], ['memberNumber' => 'ASC']);
+                $lists = $entityManager->getRepository(Member::class)->findBy([], ['memberNumber' => 'ASC']);
                 break;
             case "activeMembers":
-                $lists  = $entityManager->getRepository(Member::class)->getActiveMembers();
+                $lists = $entityManager->getRepository(Member::class)->getActiveMembers();
                 break;
             case "inactiveMembers":
-                $lists  = $entityManager->getRepository(Member::class)->getAllInActiveMembers();
+                $lists = $entityManager->getRepository(Member::class)->getAllInActiveMembers();
                 break;
             case "foundingMembers":
-                $lists  = $entityManager->getRepository(Member::class)->getFoundingMembers();
+                $lists = $entityManager->getRepository(Member::class)->getFoundingMembers();
                 break;
             case "allLoans":
-                $subQuery  = $entityManager->createQueryBuilder()
+                $subQuery = $entityManager->createQueryBuilder()
                     ->select('(lh.loan)')
                     ->from('AccountBundle:LoanHistory', 'lh')
                     ->innerJoin('AccountBundle:Loan', 'l', 'WITH', 'l.id = lh.loan')
@@ -340,30 +339,30 @@ class ReportController extends Controller
                     ->getArrayResult();
 
 
-                    $queryBuilder = $entityManager->createQueryBuilder();
-                    $listLoanWithOutHistory = $entityManager->createQueryBuilder()
-                        ->select('l')
-                        ->from('AccountBundle:Loan', 'l')
-                        ->where($queryBuilder->expr()->notIn('l.id', ':subQuery'))
-                        ->setParameter('subQuery', $subQuery)
-                        ->getQuery()
-                        ->getResult();
+                $queryBuilder = $entityManager->createQueryBuilder();
+                $listLoanWithOutHistory = $entityManager->createQueryBuilder()
+                    ->select('l')
+                    ->from('AccountBundle:Loan', 'l')
+                    ->where($queryBuilder->expr()->notIn('l.id', ':subQuery'))
+                    ->setParameter('subQuery', $subQuery)
+                    ->getQuery()
+                    ->getResult();
 
-                $lists  = $entityManager->createQueryBuilder()
-                        ->select('l', 'lh')
-                        ->from('AccountBundle:Loan', 'l')
-                        ->innerJoin('AccountBundle:LoanHistory', 'lh', 'WITH', 'l.id = lh.loan')
-                        ->where('lh.dateOperation IN
+                $lists = $entityManager->createQueryBuilder()
+                    ->select('l', 'lh')
+                    ->from('AccountBundle:Loan', 'l')
+                    ->innerJoin('AccountBundle:LoanHistory', 'lh', 'WITH', 'l.id = lh.loan')
+                    ->where('lh.dateOperation IN
                                     (SELECT MAX(lh2.dateOperation)
                                     FROM AccountBundle:LoanHistory lh2
                                     WHERE lh2.loan = l.id
                                     ORDER BY lh2.id DESC
                                     )'
-                            )
-                        ->andWhere('l.status = true')
-                        ->groupBy('lh.loan')
-                        ->getQuery()
-                        ->getScalarResult();
+                    )
+                    ->andWhere('l.status = true')
+                    ->groupBy('lh.loan')
+                    ->getQuery()
+                    ->getScalarResult();
                 break;
             case "activeLoans":
                 # code...
@@ -376,7 +375,7 @@ class ReportController extends Controller
                 break;
         }
 
-        $template =  $this->renderView('pdf_files/generate_document_file.html.twig', [
+        $template = $this->renderView('pdf_files/generate_document_file.html.twig', [
             'agency' => $agency,
             'lists' => $lists,
             'type' => $type,
@@ -385,10 +384,10 @@ class ReportController extends Controller
         ]);
 
 
-        $title = 'List_'.$type;
+        $title = 'List_' . $type;
         $html2PdfService = $this->get('app.html2pdf');
         $html2PdfService->create('P', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 10));
-        return $html2PdfService->generatePdf($template, $title.'.pdf', 'ledgers',$title, 'FI');
+        return $html2PdfService->generatePdf($template, $title . '.pdf', 'ledgers', $title, 'FI');
     }
 
     /**
@@ -403,14 +402,14 @@ class ReportController extends Controller
     public function savingSituation($id)
     {
         $entityManager = $this->getDoctrine()->getManager();
-        $member  = $entityManager->getRepository('MemberBundle:Member')->find($id);
+        $member = $entityManager->getRepository('MemberBundle:Member')->find($id);
         $agency = $entityManager->getRepository('ConfigBundle:Agency')->findOneBy([], ['id' => 'ASC']);
         $currentDate = new \DateTime('now');
 
         $operations = $entityManager->getRepository('AccountBundle:Operation')->findBy([
             'member' => $member,
             'isSaving' => true
-            ]);
+        ]);
 
         $firstOp = $entityManager->getRepository('AccountBundle:Operation')->findOneBy([
             'member' => $member,
@@ -419,7 +418,7 @@ class ReportController extends Controller
 
         $memberAccountName = str_replace(' ', '_', $member->getName());
         $type = "Savings";
-        $template =  $this->renderView('situation/accounts_situation_file.html.twig', array(
+        $template = $this->renderView('situation/accounts_situation_file.html.twig', array(
             'agency' => $agency,
             'member' => $member,
             'firstOp' => $firstOp,
@@ -428,10 +427,10 @@ class ReportController extends Controller
             'operations' => $operations,
         ));
 
-        $title = 'Situation_'.$type.'_'.$memberAccountName;
+        $title = 'Situation_' . $type . '_' . $memberAccountName;
         $html2PdfService = $this->get('app.html2pdf');
         $html2PdfService->create('P', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 10));
-        return $html2PdfService->generatePdf($template, $title.'.pdf', 'savings',$title, 'FI');
+        return $html2PdfService->generatePdf($template, $title . '.pdf', 'savings', $title, 'FI');
     }
 
 
@@ -444,27 +443,28 @@ class ReportController extends Controller
      * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      * @return Response
      */
-    public function sharesSituationAction($id){
+    public function sharesSituationAction($id)
+    {
 
         $entityManager = $this->getDoctrine()->getManager();
-        $member  = $entityManager->getRepository('MemberBundle:Member')->find($id);
+        $member = $entityManager->getRepository('MemberBundle:Member')->find($id);
         $agency = $entityManager->getRepository('ConfigBundle:Agency')->findOneBy([], ['id' => 'ASC']);
         $currentDate = new \DateTime('now');
 
         $operations = $entityManager->getRepository('AccountBundle:Operation')->findBy([
             'member' => $member,
             'isShare' => true
-            ]);
+        ]);
 
         $firstOp = $entityManager->getRepository('AccountBundle:Operation')->findOneBy([
             'member' => $member,
             'isShare' => true],
             ['id' => 'ASC',]
-            );
+        );
 
         $memberAccountName = str_replace(' ', '_', $member->getName());
         $type = "Shares";
-        $template =  $this->renderView('situation/accounts_situation_file.html.twig', array(
+        $template = $this->renderView('situation/accounts_situation_file.html.twig', array(
             'agency' => $agency,
             'member' => $member,
             'type' => $type,
@@ -473,10 +473,10 @@ class ReportController extends Controller
             'operations' => $operations,
         ));
 
-        $title = 'Situation_'.$type.'_'.$memberAccountName;
+        $title = 'Situation_' . $type . '_' . $memberAccountName;
         $html2PdfService = $this->get('app.html2pdf');
         $html2PdfService->create('P', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 10));
-        return $html2PdfService->generatePdf($template, $title.'.pdf', 'shares', $title, 'FI');
+        return $html2PdfService->generatePdf($template, $title . '.pdf', 'shares', $title, 'FI');
     }
 
     /**
@@ -488,39 +488,40 @@ class ReportController extends Controller
      * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      * @return Response
      */
-    public function depositSituation($id){
+    public function depositSituation($id)
+    {
 
         $entityManager = $this->getDoctrine()->getManager();
-        $member  = $entityManager->getRepository('MemberBundle:Member')->find($id);
+        $member = $entityManager->getRepository('MemberBundle:Member')->find($id);
         $agency = $entityManager->getRepository('ConfigBundle:Agency')->findOneBy([], ['id' => 'ASC']);
         $currentDate = new \DateTime('now');
 
         $operations = $entityManager->getRepository('AccountBundle:Operation')->findBy([
             'member' => $member,
             'isDeposit' => true
-            ]);
+        ]);
         $firstOp = $entityManager->getRepository('AccountBundle:Operation')->findOneBy([
             'member' => $member,
             'isDeposit' => true],
             ['id' => 'ASC',]
-            );
+        );
 
 
         $memberAccountName = str_replace(' ', '_', $member->getName());
         $type = "Deposits";
-        $template =  $this->renderView('situation/accounts_situation_file.html.twig', array(
+        $template = $this->renderView('situation/accounts_situation_file.html.twig', array(
             'agency' => $agency,
             'member' => $member,
-             'firstOp' => $firstOp,
+            'firstOp' => $firstOp,
             'type' => $type,
             'currentDate' => $currentDate,
             'operations' => $operations,
         ));
 
-        $title = 'Situation_'.$type.'_'.$memberAccountName;
+        $title = 'Situation_' . $type . '_' . $memberAccountName;
         $html2PdfService = $this->get('app.html2pdf');
         $html2PdfService->create('P', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 10));
-        return $html2PdfService->generatePdf($template, $title.'.pdf', 'deposits',$title, 'FI');
+        return $html2PdfService->generatePdf($template, $title . '.pdf', 'deposits', $title, 'FI');
     }
 
 
@@ -536,7 +537,7 @@ class ReportController extends Controller
     public function loanSituation($id)
     {
         $entityManager = $this->getDoctrine()->getManager();
-        $member  = $entityManager->getRepository(Member::class)->find($id);
+        $member = $entityManager->getRepository(Member::class)->find($id);
         $agency = $entityManager->getRepository(Agency::class)->findOneBy([], ['id' => 'ASC']);
         $currentDate = new \DateTime('now');
 
@@ -546,7 +547,7 @@ class ReportController extends Controller
 
         $memberAccountName = str_replace(' ', '_', $member->getName());
         $type = "Loans";
-        $template =  $this->renderView('situation/loan_situation_file.html.twig', [
+        $template = $this->renderView('situation/loan_situation_file.html.twig', [
             'agency' => $agency,
             'member' => $member,
             'loan' => $loan,
@@ -554,13 +555,13 @@ class ReportController extends Controller
             'currentDate' => $currentDate,
             'loanSituations' => $loanSituations,
         ]);
-        $title = 'Situation_'.$type.'_'.$memberAccountName;
+        $title = 'Situation_' . $type . '_' . $memberAccountName;
         $html2PdfService = $this->get('app.html2pdf');
         $html2PdfService->create('P', 'A4', 'en', true, 'UTF-8', array(5, 10, 5, 10));
-        if ($loanSituations){
-            return $html2PdfService->generatePdf($template, $title.'.pdf', 'loans',$title, 'FI');
+        if ($loanSituations) {
+            return $html2PdfService->generatePdf($template, $title . '.pdf', 'loans', $title, 'FI');
         }
-        return $html2PdfService->generatePdf($template, $title.'.pdf', 'loans',$title, 'I');
+        return $html2PdfService->generatePdf($template, $title . '.pdf', 'loans', $title, 'I');
 
     }
 
@@ -572,12 +573,13 @@ class ReportController extends Controller
      * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      * @return Response
      */
-    public function trialBalance(Request $request){
+    public function trialBalance(Request $request)
+    {
 
         if ($request->getMethod() == 'POST') {
             $em = $this->getDoctrine()->getManager();
-            $currentUserId  = $this->get('security.token_storage')->getToken()->getUser()->getId();
-            $currentUser    = $em->getRepository('UserBundle:Utilisateur')->find($currentUserId);
+            $currentUserId = $this->get('security.token_storage')->getToken()->getUser()->getId();
+            $currentUser = $em->getRepository('UserBundle:Utilisateur')->find($currentUserId);
             $date = new \DateTime('now');
             $agency = $em->getRepository('ConfigBundle:Agency')->findOneBy([], ['id' => 'ASC']);
 
@@ -595,28 +597,28 @@ class ReportController extends Controller
             $dateDebut = $request->get('start');
             $dateFin = $request->get('end');
 
-            $newDateStart = explode( "/" , substr($dateDebut,strrpos($dateDebut," ")));
-            $newDateEnd = explode( "/" , substr($dateFin,strrpos($dateFin," ")));
+            $newDateStart = explode("/", substr($dateDebut, strrpos($dateDebut, " ")));
+            $newDateEnd = explode("/", substr($dateFin, strrpos($dateFin, " ")));
 
-            $displayDateStart  = $newDateStart[1]."-".$newDateStart[0]."-".$newDateStart[2];
-            $displayDateEnd  = $newDateEnd[1]."-".$newDateEnd[0]."-".$newDateEnd[2];
+            $displayDateStart = $newDateStart[1] . "-" . $newDateStart[0] . "-" . $newDateStart[2];
+            $displayDateEnd = $newDateEnd[1] . "-" . $newDateEnd[0] . "-" . $newDateEnd[2];
 
-                $template =  $this->renderView('report/trial_balance_file.html.twig', array(
-                    'displayDateStart' => $displayDateStart,
-                    'displayDateEnd' => $displayDateEnd,
-                    'currentUser' => $currentUser,
-                    'date' => $date,
-                    'agency' => $agency,
-                    'internalAccounts' => $internalAccounts,
-                ));
+            $template = $this->renderView('report/trial_balance_file.html.twig', array(
+                'displayDateStart' => $displayDateStart,
+                'displayDateEnd' => $displayDateEnd,
+                'currentUser' => $currentUser,
+                'date' => $date,
+                'agency' => $agency,
+                'internalAccounts' => $internalAccounts,
+            ));
 
-                $title = 'Trial_Balance';
-                $html2PdfService = $this->get('app.html2pdf');
-                $html2PdfService->create('P', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 15));
-                    return $html2PdfService->generatePdf($template, $title.'.pdf', 'loans',$title, 'I');
-            }
-        return $this->render('report/general_statistic.html.twig');
+            $title = 'Trial_Balance';
+            $html2PdfService = $this->get('app.html2pdf');
+            $html2PdfService->create('P', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 15));
+            return $html2PdfService->generatePdf($template, $title . '.pdf', 'loans', $title, 'I');
         }
+        return $this->render('report/general_statistic.html.twig');
+    }
 
 
     /**
@@ -626,110 +628,111 @@ class ReportController extends Controller
      * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      * @return Response
      */
-        public function accountHistoryAction(Request $request){
-            $em = $this->getDoctrine()->getManager();
-            $qb = $em->createQueryBuilder();
-            $agency = $em->getRepository('ConfigBundle:Agency')->findOneBy([], ['id' => 'ASC']);
+    public function accountHistoryAction(Request $request)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $qb = $em->createQueryBuilder();
+        $agency = $em->getRepository('ConfigBundle:Agency')->findOneBy([], ['id' => 'ASC']);
 
-            $currentDate = new \DateTime('now');
+        $currentDate = new \DateTime('now');
 
-            if ($request->getMethod() == 'POST') {
+        if ($request->getMethod() == 'POST') {
 
-                $dateDebut = $request->get('start');
-                $dateFin = $request->get('end');
-                $accountNumber = $request->get('accountNumber');
-                $accountType = $request->get('accountType');
+            $dateDebut = $request->get('start');
+            $dateFin = $request->get('end');
+            $accountNumber = $request->get('accountNumber');
+            $accountType = $request->get('accountType');
 
-                $newDateStart = explode( "/" , substr($dateDebut,strrpos($dateDebut," ")));
-                $newDateEnd = explode( "/" , substr($dateFin,strrpos($dateFin," ")));
+            $newDateStart = explode("/", substr($dateDebut, strrpos($dateDebut, " ")));
+            $newDateEnd = explode("/", substr($dateFin, strrpos($dateFin, " ")));
 
 
-                $dateStart1  = new \DateTime($newDateStart[2]."-".$newDateStart[0]."-".$newDateStart[1]);
-                $dateEnd1  = new \DateTime($newDateEnd[2]."-".$newDateEnd[0]."-".$newDateEnd[1]);
+            $dateStart1 = new \DateTime($newDateStart[2] . "-" . $newDateStart[0] . "-" . $newDateStart[1]);
+            $dateEnd1 = new \DateTime($newDateEnd[2] . "-" . $newDateEnd[0] . "-" . $newDateEnd[1]);
 
 //                $dateEnd11 = $dateEnd1->add(new \DateInterval('P1D'));
 
-                $displayDateStart  = $newDateStart[1]."-".$newDateStart[0]."-".$newDateStart[2];
-                $displayDateEnd  = $newDateEnd[1]."-".$newDateEnd[0]."-".$newDateEnd[2];
- 
-                switch ($accountType) {
-                    case 1:
-                        $qb->select('op')
-                            ->from('AccountBundle:Operation', 'op')
-                            ->innerJoin('AccountBundle:Saving', 'sa','WITH','op.savingAccount = sa.id')
-                            ->where('op.dateOperation BETWEEN :date1 AND :date2')
-                            ->andWhere('sa.id =:identify')
-                            ->setParameters(
-                                [
+            $displayDateStart = $newDateStart[1] . "-" . $newDateStart[0] . "-" . $newDateStart[2];
+            $displayDateEnd = $newDateEnd[1] . "-" . $newDateEnd[0] . "-" . $newDateEnd[2];
+
+            switch ($accountType) {
+                case 1:
+                    $qb->select('op')
+                        ->from('AccountBundle:Operation', 'op')
+                        ->innerJoin('AccountBundle:Saving', 'sa', 'WITH', 'op.savingAccount = sa.id')
+                        ->where('op.dateOperation BETWEEN :date1 AND :date2')
+                        ->andWhere('sa.id =:identify')
+                        ->setParameters(
+                            [
                                 'date1' => $dateStart1->format('Y-m-d'),
                                 'date2' => $dateEnd1->format('Y-m-d'),
                                 'identify' => $accountNumber,
-                                ]
-                            );
-                        $operations = $qb->getQuery()->getResult();
+                            ]
+                        );
+                    $operations = $qb->getQuery()->getResult();
 
-                        $account = $em->getRepository('AccountBundle:Saving')->find($accountNumber);
-                        break;
-                    case 2:
-                        $qb->select('op')
-                            ->from('AccountBundle:Operation', 'op')
-                            ->innerJoin('AccountBundle:Share', 'sa','WITH','op.shareAccount = sa.id')
-                            ->where('op.dateOperation BETWEEN :date1 AND :date2')
-                            ->andWhere('sa.id =:identify')
-                            ->setParameters(
-                                [
+                    $account = $em->getRepository('AccountBundle:Saving')->find($accountNumber);
+                    break;
+                case 2:
+                    $qb->select('op')
+                        ->from('AccountBundle:Operation', 'op')
+                        ->innerJoin('AccountBundle:Share', 'sa', 'WITH', 'op.shareAccount = sa.id')
+                        ->where('op.dateOperation BETWEEN :date1 AND :date2')
+                        ->andWhere('sa.id =:identify')
+                        ->setParameters(
+                            [
                                 'date1' => $dateStart1->format('Y-m-d'),
                                 'date2' => $dateEnd1->format('Y-m-d'),
                                 'identify' => $accountNumber,
-                                ]
-                            );
-                        $operations = $qb->getQuery()->getResult();
-                        $account = $em->getRepository('AccountBundle:Share')->find($accountNumber);
-                        break;
-                    case 3:
-                        $qb->select('op')
-                            ->from('AccountBundle:Operation', 'op')
-                            ->innerJoin('AccountBundle:Deposit', 'sa','WITH','op.depositAccount = sa.id')
-                            ->where('op.dateOperation BETWEEN :date1 AND :date2')
-                            ->andWhere('sa.id =:identify')
-                            ->setParameters(
-                                [
+                            ]
+                        );
+                    $operations = $qb->getQuery()->getResult();
+                    $account = $em->getRepository('AccountBundle:Share')->find($accountNumber);
+                    break;
+                case 3:
+                    $qb->select('op')
+                        ->from('AccountBundle:Operation', 'op')
+                        ->innerJoin('AccountBundle:Deposit', 'sa', 'WITH', 'op.depositAccount = sa.id')
+                        ->where('op.dateOperation BETWEEN :date1 AND :date2')
+                        ->andWhere('sa.id =:identify')
+                        ->setParameters(
+                            [
                                 'date1' => $dateStart1->format('Y-m-d'),
                                 'date2' => $dateEnd1->format('Y-m-d'),
                                 'identify' => $accountNumber,
-                                ]
-                            );
-                        $operations = $qb->getQuery()->getResult();
-                        $account = $em->getRepository('AccountBundle:Deposit')->find($accountNumber);
-                        break;
-                    default:
-                        # code...
-                        break;
-                }
-
-                $html =  $this->renderView('report/account_history_file.html.twig', array(
-                    'operations' => $operations,
-                    'agency' => $agency,
-                    'displayDateStart' => $displayDateStart,
-                    'displayDateEnd' => $displayDateEnd,
-                    'account' => $account,
-                    'currentDate' => $currentDate,
-                ));
-
-                $html2pdf = $this->get('html2pdf_factory')->create('P', 'A4', 'en', true, 'UTF-8', array(5, 10, 5, 10));
-                $html2pdf->pdf->SetAuthor('GreenSoft-Team');
-                $html2pdf->pdf->SetDisplayMode('real');
-                $html2pdf->pdf->SetTitle('Account statement_'.$account->getAccountNumber());
-                $response = new Response();
-                $html2pdf->pdf->SetTitle('Account Statement_'.$account->getAccountNumber());
-                $html2pdf->writeHTML($html);
-                $content = $html2pdf->Output('', true);
-                $response->setContent($content);
-                $response->headers->set('Content-Type', 'application/pdf');
-                $response->headers->set('Content-disposition', 'filename=Account_Statement_'.$account->getAccountNumber().'.pdf');
-                return $response;
+                            ]
+                        );
+                    $operations = $qb->getQuery()->getResult();
+                    $account = $em->getRepository('AccountBundle:Deposit')->find($accountNumber);
+                    break;
+                default:
+                    # code...
+                    break;
             }
+
+            $html = $this->renderView('report/account_history_file.html.twig', array(
+                'operations' => $operations,
+                'agency' => $agency,
+                'displayDateStart' => $displayDateStart,
+                'displayDateEnd' => $displayDateEnd,
+                'account' => $account,
+                'currentDate' => $currentDate,
+            ));
+
+            $html2pdf = $this->get('html2pdf_factory')->create('P', 'A4', 'en', true, 'UTF-8', array(5, 10, 5, 10));
+            $html2pdf->pdf->SetAuthor('GreenSoft-Team');
+            $html2pdf->pdf->SetDisplayMode('real');
+            $html2pdf->pdf->SetTitle('Account statement_' . $account->getAccountNumber());
+            $response = new Response();
+            $html2pdf->pdf->SetTitle('Account Statement_' . $account->getAccountNumber());
+            $html2pdf->writeHTML($html);
+            $content = $html2pdf->Output('', true);
+            $response->setContent($content);
+            $response->headers->set('Content-Type', 'application/pdf');
+            $response->headers->set('Content-disposition', 'filename=Account_Statement_' . $account->getAccountNumber() . '.pdf');
+            return $response;
         }
+    }
 
 
     /**
@@ -739,7 +742,8 @@ class ReportController extends Controller
      * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      * @return Response
      */
-    public function dailyReportConfirmationAction(Request $request){
+    public function dailyReportConfirmationAction(Request $request)
+    {
         $em = $this->getDoctrine()->getManager();
 
 
@@ -747,10 +751,10 @@ class ReportController extends Controller
 
             $dateDebut = $request->get('dateOperation');
 
-            $newDateStart = explode( "/" , substr($dateDebut,strrpos($dateDebut," ")));
+            $newDateStart = explode("/", substr($dateDebut, strrpos($dateDebut, " ")));
 
-            $today_start_datetime = \DateTime::createFromFormat("Y-m-d H:i:s", date($newDateStart[2]."-".$newDateStart[1]."-".$newDateStart[0]." 00:00:00"));
-            $today_end_datetime = \DateTime::createFromFormat("Y-m-d H:i:s", date($newDateStart[2]."-".$newDateStart[1]."-".$newDateStart[0]." 23:59:59"));
+            $today_start_datetime = \DateTime::createFromFormat("Y-m-d H:i:s", date($newDateStart[2] . "-" . $newDateStart[1] . "-" . $newDateStart[0] . " 00:00:00"));
+            $today_end_datetime = \DateTime::createFromFormat("Y-m-d H:i:s", date($newDateStart[2] . "-" . $newDateStart[1] . "-" . $newDateStart[0] . " 23:59:59"));
 
             $operations = $em->createQueryBuilder()
                 ->select('op')
@@ -816,31 +820,29 @@ class ReportController extends Controller
                     ]
                 )->getQuery()->getResult();
 
-                $memberRegist = $em->createQueryBuilder()
-                    ->select('m')
-                    ->from('MemberBundle:Member', 'm')
-                    ->where('m.membershipDateCreation >= :start')
-                    ->andWhere('m.membershipDateCreation <= :end')
-                    ->setParameters(
-                        [
-                            'start' => $today_start_datetime,
-                            'end' => $today_end_datetime,
-                        ]
-                    )->getQuery()->getResult();
+            $memberRegist = $em->createQueryBuilder()
+                ->select('m')
+                ->from('MemberBundle:Member', 'm')
+                ->where('m.membershipDateCreation >= :start')
+                ->andWhere('m.membershipDateCreation <= :end')
+                ->setParameters(
+                    [
+                        'start' => $today_start_datetime,
+                        'end' => $today_end_datetime,
+                    ]
+                )->getQuery()->getResult();
 
-                $morMemberRegist = $em->createQueryBuilder()
-                    ->select('m')
-                    ->from('MemberBundle:MoralMember', 'm')
-                    ->where('m.membershipDateCreation >= :start')
-                    ->andWhere('m.membershipDateCreation <= :end')
-                    ->setParameters(
-                        [
-                            'start' => $today_start_datetime,
-                            'end' => $today_end_datetime,
-                        ]
-                    )->getQuery()->getResult();
-
-
+            $morMemberRegist = $em->createQueryBuilder()
+                ->select('m')
+                ->from('MemberBundle:MoralMember', 'm')
+                ->where('m.membershipDateCreation >= :start')
+                ->andWhere('m.membershipDateCreation <= :end')
+                ->setParameters(
+                    [
+                        'start' => $today_start_datetime,
+                        'end' => $today_end_datetime,
+                    ]
+                )->getQuery()->getResult();
 
 
             return $this->render('report/confirmation_operation.html.twig', array(
@@ -860,7 +862,7 @@ class ReportController extends Controller
 
     /**
      * @param Request $request [contains the http request that is passed on]
-     * 
+     *
      * @Route("/validate/operation", name="operation_validation")
      * @Method({"GET", "POST"})
      * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
@@ -871,15 +873,15 @@ class ReportController extends Controller
         $entityManager = $this->getDoctrine()->getManager();
 
         // Get the current user connected
-        $currentUserId  = $this->get('security.token_storage')->getToken()->getUser()->getId();
-        $currentUser    = $entityManager->getRepository('UserBundle:Utilisateur')->find($currentUserId);
+        $currentUserId = $this->get('security.token_storage')->getToken()->getUser()->getId();
+        $currentUser = $entityManager->getRepository('UserBundle:Utilisateur')->find($currentUserId);
 
 
-        try{
+        try {
             //first thing we get the class with the JSON format
             $accountJSON = json_decode(json_encode($request->request->get('data')), true);
             $operation = $entityManager->getRepository('AccountBundle:Operation')->find($accountJSON["idOperation"]);
-            
+
             switch ($accountJSON["account"]) {
                 case 1://Saving Account
                     $account = $operation->getSavingAccount();
@@ -888,27 +890,27 @@ class ReportController extends Controller
                             $account->setSolde($operation->getCurrentBalance());
 
                             //update the cash in hand
-                            $cashInHandAccount  = $entityManager->getRepository('ClassBundle:InternalAccount')->find(9);
+                            $cashInHandAccount = $entityManager->getRepository('ClassBundle:InternalAccount')->find(9);
                             $cashInHandAccount->setAmount($cashInHandAccount->getAmount() + $operation->getAmount() + $operation->getDebitFees());
                             $entityManager->persist($cashInHandAccount);
 
                             $income = new TransactionIncome();
 
                             $income->setAmount($operation->getDebitFees());
-                            $income->setDescription("Operation charges. Account Number: ".$account->getAccountNumber()." // Amount: ".$operation->getAmount());
+                            $income->setDescription("Operation charges. Account Number: " . $account->getAccountNumber() . " // Amount: " . $operation->getAmount());
                             $entityManager->persist($income);
                             break;
                         case 2://Debit operation
                             $account->setSolde($operation->getCurrentBalance());
                             //update the cash in hand
-                            $cashInHandAccount  = $entityManager->getRepository('ClassBundle:InternalAccount')->find(9);
+                            $cashInHandAccount = $entityManager->getRepository('ClassBundle:InternalAccount')->find(9);
                             $cashInHandAccount->setAmount($cashInHandAccount->getAmount() - $operation->getAmount() + $operation->getDebitFees());
                             $entityManager->persist($cashInHandAccount);
 
                             $income = new TransactionIncome();
 
                             $income->setAmount($operation->getDebitFees());
-                            $income->setDescription("Operation charges. Account Number: ".$account->getAccountNumber()." // Amount: ".$operation->getAmount());
+                            $income->setDescription("Operation charges. Account Number: " . $account->getAccountNumber() . " // Amount: " . $operation->getAmount());
                             $entityManager->persist($income);
                             break;
                         case 3://Transfer Operation
@@ -926,12 +928,12 @@ class ReportController extends Controller
                             $account->setSolde($operation->getCurrentBalance());
                             //update the internal account
                             $internalAccount = $entityManager->getRepository('ClassBundle:InternalAccount')->find($account->getNternalAccount()->getId());
-                            $internalAccount->setAmount($internalAccount->getAmount()  + $operation->getAmount());
+                            $internalAccount->setAmount($internalAccount->getAmount() + $operation->getAmount());
 
                             // Make records
 
                             $entityManager->persist($internalAccount);
-                            
+
                             //Update the classe account
                             $classe = $entityManager->getRepository('ClassBundle:Classe')->find($internalAccount->getClasse()->getId());
                             $classe->setTotalAmount($classe->getTotalAmount() + $operation->getAmount());
@@ -946,7 +948,7 @@ class ReportController extends Controller
                             $entityManager->persist($motherClass);
 
                             //update the cash in hand
-                            $cashInHandAccount  = $entityManager->getRepository('ClassBundle:InternalAccount')->find(9);
+                            $cashInHandAccount = $entityManager->getRepository('ClassBundle:InternalAccount')->find(9);
                             $cashInHandAccount->setAmount($cashInHandAccount->getAmount() + $operation->getAmount());
 
                             $entityManager->flush();
@@ -956,12 +958,12 @@ class ReportController extends Controller
                             $account->setSolde($operation->getCurrentBalance());
                             //update the internal account
                             $internalAccount = $entityManager->getRepository('ClassBundle:InternalAccount')->find($account->getNternalAccount()->getId());
-                            $internalAccount->setAmount($internalAccount->getAmount()  - $operation->getAmount());
+                            $internalAccount->setAmount($internalAccount->getAmount() - $operation->getAmount());
 
                             // Make records
 
                             $entityManager->persist($internalAccount);
-                            
+
                             //Update the classe account
                             $classe = $entityManager->getRepository('ClassBundle:Classe')->find($internalAccount->getClasse()->getId());
                             $classe->setTotalAmount($classe->getTotalAmount() - $operation->getAmount());
@@ -976,13 +978,13 @@ class ReportController extends Controller
                             $entityManager->persist($motherClass);
 
                             //update the cash in hand
-                            $cashInHandAccount  = $entityManager->getRepository('ClassBundle:InternalAccount')->find(9);
+                            $cashInHandAccount = $entityManager->getRepository('ClassBundle:InternalAccount')->find(9);
                             $cashInHandAccount->setAmount($cashInHandAccount->getAmount() - $operation->getAmount());
 
                             $income = new TransactionIncome();
 
                             $income->setAmount($operation->getDebitFees());
-                            $income->setDescription("Operation charges. Account Number: ".$account->getAccountNumber()." // Amount: ".$operation->getAmount());
+                            $income->setDescription("Operation charges. Account Number: " . $account->getAccountNumber() . " // Amount: " . $operation->getAmount());
 
                             $entityManager->persist($cashInHandAccount);
                             $entityManager->persist($income);
@@ -1001,13 +1003,13 @@ class ReportController extends Controller
                         case 1://Credit Operation
                             $account->setSolde($operation->getCurrentBalance());
                             //update the cash in hand
-                            $cashInHandAccount  = $entityManager->getRepository('ClassBundle:InternalAccount')->find(9);
+                            $cashInHandAccount = $entityManager->getRepository('ClassBundle:InternalAccount')->find(9);
                             $cashInHandAccount->setAmount($cashInHandAccount->getAmount() + $operation->getAmount() + $operation->getDebitFees());
 
                             $income = new TransactionIncome();
 
                             $income->setAmount($operation->getDebitFees());
-                            $income->setDescription("Operation charges. Account Number: ".$account->getAccountNumber()." // Amount: ".$operation->getDebitFees());
+                            $income->setDescription("Operation charges. Account Number: " . $account->getAccountNumber() . " // Amount: " . $operation->getDebitFees());
 
                             $entityManager->persist($income);
                             $entityManager->persist($cashInHandAccount);
@@ -1015,14 +1017,14 @@ class ReportController extends Controller
                         case 2://Debit Operation
                             $account->setSolde($operation->getCurrentBalance());
                             //update the cash in hand
-                            $cashInHandAccount  = $entityManager->getRepository('ClassBundle:InternalAccount')->find(9);
+                            $cashInHandAccount = $entityManager->getRepository('ClassBundle:InternalAccount')->find(9);
                             $cashInHandAccount->setAmount($cashInHandAccount->getAmount() - $operation->getAmount());
 
                             $income = new TransactionIncome();
 
                             $income->setAmount($operation->getDebitFees());
-                            $income->setDescription("Operation charges. Account Number: ".$account->getAccountNumber()." // Amount: ".$operation->getDebitFees());
-                            
+                            $income->setDescription("Operation charges. Account Number: " . $account->getAccountNumber() . " // Amount: " . $operation->getDebitFees());
+
 
                             $entityManager->persist($cashInHandAccount);
                             $entityManager->persist($income);
@@ -1040,24 +1042,24 @@ class ReportController extends Controller
 
             $operation->setIsConfirmed(true);
             $operation->setUserConfirmed($currentUser);
-            
+
 
             /**
-            *** Making record here
-            **/
-            
+             *** Making record here
+             **/
+
             $entityManager->persist($operation);
             $entityManager->persist($account);
             $entityManager->flush();
 
 
-            $response["data"]               = $accountJSON;
-            $response["optionalData"]       = json_encode($operation->getId());
+            $response["data"] = $accountJSON;
+            $response["optionalData"] = json_encode($operation->getId());
             $response["success"] = true;
 
             return new Response(json_encode($response));
-       
-        }catch(Exception $ex){
+
+        } catch (Exception $ex) {
             $response["success"] = false;
             return new Response(json_encode($response));
         }
@@ -1098,7 +1100,7 @@ class ReportController extends Controller
         $ds2 = $em->getRepository('ClassBundle:InternalAccount')->find(39);
         $ds3 = $em->getRepository('ClassBundle:InternalAccount')->find(40);
         $ds4 = $em->getRepository('ClassBundle:InternalAccount')->find(41);
-        $totalDailySavings = $ds1->getBalance() + $ds2->getBalance() + $ds3->getBalance() + $ds4->getBalance() ;
+        $totalDailySavings = $ds1->getBalance() + $ds2->getBalance() + $ds3->getBalance() + $ds4->getBalance();
 
         $totalRegistrationFeesPM = $em->createQueryBuilder()
             ->select('SUM(m.registrationFees)')
@@ -1116,7 +1118,7 @@ class ReportController extends Controller
         $totalCollectors = $em->createQueryBuilder()
             ->select('COUNT(u)')
             ->from('UserBundle:Utilisateur', 'u')
-            ->innerJoin('UserBundle:Groupe', 'g', 'WITH','g.id = u.groupe')
+            ->innerJoin('UserBundle:Groupe', 'g', 'WITH', 'g.id = u.groupe')
             ->where('g.name = :name')
             ->orWhere('g.name = :name2')
             ->setParameters([
@@ -1134,7 +1136,7 @@ class ReportController extends Controller
             $lowest_remain_amount_LoanHistory = $em->createQueryBuilder()
                 ->select('MIN(lh.remainAmount)')
                 ->from('AccountBundle:LoanHistory', 'lh')
-                ->innerJoin('AccountBundle:Loan', 'l', 'WITH','lh.loan = l.id')
+                ->innerJoin('AccountBundle:Loan', 'l', 'WITH', 'lh.loan = l.id')
                 ->where('l.id = :loan')
                 ->orderBy('lh.id', 'DESC')
                 ->setParameter('loan', $loan)
@@ -1156,7 +1158,7 @@ class ReportController extends Controller
                     $loanPaid += ($loan->getLoanAmount() - $latestLoanHistory->getRemainAmount());
                 }
 
-            }else{
+            } else {
                 $loanUnpaid += $loan->getLoanAmount();
             }
         }
@@ -1165,14 +1167,14 @@ class ReportController extends Controller
 
         $ubBalance = $em->getRepository('ClassBundle:InternalAccount')->find(76)->getBalance();
         /*Get the total cash on hand*/
-        $cashOnHand= $em->getRepository('ReportBundle:GeneralLedgerBalance')
+        $cashOnHand = $em->getRepository('ReportBundle:GeneralLedgerBalance')
             ->findOneBy(
-                [], ['id' => 'DESC' ]
+                [], ['id' => 'DESC']
             )->getBalance();
         /*total loan Interest*/
         $loanInterest = $em->getRepository('ClassBundle:InternalAccount')->find(136)->getBalance();
 
-        $template =  $this->renderView('pdf_files/general_situation_file.html.twig', [
+        $template = $this->renderView('pdf_files/general_situation_file.html.twig', [
             'numberNumber' => count($members),
             'agency' => $agency,
             'members' => $members,
@@ -1195,7 +1197,7 @@ class ReportController extends Controller
         $title = 'General_Situation';
         $html2PdfService = $this->get('app.html2pdf');
         $html2PdfService->create('P', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 10));
-        return $html2PdfService->generatePdf($template, $title.'.pdf', 'ledgers',$title, 'FI');
+        return $html2PdfService->generatePdf($template, $title . '.pdf', 'ledgers', $title, 'FI');
     }
 
 
@@ -1209,18 +1211,18 @@ class ReportController extends Controller
     {
         // Test is the user does not have the default role
         if (!$this->container->get('security.authorization_checker')->isGranted('ROLE_USER')) {
-            return new RedirectResponse($this->container->get ('router')->generate ('fos_user_security_login'));
+            return new RedirectResponse($this->container->get('router')->generate('fos_user_security_login'));
         }
 
 
-        $currentDate  = $request->get('currentDate');
-        $date = explode( "/" , substr($currentDate,strrpos($currentDate," ")));
+        $currentDate = $request->get('currentDate');
+        $date = explode("/", substr($currentDate, strrpos($currentDate, " ")));
 
-        $date  = new \DateTime($date[2]."-".$date[1]."-".$date[0]);
+        $date = new \DateTime($date[2] . "-" . $date[1] . "-" . $date[0]);
 
         $em = $this->getDoctrine()->getManager();
         $agency = $em->getRepository('ConfigBundle:Agency')->findOneBy([], ['id' => 'ASC']);
-        $members = $em->getRepository('MemberBundle:Member')->findBy([],['memberNumber' => 'ASC']);
+        $members = $em->getRepository('MemberBundle:Member')->findBy([], ['memberNumber' => 'ASC']);
 
         foreach ($members as $member) {
             $tmpLoan = $em->getRepository(Loan::class)->getMemberLoans($member, $date);
@@ -1233,7 +1235,7 @@ class ReportController extends Controller
             }
         }
 
-        $template =  $this->renderView('pdf_files/all_situation_file.html.twig', [
+        $template = $this->renderView('pdf_files/all_situation_file.html.twig', [
             'numberNumber' => count($members),
             'members' => $members,
             'agency' => $agency,
@@ -1243,7 +1245,7 @@ class ReportController extends Controller
         $title = 'All_Members_General_Situation';
         $html2PdfService = $this->get('app.html2pdf');
         $html2PdfService->create('L', 'A4', 'en', true, 'UTF-8', array(5, 10, 10, 10));
-        return $html2PdfService->generatePdf($template, $title.'.pdf', 'ledgers',$title, 'FI');
+        return $html2PdfService->generatePdf($template, $title . '.pdf', 'ledgers', $title, 'FI');
     }
 
     /**
@@ -1260,11 +1262,11 @@ class ReportController extends Controller
         $start = $request->get('start');
         $end = $request->get('end');
 
-        $startParsed = explode( "/" , substr($start,strrpos($start," ")));
-        $endParsed = explode( "/" , substr($end,strrpos($end," ")));
+        $startParsed = explode("/", substr($start, strrpos($start, " ")));
+        $endParsed = explode("/", substr($end, strrpos($end, " ")));
 
-        $startDate  = new \DateTime($startParsed[2]."-".$startParsed[1]."-".$startParsed[0]);
-        $endDate  = new \DateTime($endParsed[2]."-".$endParsed[1]."-".$endParsed[0]);
+        $startDate = new \DateTime($startParsed[2] . "-" . $startParsed[1] . "-" . $startParsed[0]);
+        $endDate = new \DateTime($endParsed[2] . "-" . $endParsed[1] . "-" . $endParsed[0]);
         $members = $em->getRepository('MemberBundle:Member')->getMemberRegisteredBefore($endDate);
 
         $shares = 0;
@@ -1294,6 +1296,173 @@ class ReportController extends Controller
         }
 
 
+        /* Get the cash at Bayelle */
+        $ds1 = $em->getRepository('ClassBundle:InternalAccount')->find(38);
+        $ds1Balance = $em->getRepository('ReportBundle:GeneralLedgerBalance')->getGLBHistoryInternalAccount($endDate, $ds1);
+
+        $ds2 = $em->getRepository('ClassBundle:InternalAccount')->find(39);
+        $ds2Balance = $em->getRepository('ReportBundle:GeneralLedgerBalance')->getGLBHistoryInternalAccount($endDate, $ds2);
+
+        $ds3 = $em->getRepository('ClassBundle:InternalAccount')->find(40);
+        $ds3Balance = $em->getRepository('ReportBundle:GeneralLedgerBalance')->getGLBHistoryInternalAccount($endDate, $ds3);
+
+        $ds4 = $em->getRepository('ClassBundle:InternalAccount')->find(41);
+        $ds4Balance = $em->getRepository('ReportBundle:GeneralLedgerBalance')->getGLBHistoryInternalAccount($endDate, $ds4);
+
+
+        $openingAccountBayelle = $em->getRepository('ClassBundle:InternalAccount')->find(18);
+        $openingAccountBayelleBalance = $em->getRepository('ReportBundle:GeneralLedgerBalance')->getGLBHistoryInternalAccount($endDate, $openingAccountBayelle);
+
+        $openingAccountUB = $em->getRepository('ClassBundle:InternalAccount')->find(21);
+        $openingAccountUBBalance = $em->getRepository('ReportBundle:GeneralLedgerBalance')->getGLBHistoryInternalAccount($endDate, $openingAccountUB);
+
+        $totalDailySavings = $ds1Balance + $ds2Balance + $ds3Balance + $ds4Balance;
+
+        /* Get the cash at Bayelle */
+        $bayelleAccount = $em->getRepository('ClassBundle:InternalAccount')->find(82);
+        $bayelleBalance = $em->getRepository('ReportBundle:GeneralLedgerBalance')->getGLBHistoryBayelle($endDate, $bayelleAccount);
+
+
+        /* Get the cash the UB bank */
+        $ubAccount = $em->getRepository('ClassBundle:InternalAccount')->find(76);
+        $ubBalance = $em->getRepository('ReportBundle:GeneralLedgerBalance')->getGLBHistoryUB($endDate, $ubAccount);
+
+        /*Get the total cash on hand*/
+        $cashOnHand = $em->getRepository('ReportBundle:GeneralLedgerBalance')->getGLBHistoryCashOnHand($endDate);
+
+        /* Get the cash in the General Reserve */
+        $internalGeneralReserve = $em->getRepository('ClassBundle:InternalAccount')->find(3);
+        $internalGeneralReserveBalance = $em->getRepository('ReportBundle:GeneralLedgerBalance')->getGLBHistoryInternalAccount($endDate, $internalGeneralReserve);
+
+
+        /* Get the cash the UB bank */
+        $otherReserveAccount = $em->getRepository('ClassBundle:InternalAccount')->find(10);
+        $otherReserveAccountBalance = $em->getRepository('ReportBundle:GeneralLedgerBalance')->getGLBHistoryInternalAccount($endDate, $otherReserveAccount);
+
+        $template = $this->renderView('pdf_files/balance_sheet.html.twig', [
+            'numberNumber' => count($members),
+            'agency' => $agency,
+            'members' => $members,
+            'shares' => $shares,
+            'savings' => $savings,
+            'deposit' => $deposit,
+            'buildingFees' => $buildingFees,
+            'reserves' => $internalGeneralReserveBalance + $otherReserveAccountBalance,
+            'remainLoan' => $remainLoan,
+            'totalDailySavings' => $totalDailySavings,
+            'bayelleBalance' => $bayelleBalance,
+            'ubBalance' => $ubBalance,
+            'cashOnHand' => $cashOnHand,
+            'start' => $startDate,
+            'end' => $endDate,
+            'undividedEarnings' => $this->undividedEarnings($startDate, $endDate),
+            'openingAccountBayelleBalance' => $openingAccountBayelleBalance,
+            'openingAccountUBBalance' => $openingAccountUBBalance,
+        ]);
+
+        $title = 'Balance_Sheet_' . $endDate->format('Y');
+        $html2PdfService = $this->get('app.html2pdf');
+        $html2PdfService->create('P', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 10));
+        return $html2PdfService->generatePdf($template, $title . '.pdf', 'ledgers', $title, 'FI');
+    }
+
+    /**
+     * @param $start
+     * @param $end
+     * @return int
+     */
+    public function undividedEarnings($start, $end)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $incomeOperations = $em->createQueryBuilder()
+            ->select('SUM(op.debit)')
+            ->from('ReportBundle:GeneralLedgerBalance', 'op')
+            ->innerJoin('ClassBundle:InternalAccount', 'ia', 'WITH', 'ia.id = op.account')
+            ->innerJoin('ClassBundle:Classe', 'cl', 'WITH', 'cl.id = ia.classe')
+            ->where('op.dateOperation BETWEEN :date1 AND :date2')
+            ->andWhere('cl.id =:income')
+            ->groupBy('op.account')
+            ->setParameters(
+                [
+                    'date1' => $start,
+                    'date2' => $end,
+                    'income' => 7,
+                ]
+            )
+            ->getQuery()->getScalarResult();
+
+        $incomes = 0;
+        foreach ($incomeOperations as $operation) {
+            ;
+            $incomes += intval($operation[1]);
+        }
+
+
+        $expenditureOperations = $em->createQueryBuilder()
+            ->select('SUM(op.credit)')
+            ->from('ReportBundle:GeneralLedgerBalance', 'op')
+            ->innerJoin('ClassBundle:InternalAccount', 'ia', 'WITH', 'ia.id = op.account')
+            ->innerJoin('ClassBundle:Classe', 'cl', 'WITH', 'cl.id = ia.classe')
+            ->where('op.dateOperation BETWEEN :date1 AND :date2')
+            ->andWhere('cl.id = :expenditure')
+            ->groupBy('op.account')
+            ->setParameters(
+                [
+                    'date1' => $start,
+                    'date2' => $end,
+                    'expenditure' => 6,
+                ]
+            )
+            ->getQuery()->getScalarResult();
+
+        $expenditures = 0;
+        foreach ($expenditureOperations as $operation) {
+            $expenditures += intval($operation[1]);
+        }
+        return ($incomes - $expenditures);
+    }
+
+    /**
+     * @Route("/current/balance/sheet", name="current_balance_sheet")
+     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
+     * @return Response
+     */
+    public function currentBalanceSheet()
+    {
+        $em = $this->getDoctrine()->getManager();
+        $agency = $em->getRepository('ConfigBundle:Agency')->findOneBy([], ['id' => 'ASC']);
+
+
+        $endDate = new \DateTime('now');
+        $yearStart = new \DateTime("01-01-" . $endDate->format('Y'));
+        $members = $em->getRepository('MemberBundle:Member')->getMemberRegisteredBefore($endDate);
+
+        $shares = 0;
+        $savings = 0;
+        $deposit = 0;
+        $buildingFees = 0;
+        $remainLoan = 0;
+        foreach ($members as $member) {
+            $tmpLoan = $em->getRepository(Loan::class)->getMemberLoans($member, $endDate);
+
+            $member = $em->getRepository(Operation::class)->getSituationAt($member, $endDate);
+            $shares += $member->getShare();
+            $savings += $member->getSaving();
+            $deposit += $member->getDeposit();
+            $buildingFees += $member->getBuildingFees();
+
+            if ($tmpLoan) {
+                $loan = $em->getRepository(LoanHistory::class)->getActiveLoanPerMember($tmpLoan, $endDate);
+                if ($loan) {
+                    if ($loan->getLoanHistory()) {
+                        $remainLoan += $loan->getLoanHistory()->getRemainAmount();
+                    } else {
+                        $remainLoan += $loan->getLoanAmount();
+                    }
+                }
+            }
+        }
+
 
         /* Get the cash at Bayelle */
         $ds1 = $em->getRepository('ClassBundle:InternalAccount')->find(38);
@@ -1315,7 +1484,7 @@ class ReportController extends Controller
         $openingAccountUB = $em->getRepository('ClassBundle:InternalAccount')->find(21);
         $openingAccountUBBalance = $em->getRepository('ReportBundle:GeneralLedgerBalance')->getGLBHistoryInternalAccount($endDate, $openingAccountUB);
 
-        $totalDailySavings = $ds1Balance + $ds2Balance + $ds3Balance + $ds4Balance ;
+        $totalDailySavings = $ds1Balance + $ds2Balance + $ds3Balance + $ds4Balance;
 
         /* Get the cash at Bayelle */
         $bayelleAccount = $em->getRepository('ClassBundle:InternalAccount')->find(82);
@@ -1327,19 +1496,18 @@ class ReportController extends Controller
         $ubBalance = $em->getRepository('ReportBundle:GeneralLedgerBalance')->getGLBHistoryUB($endDate, $ubAccount);
 
         /*Get the total cash on hand*/
-        $cashOnHand= $em->getRepository('ReportBundle:GeneralLedgerBalance')->getGLBHistoryCashOnHand($endDate);
+        $cashOnHand = $em->getRepository('ReportBundle:GeneralLedgerBalance')->getGLBHistoryCashOnHand($endDate);
 
         /* Get the cash in the General Reserve */
         $internalGeneralReserve = $em->getRepository('ClassBundle:InternalAccount')->find(3);
         $internalGeneralReserveBalance = $em->getRepository('ReportBundle:GeneralLedgerBalance')->getGLBHistoryInternalAccount($endDate, $internalGeneralReserve);
 
 
-
         /* Get the cash the UB bank */
         $otherReserveAccount = $em->getRepository('ClassBundle:InternalAccount')->find(10);
-        $otherReserveAccountBalance  = $em->getRepository('ReportBundle:GeneralLedgerBalance')->getGLBHistoryInternalAccount($endDate, $otherReserveAccount);
+        $otherReserveAccountBalance = $em->getRepository('ReportBundle:GeneralLedgerBalance')->getGLBHistoryInternalAccount($endDate, $otherReserveAccount);
 
-        $template =  $this->renderView('pdf_files/balance_sheet.html.twig', [
+        $template = $this->renderView('pdf_files/latest_balance_sheet.html.twig', [
             'numberNumber' => count($members),
             'agency' => $agency,
             'members' => $members,
@@ -1351,72 +1519,17 @@ class ReportController extends Controller
             'remainLoan' => $remainLoan,
             'totalDailySavings' => $totalDailySavings,
             'bayelleBalance' => $bayelleBalance,
+            'undividedEarnings' => $this->undividedEarnings($yearStart, $endDate),
             'ubBalance' => $ubBalance,
             'cashOnHand' => $cashOnHand,
-            'start' => $startDate,
             'end' => $endDate,
-            'undividedEarnings' => $this->undividedEarnings($startDate, $endDate),
             'openingAccountBayelleBalance' => $openingAccountBayelleBalance,
             'openingAccountUBBalance' => $openingAccountUBBalance,
         ]);
 
-        $title = 'Balance_Sheet_'.$endDate->format('Y');
+        $title = 'Balance_Sheet_' . $endDate->format('Y');
         $html2PdfService = $this->get('app.html2pdf');
         $html2PdfService->create('P', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 10));
-        return $html2PdfService->generatePdf($template, $title.'.pdf', 'ledgers',$title, 'FI');
-    }
-
-    /**
-     * @param $start
-     * @param $end
-     * @return int
-     */
-    public function undividedEarnings($start, $end) {
-        $em = $this->getDoctrine()->getManager();
-        $incomeOperations = $em->createQueryBuilder()
-            ->select('SUM(op.debit)')
-            ->from('ReportBundle:GeneralLedgerBalance', 'op')
-            ->innerJoin('ClassBundle:InternalAccount', 'ia','WITH','ia.id = op.account')
-            ->innerJoin('ClassBundle:Classe', 'cl','WITH','cl.id = ia.classe')
-            ->where('op.dateOperation BETWEEN :date1 AND :date2')
-            ->andWhere('cl.id =:income')
-            ->groupBy('op.account')
-            ->setParameters(
-                [
-                    'date1' => $start,
-                    'date2' => $end,
-                    'income' => 7,
-                ]
-            )
-            ->getQuery()->getScalarResult();
-
-        $incomes = 0;
-        foreach ($incomeOperations as $operation){;
-            $incomes += intval($operation[1]);
-        }
-
-
-        $expenditureOperations = $em->createQueryBuilder()
-            ->select('SUM(op.credit)')
-            ->from('ReportBundle:GeneralLedgerBalance', 'op')
-            ->innerJoin('ClassBundle:InternalAccount', 'ia','WITH','ia.id = op.account')
-            ->innerJoin('ClassBundle:Classe', 'cl','WITH','cl.id = ia.classe')
-            ->where('op.dateOperation BETWEEN :date1 AND :date2')
-            ->andWhere('cl.id = :expenditure')
-            ->groupBy('op.account')
-            ->setParameters(
-                [
-                    'date1' => $start,
-                    'date2' => $end,
-                    'expenditure' => 6,
-                ]
-            )
-            ->getQuery()->getScalarResult();
-
-        $expenditures = 0;
-        foreach ($expenditureOperations as $operation){
-            $expenditures += intval($operation[1]);
-        }
-        return ($incomes - $expenditures);
+        return $html2PdfService->generatePdf($template, $title . '.pdf', 'ledgers', $title, 'FI');
     }
 }

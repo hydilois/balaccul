@@ -140,7 +140,7 @@ class OperationController extends Controller
      * @Route("/", name="operation_index")
      * @Method("GET")
      */
-    public function indexAction(){
+    public function index(){
         $em = $this->getDoctrine()->getManager();
 
         $operations = $em->getRepository('AccountBundle:Operation')->findBy([],[ 'dateOperation' => 'DESC']);
@@ -158,7 +158,7 @@ class OperationController extends Controller
      * @param Operation $operation
      * @return Response
      */
-    public function showAction(Operation $operation){
+    public function show(Operation $operation){
         $deleteForm = $this->createDeleteForm($operation);
 
         return $this->render('operation/show.html.twig', array(

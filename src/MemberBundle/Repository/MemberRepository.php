@@ -400,6 +400,7 @@ class MemberRepository extends EntityRepository
      */
     public function saveMemberBuildingFeesOperation(Utilisateur $currentUser, \DateTime $dateOperation, Member $member, $buildingFees,InternalAccount $feesAccount, $representative)
     {
+        $em = $this->getEntityManager();
         $operationFees = new Operation();
         $operationFees->setCurrentUser($currentUser);
         $operationFees->setDateOperation($dateOperation);
@@ -408,7 +409,8 @@ class MemberRepository extends EntityRepository
         $operationFees->setMember($member);
         $operationFees->setRepresentative($representative);
         $operationFees->setBalance($feesAccount->getBalance());
-        $this->getEntityManager()->persist($operationFees);
+        $em->persist($operationFees);
+        $em->flush();
     }
 
     /**

@@ -51,6 +51,7 @@
     }
     .total {
         font-size:20px;
+        text-align: center;
     }
 </style>
 
@@ -134,7 +135,8 @@
                         </td>
                     </tr>
                 {% endfor %}
-                <tr><td class="text-center total" colspan="4"><b>Total</b></td><td class="text-center total"><b>{{ totalBalance|number_format(0, '.', ' ') }}</b></td></tr>
+                {% set length = operations|length -1 %}
+                <tr><td class="total" colspan="2"><b>Total</b></td><td colspan="2" class="total"><b>{{ totalBalance|number_format(0, '.', ' ') }}</b></td><td class="total"><strong>{{ operations[length].accountBalance |number_format(0, '.', ' ') }}</strong></td></tr>
             </table>
         {% else %}
             <table class="table">
