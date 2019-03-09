@@ -160,7 +160,7 @@ class ReportController extends Controller
                 ->from(GeneralLedgerBalance::class, 'glb')
                 ->where('glb.dateOperation <= :date')
                 ->setParameters(['date' => $dayBefore_endDatetime])
-                ->orderBy('glb.dateOperation', 'ASC')
+                ->orderBy('glb.id', 'ASC')
                 ->getQuery()
                 ->getResult();
 

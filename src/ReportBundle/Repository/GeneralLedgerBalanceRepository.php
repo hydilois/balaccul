@@ -202,7 +202,7 @@ class GeneralLedgerBalanceRepository extends EntityRepository
                 ->setParameters([
                     'date_end' => $today_end_datetime
                 ])
-                ->orderBy('glb.dateOperation', 'ASC')
+                ->orderBy('glb.id', 'ASC')
                 ->getQuery()
                 ->getResult();
             if ($operations1){
@@ -242,7 +242,7 @@ class GeneralLedgerBalanceRepository extends EntityRepository
                 ->setParameters([
                     'date_end' => $today_end_datetime
                 ])
-                ->orderBy('glb.dateOperation', 'ASC')
+                ->orderBy('glb.id', 'ASC')
                 ->getQuery()
                 ->getResult();
             if ($operations1){
