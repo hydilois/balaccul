@@ -526,7 +526,7 @@ class MemberRepository extends EntityRepository
                 ->setParameters([
                     'date_end' => $today_end_datetime
                 ])
-                ->orderBy('glb.id', 'ASC')
+                ->orderBy('glb.dateOperation', 'ASC')
                 ->getQuery()
                 ->getResult();
             if ($operations1){

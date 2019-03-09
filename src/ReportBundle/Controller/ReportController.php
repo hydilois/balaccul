@@ -152,7 +152,7 @@ class ReportController extends Controller
 
             $date = new \DateTime($date[2] . "-" . $date[1] . "-" . $date[0]);
             $day_before = date('Y-m-d', strtotime($date->format('Y-m-d') . ' -1 day'));
-            $dayBefore_endDatetime = \DateTime::createFromFormat("Y-m-d H:i:s", $day_before . " 23:59:59");
+            $dayBefore_endDatetime = \DateTime::createFromFormat("Y-m-d H:i:s", $day_before . " 00:00:00");
 
             /* Get the balance brougth forward for the new day */
             $totalGLBDayBefore = $em->createQueryBuilder()
@@ -160,7 +160,7 @@ class ReportController extends Controller
                 ->from(GeneralLedgerBalance::class, 'glb')
                 ->where('glb.dateOperation <= :date')
                 ->setParameters(['date' => $dayBefore_endDatetime])
-                ->orderBy('glb.id', 'ASC')
+                ->orderBy('glb.dateOperation', 'ASC')
                 ->getQuery()
                 ->getResult();
 
