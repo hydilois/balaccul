@@ -4,6 +4,7 @@ namespace AppBundle\Controller;
 
 use AccountBundle\Service\DatabaseBackupManager;
 use AccountBundle\Service\FileUploader;
+use ReportBundle\Entity\GeneralLedgerBalance;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -149,7 +150,6 @@ class DefaultController extends Controller
         /*total loan Interest*/
         $loanInterest = $em->getRepository('ClassBundle:InternalAccount')->find(136)->getBalance();
 
-        // replace this example code with whatever you need
         return $this->render('default/index.html.twig', [
             'numberNumber' => count($members),
             'agency' => $agency,

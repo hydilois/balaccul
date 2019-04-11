@@ -139,6 +139,8 @@ class ReportController extends Controller
     public function generalLedgerBalance(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
+
+
         if ($request->getMethod() == "POST") {
             $agency = $em->getRepository(Agency::class)->findOneBy([], ['id' => 'ASC']);
             $currentDate = new \DateTime('now');
@@ -160,7 +162,7 @@ class ReportController extends Controller
                 ->from(GeneralLedgerBalance::class, 'glb')
                 ->where('glb.dateOperation <= :date')
                 ->setParameters(['date' => $dayBefore_endDatetime])
-                ->orderBy('glb.dateOperation', 'ASC')
+                ->orderBy('glb.id', 'ASC')
                 ->getQuery()
                 ->getResult();
 

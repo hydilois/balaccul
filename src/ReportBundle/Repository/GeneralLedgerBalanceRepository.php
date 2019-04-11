@@ -242,7 +242,7 @@ class GeneralLedgerBalanceRepository extends EntityRepository
                 ->setParameters([
                     'date_end' => $today_end_datetime
                 ])
-                ->orderBy('glb.dateOperation', 'ASC')
+                ->orderBy('glb.id', 'ASC')
                 ->getQuery()
                 ->getResult();
             if ($operations1){
@@ -443,5 +443,25 @@ class GeneralLedgerBalanceRepository extends EntityRepository
         } else {
             return $account->getBalance();
         }
+    }
+
+    /**
+     * @param $id
+     * @return array GeneralLedgerBalance|null
+     */
+    public function getGLBFromId($id)
+    {
+        $em = $this->getEntityManager();
+        $operations = $em->createQueryBuilder()
+            ->select('gl')
+            ->from('ReportBundle:GeneralLedgerBalance', 'gl')
+            ->where('gl.id > :id')
+            ->setParameters([
+                'id' => $id,
+            ])
+            ->getQuery()
+            ->getResult();
+
+        return $operations;
     }
 }
