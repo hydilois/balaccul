@@ -3,14 +3,18 @@
 namespace ClassBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+
 
 /**
  * Classe
  *
  * @ORM\Table(name="classe")
  * @ORM\Entity(repositoryClass="ClassBundle\Repository\ClasseRepository")
+ * @UniqueEntity("name", message="This class's name has already been used")
  */
-class Classe{
+class Classe {
     /**
      * @var int
      *
@@ -25,6 +29,7 @@ class Classe{
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255)
+     * @Assert\NotBlank()
      */
     private $name;
 
@@ -42,6 +47,11 @@ class Classe{
      * @ORM\Column(name="description", type="text")
      */
     private $description;
+
+    /**
+     * @ORM\OneToMany(targetEntity="ClassBundle\Entity\InternalAccount", mappedBy="classe")
+     */
+    private $accounts;
 
 
     public function __toString(){
@@ -131,5 +141,21 @@ class Classe{
     public function getBalance()
     {
         return $this->balance;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAccounts()
+    {
+        return $this->accounts;
+    }
+
+    /**
+     * @param mixed $accounts
+     */
+    public function setAccounts($accounts)
+    {
+        $this->accounts = $accounts;
     }
 }

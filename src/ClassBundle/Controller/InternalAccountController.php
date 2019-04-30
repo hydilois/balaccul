@@ -30,7 +30,7 @@ class InternalAccountController extends Controller
         $internalAccounts = $em->getRepository('ClassBundle:InternalAccount')->findBy([], ['accountName' => 'ASC']);
 
         return $this->render('internalaccount/index.html.twig', array(
-            'internalAccounts' => $internalAccounts,
+            'accounts' => $internalAccounts,
         ));
     }
 
@@ -134,7 +134,6 @@ class InternalAccountController extends Controller
         return $this->render('internalaccount/edit.html.twig', array(
             'internalAccount' => $internalAccount,
             'edit_form' => $editForm->createView(),
-            // 'delete_form' => $deleteForm->createView(),
         ));
     }
 

@@ -2,12 +2,9 @@
 
 namespace ClassBundle\Form;
 
-use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
 class InternalAccountEditType extends AbstractType
 {
@@ -16,13 +13,7 @@ class InternalAccountEditType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options){
         $builder
-        ->add('accountName')
-        // ->add('beginingBalance')
-        // ->add('endingBalance')
-        // ->add('credit')
-        // ->add('debit')
-        // ->add('classe')
-        ;
+        ->add('accountName');
     }
     
     /**

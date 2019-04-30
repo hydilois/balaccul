@@ -3,12 +3,16 @@
 namespace ClassBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * InternalAccount
  *
  * @ORM\Table(name="internalaccount")
  * @ORM\Entity(repositoryClass="ClassBundle\Repository\InternalAccountRepository")
+ * @UniqueEntity("accountName", message="This account's name has already been used")
+ * @UniqueEntity("accountNumber", message="This account's number has already been used")
  */
 class InternalAccount{
     /**
@@ -24,6 +28,7 @@ class InternalAccount{
      * @var string
      *
      * @ORM\Column(name="accountName", type="string", length=255)
+     * @Assert\NotBlank()
      */
     private $accountName;
 
@@ -31,11 +36,12 @@ class InternalAccount{
      * @var int
      *
      * @ORM\Column(name="accountNumber", type="bigint", unique=true)
+     * @Assert\NotBlank()
      */
     private $accountNumber;
 
     /**
-     * @ORM\ManyToOne(targetEntity="ClassBundle\Entity\Classe")
+     * @ORM\ManyToOne(targetEntity="ClassBundle\Entity\Classe", inversedBy="accounts")
      * @ORM\JoinColumn(name="id_classe")
      */
     private $classe;
@@ -54,9 +60,9 @@ class InternalAccount{
      */
     private $balanceCode;
 
-
-
-
+    /**
+     * InternalAccount constructor.
+     */
     public function __construct(){
         // The default amount is 0
         $this->balance = 0;
