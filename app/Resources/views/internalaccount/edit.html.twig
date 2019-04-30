@@ -4,7 +4,6 @@
     <h1 class="text-center">Account edit</h1>
     {{ form_start(edit_form) }}
           <div class="row">
-            <div class="col-md-offset-2 col-md-8 col-sm-8 col-xs-8">
               <div class="media-left">
               </div>
                 <div class="col-md-4 col-sm-4">
@@ -19,12 +18,19 @@
                         {{form_errors(edit_form.accountName)}}
                         {{ form_widget(edit_form.accountName, {'attr':{'class':'form-control'}}) }}
                     </div>
-                </div><br>
+                </div>
+                <div class="col-md-4 col-sm-4">
                     <div class="form-group">
-                        <input class="btn btn-default" type="submit" value="Save" />
-                        <a class="btn btn-white" href="{{ path('internalaccount_index') }}">Back to the list</a>
-                                {{ form_end(edit_form) }}
+                        {{form_label(edit_form.token)}}
+                        {{form_errors(edit_form.token)}}
+                        {{form_widget(edit_form.token, {'attr':{'class':'form-control'}}) }}
                     </div>
-        </div>
+                </div>
+                <br>
+                <div class="form-group">
+                    <input class="btn btn-default" type="submit" value="Save" />
+                    <a class="btn btn-white" href="{{ path('internalaccount_index') }}">Back to the list</a>
+                            {{ form_end(edit_form) }}
+                </div>
     </div>
 {% endblock %}

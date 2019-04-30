@@ -2,7 +2,9 @@
 
 namespace ClassBundle\Form;
 
+use ClassBundle\Entity\InternalAccount;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -13,7 +15,12 @@ class InternalAccountEditType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options){
         $builder
-        ->add('accountName');
+        ->add('accountName')
+            ->add('token', ChoiceType::class, [
+                'choices'=> $this->getTokenChoices(),
+                'required' => true,
+                'label' => 'Type',
+            ]);
     }
     
     /**
@@ -34,5 +41,17 @@ class InternalAccountEditType extends AbstractType
         return 'classbundle_internalaccount';
     }
 
-
+    /**
+     * @return array
+     */
+    private function getTokenChoices()
+    {
+        $choices = InternalAccount::TOKEN;
+        $output = [];
+        foreach ($choices as $k => $v) {
+            $output[$k] = $v;
+        }
+        ksort($output);
+        return $output;
+    }
 }

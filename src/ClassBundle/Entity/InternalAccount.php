@@ -15,6 +15,18 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * @UniqueEntity("accountNumber", message="This account's number has already been used")
  */
 class InternalAccount{
+
+    const  TOKEN = [
+        'SHARES' => 'SHARES',
+        'SAVINGS' => 'SAVINGS',
+        'RESERVES' => 'RESERVES',
+        'CONTRIBUTION' => 'CONTRIBUTION',
+        'SOLIDARITY' => 'SOLIDARITY',
+        'DAILY_SAVING' => 'DAILY_SAVING',
+        'LOAN' => 'LOAN',
+        'BANK_ACCOUNT' => 'BANK_ACCOUNT',
+    ];
+
     /**
      * @var int
      *
@@ -59,6 +71,14 @@ class InternalAccount{
      * @ORM\Column(name="balanceCode", type="string", length=1, options={"default":"D"})
      */
     private $balanceCode;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="token", type="string", length=100, nullable=true)
+     * @Assert\NotBlank()
+     */
+    private $token;
 
     /**
      * InternalAccount constructor.
@@ -202,5 +222,21 @@ class InternalAccount{
     public function getClasse()
     {
         return $this->classe;
+    }
+
+    /**
+     * @return string
+     */
+    public function getToken()
+    {
+        return $this->token;
+    }
+
+    /**
+     * @param string $token
+     */
+    public function setToken($token)
+    {
+        $this->token = $token;
     }
 }

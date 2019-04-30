@@ -4,30 +4,39 @@
     <h1 class="text-center">Account creation</h1>
 
     {{ form_start(form) }}
-        {# {{ form_widget(form) }} #}
         <div class="row">
-          <div class=" col-md-offset-1 col-md-10 col-sm-10 col-xs-10">
-              <div class="col-md-4 col-sm-4">
+          <div class="col-md-10 col-sm-10 col-xs-10">
+              <div class="col-md-3 col-sm-3">
                   <div class="form-group">
                       {{form_label(form.accountNumber)}}
                       {{form_errors(form.accountNumber)}}
                       {{ form_widget(form.accountNumber, {'attr':{'class':'form-control'}}) }}
                   </div>
               </div>
-              <div class="col-md-4 col-sm-4">
+              <div class="col-md-3 col-sm-3">
                   <div class="form-group">
                       {{form_label(form.accountName)}}
                       {{form_errors(form.accountName)}}
                       {{ form_widget(form.accountName, {'attr':{'class':'form-control'}}) }}
                   </div>
               </div>
-              <div class="col-md-4 col-sm-4">
+              <div class="col-md-3 col-sm-3">
                   <div class="form-group">
                       {{form_label(form.classe)}}
                       {{form_errors(form.classe)}}
                       {{form_widget(form.classe, {'attr':{'class':'form-control'}}) }}
                   </div>
               </div>
+              <div class="col-md-3 col-sm-3">
+                  <div class="form-group">
+                      {{form_label(form.token)}}
+                      {{form_errors(form.token)}}
+                      {{form_widget(form.token, {'attr':{'class':'form-control'}}) }}
+                  </div>
+              </div>
+          </div>
+        </div>
+        <div class="row">
               <div class="col-md-6 col-sm-6">
                   <div class="form-group">
                     <input type="submit" class="btn btn-default" value="Create" />
@@ -35,6 +44,5 @@
                   </div>
               </div>
           </div>
-      </div>
     {{ form_end(form) }}
 {% endblock %}

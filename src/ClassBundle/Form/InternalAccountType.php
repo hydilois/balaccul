@@ -3,12 +3,12 @@
 namespace ClassBundle\Form;
 
 use ClassBundle\Entity\Classe;
-use Doctrine\ORM\EntityRepository;
+use ClassBundle\Entity\InternalAccount;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
 
 class InternalAccountType extends AbstractType{
@@ -24,7 +24,11 @@ class InternalAccountType extends AbstractType{
             'class' => Classe::class,
             'required' => true
         ])
-        ;
+        ->add('token', ChoiceType::class, [
+            'choices'=> $this->getTokenChoices(),
+            'required' => true,
+            'label' => 'Type',
+        ]);
     }
     
     /**
@@ -45,5 +49,17 @@ class InternalAccountType extends AbstractType{
         return 'classbundle_internalaccount';
     }
 
-
+    /**
+     * @return array
+     */
+    private function getTokenChoices()
+    {
+        $choices = InternalAccount::TOKEN;
+        $output = [];
+        foreach ($choices as $k => $v) {
+            $output[$k] = $v;
+        }
+        ksort($output);
+        return $output;
+    }
 }
