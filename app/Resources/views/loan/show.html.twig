@@ -7,7 +7,14 @@
     {% else %}
         {% set percent = 0 %}
     {% endif %}
-
+    <ol class="breadcrumb">
+        <li><a href="{{ path('homepage') }}">HYMIF</a></li>
+        <li><a href="{{ path('loan_index') }}">Loans</a></li>
+        <li><a href="#">Details</a></li>
+        <li class="active">
+            {{ loan.loanCode }}
+        </li>
+    </ol>
     <div class="row">
         <div class="col-lg-6 fadeInLeft animated ">
             <fieldset>

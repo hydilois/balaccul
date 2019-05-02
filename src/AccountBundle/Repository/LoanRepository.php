@@ -5,6 +5,7 @@ namespace AccountBundle\Repository;
 use AccountBundle\Entity\Loan;
 use AccountBundle\Entity\Operation;
 use ClassBundle\Entity\InternalAccount;
+use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\EntityRepository;
 use MemberBundle\Entity\Member;
 use ReportBundle\Entity\GeneralLedgerBalance;
@@ -64,8 +65,9 @@ class LoanRepository extends EntityRepository
      * @param Loan $loan
      * @param Member $member
      * @param InternalAccount $internalAccount
+     * @param ObjectManager $manager
      */
-    public function saveLoanOperation(Utilisateur $currentUser, Loan $loan, Member $member, InternalAccount $internalAccount)
+    public function saveLoanOperation(Utilisateur $currentUser, Loan $loan, Member $member, InternalAccount $internalAccount, ObjectManager $manager)
     {
         $operation = new Operation();
         $operation->setTypeOperation(Operation::TYPE_CASH_OUT);
@@ -75,7 +77,7 @@ class LoanRepository extends EntityRepository
         $operation->setMember($member);
         $operation->setBalance($internalAccount->getBalance());
         $operation->setRepresentative($member->getName());
-        $this->getEntityManager()->persist($operation);
+        $manager->persist($operation);
     }
 
     /**
@@ -83,16 +85,17 @@ class LoanRepository extends EntityRepository
      * @param Utilisateur $currentUser
      * @param InternalAccount $internalAccount
      * @param Member $member
+     * @param ObjectManager $manager
      */
-    public function saveLoanInGeneralLedger(Loan $loan, Utilisateur $currentUser, InternalAccount $internalAccount, Member $member)
+    public function saveLoanInGeneralLedger(Loan $loan, Utilisateur $currentUser, InternalAccount $internalAccount, Member $member, ObjectManager $manager)
     {
         $ledgerBalanceLoan = new GeneralLedgerBalance();
         $ledgerBalanceLoan->setTypeOperation(Operation::TYPE_CASH_OUT);
         $ledgerBalanceLoan->setCredit($loan->getLoanAmount());
         $ledgerBalanceLoan->setCurrentUser($currentUser);
         $ledgerBalanceLoan->setDateOperation($loan->getDateLoan());
-        $em = $this->getEntityManager();
-        $latestEntryGBL = $em->getRepository(GeneralLedgerBalance::class)->findOneBy([],['id' => 'DESC']);
+        $manager = $this->getEntityManager();
+        $latestEntryGBL = $manager->getRepository(GeneralLedgerBalance::class)->findOneBy([],['id' => 'DESC']);
         if ($latestEntryGBL) {
             $ledgerBalanceLoan->setBalance($latestEntryGBL->getBalance() - $loan->getLoanAmount());
         }else{
@@ -103,7 +106,7 @@ class LoanRepository extends EntityRepository
         $ledgerBalanceLoan->setAccountBalance($internalAccount->getBalance());
         $ledgerBalanceLoan->setAccountTitle($internalAccount->getAccountName()." A/C_".$member->getMemberNumber());
         $ledgerBalanceLoan->setMember($loan->getPhysicalMember());
-        $em->persist($ledgerBalanceLoan);
+        $manager->persist($ledgerBalanceLoan);
     }
 
     /**
@@ -111,8 +114,9 @@ class LoanRepository extends EntityRepository
      * @param Loan $loan
      * @param Member $member
      * @param InternalAccount $accountProcessing
+     * @param ObjectManager $manager
      */
-    public function saveLoanProcessingFeesOperation(Utilisateur $currentUser, Loan $loan, Member $member, InternalAccount $accountProcessing)
+    public function saveLoanProcessingFeesOperation(Utilisateur $currentUser, Loan $loan, Member $member, InternalAccount $accountProcessing, ObjectManager $manager)
     {
         $operationProcessing = new Operation();
         $operationProcessing->setTypeOperation(Operation::TYPE_CASH_IN);
@@ -123,7 +127,7 @@ class LoanRepository extends EntityRepository
         $operationProcessing->setRepresentative($member->getName());
         $operationProcessing->setBalance($accountProcessing->getBalance());
 
-        $this->getEntityManager()->persist($operationProcessing);
+        $manager->persist($operationProcessing);
     }
 
     /**
@@ -131,16 +135,16 @@ class LoanRepository extends EntityRepository
      * @param Utilisateur $currentUser
      * @param InternalAccount $accountProcessing
      * @param Member $member
+     * @param ObjectManager $manager
      */
-    public function saveProcessingFeesInGeneralLedger(Loan $loan, Utilisateur $currentUser, InternalAccount $accountProcessing, Member $member)
+    public function saveProcessingFeesInGeneralLedger(Loan $loan, Utilisateur $currentUser, InternalAccount $accountProcessing, Member $member, ObjectManager $manager)
     {
-        $em = $this->getEntityManager();
         $ledgerBalanceProcessingFees = new GeneralLedgerBalance();
         $ledgerBalanceProcessingFees->setTypeOperation(Operation::TYPE_CASH_IN);
         $ledgerBalanceProcessingFees->setDebit($loan->getLoanProcessingFees());
         $ledgerBalanceProcessingFees->setCurrentUser($currentUser);
         $ledgerBalanceProcessingFees->setDateOperation($loan->getDateLoan());
-        $latestEntryGBL = $em->getRepository(GeneralLedgerBalance::class)->findOneBy([],['id' => 'DESC']);
+        $latestEntryGBL = $manager->getRepository(GeneralLedgerBalance::class)->findOneBy([],['id' => 'DESC']);
         if ($latestEntryGBL) {
             $ledgerBalanceProcessingFees->setBalance($latestEntryGBL->getBalance() + $loan->getLoanProcessingFees());
         }else{
@@ -151,6 +155,6 @@ class LoanRepository extends EntityRepository
         $ledgerBalanceProcessingFees->setAccountBalance($accountProcessing->getBalance());
         $ledgerBalanceProcessingFees->setAccountTitle($accountProcessing->getAccountName()." A/C_".$member->getMemberNumber());
         $ledgerBalanceProcessingFees->setMember($loan->getPhysicalMember());
-        $em->persist($ledgerBalanceProcessingFees);
+        $manager->persist($ledgerBalanceProcessingFees);
     }
 }

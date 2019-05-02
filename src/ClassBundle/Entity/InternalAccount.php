@@ -25,6 +25,7 @@ class InternalAccount{
         'DAILY_SAVING' => 'DAILY_SAVING',
         'LOAN' => 'LOAN',
         'BANK_ACCOUNT' => 'BANK_ACCOUNT',
+        'PROCESSING_FEES' => 'PROCESSING_FEES',
     ];
 
     /**

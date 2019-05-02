@@ -3,11 +3,13 @@
 namespace AccountBundle\Controller;
 
 use AccountBundle\Entity\Loan;
+use AccountBundle\Repository\LoanHistoryRepository;
 use AccountBundle\Service\DatabaseBackupManager;
 use AccountBundle\Service\FileUploader;
 use ClassBundle\Entity\Classe;
 use ClassBundle\Entity\InternalAccount;
 use ConfigBundle\Entity\LoanParameter;
+use Doctrine\Common\Persistence\ObjectManager;
 use MemberBundle\Entity\Member;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -45,7 +47,7 @@ class LoanController extends Controller
 
 
     /**
-     * Finds and displays a loan entity.
+     * print the loan receipt
      *
      * @Route("/{id}/receipt", name="loan_fees_receipt")
      * @Method("GET")
@@ -53,7 +55,7 @@ class LoanController extends Controller
      * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      * @return Response
      */
-    public function loanReceipt(Loan $loan)
+    public function receipt(Loan $loan)
     {
 
         $em = $this->getDoctrine()->getManager();
@@ -79,10 +81,11 @@ class LoanController extends Controller
      * @param Request $request
      * @param DatabaseBackupManager $databaseBackupManager
      * @param FileUploader $fileUploader
+     * @param ObjectManager $manager
      * @return Response
      * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      */
-    public function create(Request $request, DatabaseBackupManager $databaseBackupManager, FileUploader $fileUploader)
+    public function create(Request $request, DatabaseBackupManager $databaseBackupManager, FileUploader $fileUploader, ObjectManager $manager)
     {
         $loan = new Loan();
         $form = $this->createForm('AccountBundle\Form\LoanType', $loan);
@@ -94,40 +97,48 @@ class LoanController extends Controller
             $db_name = $this->getParameter('database_name');
             $databaseBackupManager->backup($db_user, $db_pass, $db_name, $fileUploader, 'Add New Loan');
 
-            $em = $this->getDoctrine()->getManager();
             // Get the current user connected
-            $currentUser = $this->get('security.token_storage')->getToken()->getUser();
+            $currentUser = $this->getUser();
             $member = $loan->getPhysicalMember();
 
             if ($this->loanValidation($loan, $member)) {
                 $this->addFlash('warning', $this->errors['message']);
             } else {
-                $account = $em->getRepository(InternalAccount::class)->find(32);//Normal Loan Identification
+                $account = $manager->getRepository(InternalAccount::class)->findOneBy(
+                    ['token' => 'LOAN'],
+                    ['id' => 'ASC']
+                );//Normal Loan Identification
                 $account->setBalance($account->getBalance() - $loan->getLoanAmount());
 
-                $classLoan = $em->getRepository(Classe::class)->find($account->getClasse()->getId());
+                $classRepo = $manager->getRepository(Classe::class);
+                $loanRepo = $manager->getRepository(Loan::class);
+
+                $classLoan = $classRepo->find($account->getClasse());
                 $classLoan->setBalance($classLoan->getBalance() - $loan->getLoanAmount());
 
-                $em->getRepository(Loan::class)->saveLoanOperation($currentUser, $loan, $member, $account);
-                $em->getRepository(Loan::class)->saveLoanInGeneralLedger($loan, $currentUser, $account, $member);
-                $em->flush();
+                $loanRepo->saveLoanOperation($currentUser, $loan, $member, $account, $manager);
+                $loanRepo->saveLoanInGeneralLedger($loan, $currentUser, $account, $member, $manager);
 
                 if ($loan->getLoanProcessingFees() != 0) {
-                    $accountProcessing = $em->getRepository(InternalAccount::class)->find(140);//Processing Fees
+                    $accountProcessing = $manager->getRepository(InternalAccount::class)->findOneBy(
+                        ['token' => 'PROCESSING_FEES'],
+                        ['id' => 'ASC']
+                    );//Processing Fees
                     $accountProcessing->setBalance($accountProcessing->getBalance() + $loan->getLoanProcessingFees());
 
-                    $classProcessing = $em->getRepository(Classe::class)->find($accountProcessing->getClasse()->getId());
+                    $classProcessing = $classRepo->find($accountProcessing->getClasse());
                     $classProcessing->setBalance($classProcessing->getBalance() + $loan->getLoanProcessingFees());
 
-                    $em->getRepository(Loan::class)->saveLoanProcessingFeesOperation($currentUser, $loan, $member, $accountProcessing);
+                    /*Save the processing fees in the account situation*/
+                    $loanRepo->saveLoanProcessingFeesOperation($currentUser, $loan, $member, $accountProcessing, $manager);
 
-                    // first Step
-                    $em->getRepository(Loan::class)->saveProcessingFeesInGeneralLedger($loan, $currentUser, $accountProcessing, $member);
+                    /*Save the processing fees in the general ledger*/
+                    $loanRepo->saveProcessingFeesInGeneralLedger($loan, $currentUser, $accountProcessing, $member, $manager);
                 }
 
                 /*Make record*/
-                $em->persist($loan);
-                $em->flush();
+                $manager->persist($loan);
+                $manager->flush();
                 return $this->redirectToRoute('loan_index');
             }
         }
@@ -144,85 +155,26 @@ class LoanController extends Controller
      * @Route("/{id}", name="loan_show")
      * @Method("GET")
      * @param Loan $loan
-     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
+     * @param ObjectManager $manager
      * @return Response
+     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      */
-    public function show(Loan $loan)
+    public function show(Loan $loan, ObjectManager $manager)
     {
-        $em = $this->getDoctrine()->getManager();
-        $lowest_remain_amount_LoanHistory = $em->createQueryBuilder()
-            ->select('MIN(lh.remainAmount)')
-            ->from('AccountBundle:LoanHistory', 'lh')
-            ->innerJoin('AccountBundle:Loan', 'l', 'WITH', 'lh.loan = l.id')
-            ->where('l.id = :loan')->setParameter('loan', $loan)
-            ->getQuery()
-            ->getSingleScalarResult();
-
-        $latestLoanHistory = $em->getRepository('AccountBundle:LoanHistory')->findOneBy([
+        $loanHistoryRepo = $manager->getRepository('AccountBundle:LoanHistory');
+        $lowest_remain_amount_LoanHistory = intval($loanHistoryRepo->lowestLoanAmount($loan));
+        $latestLoanHistory = $loanHistoryRepo->findOneBy([
             'remainAmount' => $lowest_remain_amount_LoanHistory,
             'loan' => $loan],
             ['id' => 'DESC']);
 
-        $loanHistories = $em->getRepository('AccountBundle:LoanHistory')->findBy(['loan' => $loan]);
+        $loanHistories = $loanHistoryRepo->findBy(['loan' => $loan]);
 
-        return $this->render('loan/show.html.twig', array(
+        return $this->render('loan/show.html.twig', [
             'loan' => $loan,
             'loanHistory' => $latestLoanHistory,
             'loanHistories' => $loanHistories,
-        ));
-    }
-
-    /**
-     * Displays a form to edit an existing loan entity.
-     *
-     * @Route("/{id}/edit", name="loan_edit")
-     * @Method({"GET", "POST"})
-     * @param Request $request
-     * @param Loan $loan
-     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
-     * @return Response
-     */
-    public function edit(Request $request, Loan $loan)
-    {
-        $deleteForm = $this->createDeleteForm($loan);
-        $editForm = $this->createForm('AccountBundle\Form\LoanType', $loan);
-        $editForm->handleRequest($request);
-
-        if ($editForm->isSubmitted() && $editForm->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
-
-            return $this->redirectToRoute('loan_edit', array('id' => $loan->getId()));
-        }
-
-        return $this->render('loan/edit.html.twig', array(
-            'loan' => $loan,
-            'edit_form' => $editForm->createView(),
-            'delete_form' => $deleteForm->createView(),
-        ));
-    }
-
-    /**
-     * Deletes a loan entity.
-     *
-     * @Route("/{id}", name="loan_delete")
-     * @Method("DELETE")
-     * @param Request $request
-     * @param Loan $loan
-     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
-     */
-    public function delete(Request $request, Loan $loan)
-    {
-        $form = $this->createDeleteForm($loan);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->remove($loan);
-            $em->flush();
-        }
-
-        return $this->redirectToRoute('loan_index');
+        ]);
     }
 
     /**

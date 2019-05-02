@@ -5,7 +5,6 @@ namespace AccountBundle\Repository;
 use AccountBundle\Entity\Loan;
 use AccountBundle\Entity\LoanHistory;
 use Doctrine\ORM\EntityRepository;
-use MemberBundle\Entity\Member;
 
 /**
  * LoanHistoryRepository
@@ -94,5 +93,19 @@ class LoanHistoryRepository extends EntityRepository
                 $loan->setLoanHistory($latestLoanHistory);
             }
         return $loan;
+    }
+
+    /**
+     * @param Loan $loan
+     * @return mixed
+     */
+    public function lowestLoanAmount(Loan $loan)
+    {
+        return $this->createQueryBuilder('lh')
+            ->select('MIN(lh.remainAmount)')
+            ->innerJoin('AccountBundle:Loan', 'l', 'WITH', 'lh.loan = l.id')
+            ->where('l.id = :loan')->setParameter('loan', $loan)
+            ->getQuery()
+            ->getSingleScalarResult();
     }
 }

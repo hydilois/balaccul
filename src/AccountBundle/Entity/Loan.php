@@ -126,6 +126,9 @@ class Loan{
     private $loanCode;
 
 
+    /**
+     * @var mixed
+     */
     private $loanHistory;
 
     /**
