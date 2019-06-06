@@ -290,7 +290,7 @@ class MemberController extends Controller
             $member->setBuildingFees($memberJSON["buildingFees"]);
 
             /**
-             * making recordds here
+             * making records here
              * --------------------
              */
         
@@ -323,8 +323,7 @@ class MemberController extends Controller
             $logger->error('SOMETHING WENT WRONG : MemberController : trying to insert Beneficiary');
         }
 
-        $currentUserId  = $this->get('security.token_storage')->getToken()->getUser()->getId();
-        $currentUser    = $entityManager->getRepository('UserBundle:Utilisateur')->find($currentUserId);
+        $currentUser  = $this->getUser();
         $dateOperation = new \DateTime($memberJSON["membershipDateCreation"]);
 
         /**
@@ -346,8 +345,8 @@ class MemberController extends Controller
             $memberShares  = $entityManager->getRepository('ClassBundle:InternalAccount')->find(1);
             $memberShares->setBalance($memberShares->getBalance() + $member->getShare());
 
-            $classe = $entityManager->getRepository('ClassBundle:Classe')->find($memberShares->getClasse()->getId());
-            $classe->setBalance($classe->getBalance() + $member->getShare());
+            $class = $entityManager->getRepository('ClassBundle:Classe')->find($memberShares->getClasse()->getId());
+            $class->setBalance($class->getBalance() + $member->getShare());
 
             $ledgerBalanceSha = new GeneralLedgerBalance();
             $ledgerBalanceSha->setDateOperation($dateOperation);
@@ -428,8 +427,8 @@ class MemberController extends Controller
             $memberDeposits  = $entityManager->getRepository('ClassBundle:InternalAccount')->find(42);
             $memberDeposits->setBalance($memberDeposits->getBalance() + $member->getDeposit());
 
-            $classeDep = $entityManager->getRepository('ClassBundle:Classe')->find($memberDeposits->getClasse()->getId());
-            $classeDep->setBalance($classeDep->getBalance() + $member->getDeposit());
+            $classDep = $entityManager->getRepository('ClassBundle:Classe')->find($memberDeposits->getClasse()->getId());
+            $classDep->setBalance($classDep->getBalance() + $member->getDeposit());
 
             $ledgerBalanceDep = new GeneralLedgerBalance();
             $ledgerBalanceDep->setDateOperation($dateOperation);
@@ -633,12 +632,11 @@ class MemberController extends Controller
      * @param $dateOperation
      * @return mixed
      */
-    private function findLastGBLRecordOfDay($dateOperation) {
-        $date = explode("/", substr($dateOperation, strrpos($dateOperation, " ")));
-
+    private function findLastGBLRecordOfDay($dateOperation)
+    {
         $em = $this->getDoctrine()->getManager();
-        $today_start_datetime = \DateTime::createFromFormat("Y-m-d H:i:s", date($date[2] . "-" . $date[1] . "-" . $date[0] . " 00:00:00"));
-        $today_end_datetime = \DateTime::createFromFormat("Y-m-d H:i:s", date($date[2] . "-" . $date[1] . "-" . $date[0] . " 23:59:59"));
+        $today_start_datetime = new \DateTime($dateOperation->format('Y-m-d') .' 00:00:00');
+        $today_end_datetime = new \DateTime($dateOperation->format('Y-m-d') .' 23:59:59');
         $operations = $em->createQueryBuilder()
             ->select('glb')
             ->from('ReportBundle:GeneralLedgerBalance', 'glb')
