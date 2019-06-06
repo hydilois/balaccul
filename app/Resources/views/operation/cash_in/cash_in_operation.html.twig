@@ -16,7 +16,7 @@
             <div class="row">
             <h3 class="text-center">CASH IN OPERATION FROM MEMBERS</h3>
         <form target="_blank" method="POST" action="{{ path('operation_cash_in_save') }}">
-        <section class="col-lg-6">
+        <section class="col-lg-4 col-md-4 col-sm-6 col-xs-6">
             <fieldset class="fadeInDown animated">
                 <legend>Purposes</legend>
                 <div class="form-group">
@@ -29,8 +29,8 @@
                     </div>
                 </div>
                 <div class="form-group">
-                            <label class="control-label col-sm-4">Choose the member</label>
-                        <select name="accountNumber" class="form-control select2" required="required">
+                            <label for="accountNumber" class="control-label">Choose the member</label>
+                        <select name="accountNumber" id="accountNumber" class="form-control select2" required="required">
                         <option value="">&lt;------ Select ------&gt;</option>
                         {% for member in members %}
                             <option value="{{member.id}}">{{member.name}} -- {{member.memberNumber}} </option>
@@ -38,8 +38,8 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="">Representative</label>
-                    <input name="representative" type="text" class="form-control" />
+                    <label for="representative">Representative</label>
+                    <input name="representative" id="representative" type="text" class="form-control" />
                 </div>
                     <table id="purposes" class="table table-bordered table-striped">
                         <tr>
@@ -90,16 +90,16 @@
                     </table>
                         <input id="checkbox2" type="checkbox" name="balance-display" class="choice text-center">
                         <label style="color:purple; font-size:17px;" for="checkbox2">
-                            <b>Display the member balance</b>
+                            <b>Member balance</b>
                         </label><br><br>
                     <div class="form-group">
                         <input class="btn btn-default" type="submit" value="Save">
                         <a class="btn btn-primary" name="btn-formaccount-reset">Reset</a>
-                        <a class="btn btn-white" href="{{path('homepage')}}">Back to the homepage</a>
+                        <a class="btn btn-white" href="{{path('homepage')}}">Homepage</a>
                     </div>
             </fieldset>
         </section>
-        <section  class="col-lg-6">
+        <section  class="col-lg-5 col-md-5 col-sm-6 col-xs-6">
             <fieldset class="fadeInDown animated">
                 <legend>Cash Analytics</legend>
 
@@ -123,56 +123,56 @@
                             <th><input type="text" value="5000" class="form-control text-center" disabled="disabled"> </th>
                             <td><input type="text" class="form-control text-center" value="x" disabled="disabled"> </td>
                             <td><input class="form-control analytic" required="required" name="5000" type="number" value="0" min="0"/></td>
-                            <td> <input type="text" class="form-control text-center" value="=" disabled="disabled"> </td>
+                            <td><input type="text" class="form-control text-center" value="=" disabled="disabled"> </td>
                             <td><input type="number" class="form-control text-center cashResult" disabled="disabled" value="0"></td>
                         </tr>
                         <tr>
                             <th><input type="text" value="2000" class="form-control text-center" disabled="disabled"> </th>
                             <td><input type="text" class="form-control text-center" value="x" disabled="disabled"> </td>
                             <td><input class="form-control analytic" required="required" name="2000" type="number" value="0" min="0"/></td>
-                            <td> <input type="text" class="form-control text-center" value="=" disabled="disabled"> </td>
+                            <td><input type="text" class="form-control text-center" value="=" disabled="disabled"> </td>
                             <td><input type="number" class="form-control text-center cashResult" disabled="disabled" value="0"></td>
                         </tr>
                         <tr>
                             <th><input type="text" value="1000" class="form-control text-center" disabled="disabled"> </th>
                             <td><input type="text" class="form-control text-center" value="x" disabled="disabled"> </td>
                             <td><input class="form-control analytic" required="required" name="1000" type="number" value="0" min="0"/></td>
-                            <td> <input type="text" class="form-control text-center" value="=" disabled="disabled"> </td>
+                            <td><input type="text" class="form-control text-center" value="=" disabled="disabled"> </td>
                             <td><input type="number" class="form-control text-center cashResult" disabled="disabled" value="0"></td>
                         </tr>
                         <tr>
                             <th><input type="text" value="500" class="form-control text-center" disabled="disabled"> </th>
                             <td><input type="text" class="form-control text-center" value="x" disabled="disabled"> </td>
                             <td><input class="form-control analytic" required="required" name="500" type="number" value="0" min="0"/></td>
-                            <td> <input type="text" class="form-control text-center" value="=" disabled="disabled"> </td>
+                            <td><input type="text" class="form-control text-center" value="=" disabled="disabled"> </td>
                             <td><input type="number" class="form-control text-center cashResult" disabled="disabled" value="0"></td>
                         </tr>
                         <tr>
                             <th><input type="text" value="100" class="form-control text-center" disabled="disabled"> </th>
                             <td><input type="text" class="form-control text-center" value="x" disabled="disabled"> </td>
                             <td><input class="form-control analytic" required="required" name="100" type="number" value="0" min="0"/></td>
-                            <td> <input type="text" class="form-control text-center" value="=" disabled="disabled"> </td>
+                            <td><input type="text" class="form-control text-center" value="=" disabled="disabled"> </td>
                             <td><input type="number" class="form-control text-center cashResult" disabled="disabled" value="0"></td>
                         </tr>
                         <tr>
                             <th><input type="text" value="50" class="form-control text-center" disabled="disabled"> </th>
                             <td><input type="text" class="form-control text-center" value="x" disabled="disabled"> </td>
                             <td><input class="form-control analytic" required="required" name="50" type="number" value="0" min="0"/></td>
-                            <td> <input type="text" class="form-control text-center" value="=" disabled="disabled"> </td>
+                            <td><input type="text" class="form-control text-center" value="=" disabled="disabled"> </td>
                             <td><input type="number" class="form-control text-center cashResult" disabled="disabled" value="0"></td>
                         </tr>
                         <tr>
                             <th><input type="text" value="25" class="form-control text-center" disabled="disabled"> </th>
                             <td><input type="text" class="form-control text-center" value="x" disabled="disabled"> </td>
                             <td><input class="form-control analytic" required="required" name="25" type="number" value="0" min="0"/></td>
-                            <td> <input type="text" class="form-control text-center" value="=" disabled="disabled"> </td>
+                            <td><input type="text" class="form-control text-center" value="=" disabled="disabled"> </td>
                             <td><input type="number" class="form-control text-center cashResult" disabled="disabled" value="0"></td>
                         </tr>
                         <tr>
                             <th><input type="text" value="10" class="form-control text-center" disabled="disabled"> </th>
                             <td><input type="text" class="form-control text-center" value="x" disabled="disabled"> </td>
                             <td><input class="form-control analytic" required="required" name="10" type="number" value="0" min="0"/></td>
-                            <td> <input type="text" class="form-control text-center" value="=" disabled="disabled"> </td>
+                            <td><input type="text" class="form-control text-center" value="=" disabled="disabled"> </td>
                             <td><input type="number" class="form-control text-center cashResult" disabled="disabled" value="0"></td>
                         </tr>
                         <tr>
@@ -186,7 +186,7 @@
                             <th><input type="text" value="1" class="form-control text-center" disabled="disabled"> </th>
                             <td><input type="text" class="form-control text-center" value="x" disabled="disabled"> </td>
                             <td><input class="form-control analytic" required="required" name="1" type="number" value="0" min="0"/></td>
-                            <td> <input type="text" class="form-control text-center" value="=" disabled="disabled"> </td>
+                            <td><input type="text" class="form-control text-center" value="=" disabled="disabled"> </td>
                             <td><input type="number" class="form-control text-center cashResult" disabled="disabled" value="0"></td>
                         </tr>
                     </table>
@@ -201,6 +201,11 @@
                 </div>
             </fieldset>
         </section>
+            <section  class="col-lg-3 col-md-3 col-sm-6 col-xs-6">
+                <fieldset>
+                    <legend>Member's Situation</legend>
+                </fieldset>
+            </section>
     </form>
 </div>
 </div>

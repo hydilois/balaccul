@@ -1270,7 +1270,7 @@ pre {
 .side-menu {
   bottom: 0;
   top: 0;
-  width: 240px;
+  width: 201px;
   z-index: 2;
 }
 .side-menu.left {
@@ -1288,7 +1288,7 @@ body.fixed-left .side-menu.left {
   position: fixed;
 }
 .content-page {
-  margin-left: 240px;
+  margin-left: 201px;
   overflow: hidden;
 }
 .content-page > .content {

@@ -445,7 +445,7 @@ class ReportController extends Controller
      * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      * @return Response
      */
-    public function sharesSituationAction($id)
+    public function sharesSituation($id)
     {
 
         $entityManager = $this->getDoctrine()->getManager();
