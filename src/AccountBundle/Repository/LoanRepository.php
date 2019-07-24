@@ -107,6 +107,7 @@ class LoanRepository extends EntityRepository
         $ledgerBalanceLoan->setAccountTitle($internalAccount->getAccountName()." A/C_".$member->getMemberNumber());
         $ledgerBalanceLoan->setMember($loan->getPhysicalMember());
         $manager->persist($ledgerBalanceLoan);
+        $manager->flush();
     }
 
     /**
