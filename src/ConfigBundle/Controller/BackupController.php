@@ -25,8 +25,6 @@ class BackupController extends Controller
     public function index()
     {
         $databases = $this->getDoctrine()->getManager()->getRepository(Backup::class)->findBy([],['createdAt' => 'DESC']);
-//        dump($databases);
-//        die();
         return $this->render('backup/index.html.twig', [
             'databases' => $databases
         ]);

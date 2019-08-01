@@ -35,6 +35,8 @@ class LoanParameterController extends Controller{
      *
      * @Route("/new", name="loanparameter_new")
      * @Method({"GET", "POST"})
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
     public function newAction(Request $request)
     {
@@ -61,6 +63,8 @@ class LoanParameterController extends Controller{
      *
      * @Route("/{id}/show", name="loanparameter_show")
      * @Method("GET")
+     * @param LoanParameter $loanParameter
+     * @return \Symfony\Component\HttpFoundation\Response
      */
     public function showAction(LoanParameter $loanParameter)
     {
@@ -77,6 +81,9 @@ class LoanParameterController extends Controller{
      *
      * @Route("/{id}/edit", name="loanparameter_edit")
      * @Method({"GET", "POST"})
+     * @param Request $request
+     * @param LoanParameter $loanParameter
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
     public function editAction(Request $request, LoanParameter $loanParameter)
     {
@@ -103,6 +110,9 @@ class LoanParameterController extends Controller{
      *
      * @Route("/{id}", name="loanparameter_delete")
      * @Method("DELETE")
+     * @param Request $request
+     * @param LoanParameter $loanParameter
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function deleteAction(Request $request, LoanParameter $loanParameter)
     {

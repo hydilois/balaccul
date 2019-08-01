@@ -1,13 +1,5 @@
-member_client:
-    resource: "@MemberBundle/Controller/ClientController.php"
-    type:     annotation
-
 user_groupe:
     resource: "@UserBundle/Controller/GroupeController.php"
-    type:     annotation
-
-config_loan_parameter:
-    resource: "@ConfigBundle/Controller/LoanParameterController.php"
     type:     annotation
 
 config_loan_parameter:

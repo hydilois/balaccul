@@ -36,6 +36,8 @@ class AgencyController extends Controller
      *
      * @Route("/new", name="agency_new")
      * @Method({"GET", "POST"})
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
     public function newAction(Request $request)
     {
@@ -62,6 +64,8 @@ class AgencyController extends Controller
      *
      * @Route("/{id}/show", name="agency_show")
      * @Method("GET")
+     * @param Agency $agency
+     * @return \Symfony\Component\HttpFoundation\Response
      */
     public function showAction(Agency $agency)
     {
@@ -78,6 +82,9 @@ class AgencyController extends Controller
      *
      * @Route("/{id}/edit", name="agency_edit")
      * @Method({"GET", "POST"})
+     * @param Request $request
+     * @param Agency $agency
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
     public function editAction(Request $request, Agency $agency)
     {
@@ -103,6 +110,9 @@ class AgencyController extends Controller
      *
      * @Route("/{id}", name="agency_delete")
      * @Method("DELETE")
+     * @param Request $request
+     * @param Agency $agency
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function deleteAction(Request $request, Agency $agency)
     {

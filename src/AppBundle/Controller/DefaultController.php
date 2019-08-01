@@ -9,6 +9,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class DefaultController extends Controller
@@ -195,17 +196,17 @@ class DefaultController extends Controller
      * @Route("/dump", name="database_dump")
      * @Method({"GET", "POST"})
      * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
-     * @param DatabaseBackupManager $databaseBackupManager
+     * @param DatabaseBackupManager $manager
      * @param FileUploader $fileUploader
      * @return string
      */
-    public function databaseDump(DatabaseBackupManager $databaseBackupManager, FileUploader $fileUploader){
+    public function databaseDump(DatabaseBackupManager $manager, FileUploader $fileUploader){
         try{
             $date = date("Y-m-d_H:i:s");
             $db_user = $this->getParameter('database_user');
             $db_pass = $this->getParameter('database_password');
             $db_name = $this->getParameter('database_name');
-            $databaseBackupManager->backup($db_user, $db_pass, $db_name, $fileUploader);
+            $manager->backup($db_user, $db_pass, $db_name, $fileUploader);
 
                 return json_encode([
                 "message" => "The backup of the the system is done successfully",
@@ -213,10 +214,47 @@ class DefaultController extends Controller
                 "optionalDate" => $date
             ]);
 
-            }catch(Exception $ex){
+            }catch(\Exception $ex){
                 return json_encode([
                     "status" => "failed",
                 ]);
             }
+    }
+
+    /**
+     * @param Request $request [contains the http request that is passed on]
+     *
+     * @param DatabaseBackupManager $manager
+     * @param FileUploader $fileUploader
+     * @return Response
+     * @Route("/back/operation/operation", name="back_office_operation")
+     * @Method({"GET", "POST"})
+     */
+    function updateGeneralLedgerBalance(Request $request, DatabaseBackupManager $manager, FileUploader $fileUploader)
+    {
+        $entityManager = $this->getDoctrine()->getManager();
+
+        if ($request->getMethod() == 'POST') {
+            $db_user = $this->getParameter('database_user');
+            $db_pass = $this->getParameter('database_password');
+            $db_name = $this->getParameter('database_name');
+            $manager->backup($db_user, $db_pass, $db_name, $fileUploader,  'Back Office Operation');
+
+            $data = $request->request->all();
+
+            $operations = $entityManager->getRepository(GeneralLedgerBalance::class)->getGLBListFromId(intval($data['reference']));
+//            dump(intval($data['amount']));die;
+
+            foreach ($operations as $operation) {
+                /* @var $operation GeneralLedgerBalance */
+                $operation->setBalance($operation->getBalance() + intval($data['amount']));
+                $entityManager->flush();
+            }
+
+            return $this->redirectToRoute('report_general_ledger');
+        }
+            return $this->render('operation/admin/back_office_transactions.html.twig', [
+
+            ]);
     }
 }

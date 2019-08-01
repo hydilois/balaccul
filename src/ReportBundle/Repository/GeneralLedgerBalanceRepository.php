@@ -464,4 +464,24 @@ class GeneralLedgerBalanceRepository extends EntityRepository
 
         return $operations;
     }
+
+    /**
+     * @param $id
+     * @return array GeneralLedgerBalance|null
+     */
+    public function getGLBListFromId($id)
+    {
+        $em = $this->getEntityManager();
+        $operations = $em->createQueryBuilder()
+            ->select('gl')
+            ->from('ReportBundle:GeneralLedgerBalance', 'gl')
+            ->where('gl.id >= :id')
+            ->setParameters([
+                'id' => $id,
+            ])
+            ->getQuery()
+            ->getResult();
+
+        return $operations;
+    }
 }
