@@ -89,7 +89,7 @@
                 </div>
             </div>
         </div>
-        {% if is_granted("ROLE_BOARD") or is_granted("ROLE_ADMINISTRATOR") %}
+        {% if is_granted("ROLE_BOARD") or is_granted("ROLE_ADMINISTRATOR") or is_granted("ROLE_MANAGER") %}
             <fieldset>
                 <legend>CASH</legend>
                 <div class="row">
