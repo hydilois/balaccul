@@ -243,8 +243,6 @@ class DefaultController extends Controller
             $data = $request->request->all();
 
             $operations = $entityManager->getRepository(GeneralLedgerBalance::class)->getGLBListFromId(intval($data['reference']));
-//            dump(intval($data['amount']));die;
-
             foreach ($operations as $operation) {
                 /* @var $operation GeneralLedgerBalance */
                 $operation->setBalance($operation->getBalance() + intval($data['amount']));

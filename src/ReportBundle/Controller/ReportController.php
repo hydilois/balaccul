@@ -60,7 +60,6 @@ class ReportController extends Controller
         $em = $this->getDoctrine()->getManager();
 
         if ($request->getMethod() == "POST") {
-
             $agency = $em->getRepository('ConfigBundle:Agency')->findOneBy([], ['id' => 'ASC']);
             $currentDate = new \DateTime('now');
 
@@ -125,9 +124,7 @@ class ReportController extends Controller
             return $html2PdfService->generatePdf($template, $title . '.pdf', 'ledgers', $title, 'FI');
 
         }
-        return $this->render('report/report_month.html.twig', [
-
-        ]);
+        return $this->render('report/report_month.html.twig');
     }
 
     /**
@@ -577,7 +574,6 @@ class ReportController extends Controller
      */
     public function trialBalance(Request $request)
     {
-
         if ($request->getMethod() == 'POST') {
             $em = $this->getDoctrine()->getManager();
             $currentUserId = $this->get('security.token_storage')->getToken()->getUser()->getId();
@@ -1533,5 +1529,77 @@ class ReportController extends Controller
         $html2PdfService = $this->get('app.html2pdf');
         $html2PdfService->create('P', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 10));
         return $html2PdfService->generatePdf($template, $title . '.pdf', 'ledgers', $title, 'FI');
+    }
+
+
+    /**
+     * @Route("/details/month", name="details_report_month")
+     * @param Request $request
+     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
+     * @return Response
+     */
+    public function reportMonthDetails(Request $request)
+    {
+        $em = $this->getDoctrine()->getManager();
+            $agency = $em->getRepository('ConfigBundle:Agency')->findOneBy([], ['id' => 'ASC']);
+            $currentDate = new \DateTime('now');
+
+            $currentUser = $this->getUser();
+
+            $dateDebut = $request->get('start');
+            $dateFin = $request->get('end');
+
+            $newDateStart = explode("/", substr($dateDebut, strrpos($dateDebut, " ")));
+            $newDateEnd = explode("/", substr($dateFin, strrpos($dateFin, " ")));
+
+            $dateStart = \DateTime::createFromFormat("Y-m-d H:i:s", date($newDateStart[2] . "-" . $newDateStart[1] . "-" . $newDateStart[0] . " 00:00:00"));
+            $dateEnd = \DateTime::createFromFormat("Y-m-d H:i:s", date($newDateEnd[2] . "-" . $newDateEnd[1] . "-" . $newDateEnd[0] . " 23:59:59"));
+
+            $incomeOperations = $em->createQueryBuilder()
+                ->select('op')
+                ->from('ReportBundle:GeneralLedgerBalance', 'op')
+                ->innerJoin('ClassBundle:InternalAccount', 'ia', 'WITH', 'ia.id = op.account')
+                ->innerJoin('ClassBundle:Classe', 'cl', 'WITH', 'cl.id = ia.classe')
+                ->where('op.dateOperation BETWEEN :date1 AND :date2')
+                ->andWhere('cl.id =:income')
+                ->setParameters(
+                    [
+                        'date1' => $dateStart,
+                        'date2' => $dateEnd,
+                        'income' => 7,
+                    ]
+                )
+                ->getQuery()->getScalarResult();
+
+            $expenditureOperations = $em->createQueryBuilder()
+                ->select('op')
+                ->from('ReportBundle:GeneralLedgerBalance', 'op')
+                ->innerJoin('ClassBundle:InternalAccount', 'ia', 'WITH', 'ia.id = op.account')
+                ->innerJoin('ClassBundle:Classe', 'cl', 'WITH', 'cl.id = ia.classe')
+                ->where('op.dateOperation BETWEEN :date1 AND :date2')
+                ->andWhere('cl.id = :expenditure')
+                ->setParameters(
+                    [
+                        'date1' => $dateStart,
+                        'date2' => $dateEnd,
+                        'expenditure' => 6,
+                    ]
+                )
+                ->getQuery()->getScalarResult();
+
+            $template = $this->renderView('pdf_files/monthly_report_details_file.html.twig', [
+                'displayDateStart' => $dateDebut,
+                'displayDateEnd' => $dateFin,
+                'currentUser' => $currentUser,
+                'date' => $currentDate,
+                'agency' => $agency,
+                'expenditureOp' => $expenditureOperations,
+                'incomeOp' => $incomeOperations,
+            ]);
+
+            $title = 'Monthly_Report_Details' . $dateStart->format('d-m-Y') . '_' . $dateEnd->format('d-m-Y');
+            $html2PdfService = $this->get('app.html2pdf');
+            $html2PdfService->create('P', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 10));
+            return $html2PdfService->generatePdf($template, $title . '.pdf', 'ledgers', $title, 'FI');
     }
 }

@@ -54,6 +54,11 @@ jQuery(document).ready(function() {
                     format: "dd/mm/yyyy",
                 });
 
+                jQuery('#date-range2').datepicker({
+                    toggleActive: true,
+                    format: "dd/mm/yyyy",
+                });
+
                 
                 //Clock Picker
                 $('.clockpicker').clockpicker({
