@@ -43,7 +43,6 @@ class LoanHistoryController extends Controller
      */
     public function allLoansSituationAction()
     {
-
         $em = $this->getDoctrine()->getManager();
         $agency = $em->getRepository('ConfigBundle:Agency')->findOneBy([],['id' => 'ASC']);
         $loans = $em->getRepository(LoanHistory::class)->getAllActiveLoans();
@@ -211,14 +210,14 @@ class LoanHistoryController extends Controller
 
 
         try{
-            $loanhistory = new Loanhistory();
+            $loanHistory = new Loanhistory();
             //first thing we get the classe with the JSON format
             $loanHistoryJSON = json_decode(json_encode($request->request->get('data')), true);
 
-            $loanhistory->setCurrentUser($currentUser);
-            $loanhistory->setCloseLoan(false);
-            $loanhistory->setMonthlyPayement($loanHistoryJSON["monthlyPayment"]);
-            $loanhistory->setInterest($loanHistoryJSON["interest"]);
+            $loanHistory->setCurrentUser($currentUser);
+            $loanHistory->setCloseLoan(false);
+            $loanHistory->setMonthlyPayement($loanHistoryJSON["monthlyPayment"]);
+            $loanHistory->setInterest($loanHistoryJSON["interest"]);
 
             $loan    = $entityManager->getRepository('AccountBundle:Loan')->find($loanHistoryJSON["loanCode"]);
             
@@ -243,9 +242,9 @@ class LoanHistoryController extends Controller
 
             if ($latestLoanHistory) {
                 //set the unpaid to recover after in the next payment
-                $loanhistory->setRemainAmount($latestLoanHistory->getRemainAmount() - $loanHistoryJSON["monthlyPayment"]);
+                $loanHistory->setRemainAmount($latestLoanHistory->getRemainAmount() - $loanHistoryJSON["monthlyPayment"]);
 
-                $interest = ($loanhistory->getRemainAmount() * $loan->getRate())/100;
+                $interest = ($loanHistory->getRemainAmount() * $loan->getRate())/100;
                 $dailyInterestPayment = $interest/30;
                 
                 $date = strtotime($latestLoanHistory->getDateOperation()->format('Y-m-d'));
@@ -254,10 +253,10 @@ class LoanHistoryController extends Controller
                 $interestToPay = $dailyInterestPayment * floor(($dateNow - $date)/(60*60*24));
 
                 if($interestToPay + $latestLoanHistory->getUnpaidInterest() - $loanHistoryJSON["interest"] < 0){
-                    $loanhistory->setUnpaidInterest(0);
+                    $loanHistory->setUnpaidInterest(0);
                 }else{
 
-                    $loanhistory->setUnpaidInterest($interestToPay + $latestLoanHistory->getUnpaidInterest() - $loanHistoryJSON["interest"]);
+                    $loanHistory->setUnpaidInterest($interestToPay + $latestLoanHistory->getUnpaidInterest() - $loanHistoryJSON["interest"]);
                 }
 
             }else{
@@ -270,17 +269,17 @@ class LoanHistoryController extends Controller
 
                 $interestToPay = $dailyInterestPayment * floor(($dateNow - $date)/(60*60*24));
                 if ($interestToPay- $loanHistoryJSON["interest"] < 0 ) {
-                    $loanhistory->setUnpaidInterest(0);
+                    $loanHistory->setUnpaidInterest(0);
                 }else{
-                    $loanhistory->setUnpaidInterest($interestToPay- $loanHistoryJSON["interest"]);
+                    $loanHistory->setUnpaidInterest($interestToPay- $loanHistoryJSON["interest"]);
                 }
 
 
-                $loanhistory->setRemainAmount($loan->getLoanAmount() - $loanHistoryJSON["monthlyPayment"]);
+                $loanHistory->setRemainAmount($loan->getLoanAmount() - $loanHistoryJSON["monthlyPayment"]);
             }
             
             
-            $loanhistory->setLoan($loan);
+            $loanHistory->setLoan($loan);
 
             $income  = new TransactionIncome();
 
@@ -298,12 +297,12 @@ class LoanHistoryController extends Controller
             *** Making record here
             **/
             
-            $entityManager->persist($loanhistory);
+            $entityManager->persist($loanHistory);
             $entityManager->persist($income);
             $entityManager->flush();
 
             $response["data"]               = $loanHistoryJSON;
-            $response["optionalData"]       = json_encode($loanhistory->getId());
+            $response["optionalData"]       = json_encode($loanHistory->getId());
             $response["success"] = true;
 
             return new Response(json_encode($response));
