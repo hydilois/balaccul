@@ -1,0 +1,485 @@
+<style type="text/css">
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+        font-size: 10px;
+    }
+    tr.space td {
+        height: 10px;
+    }
+
+    .p-10{ width: 10%;}
+    .p-15{ width: 15%;}
+    .p-25{ width: 25%;}
+    .p-50{ width: 50%;}
+    .p-60{ width: 60%;}
+    .p-40{width: 40%}
+    .p-100{width: 100%;}
+
+    .content th, .content td {
+        border: 1px solid black;
+    }
+    .bold {
+        font-weight: bold;
+    }
+
+    .pull-right {
+        text-align: right;
+    }
+
+    .text-center {
+        text-align: center;
+    }
+</style>
+
+<page footer="page;" backbottom="3mm">
+    {#
+    {% set assets = 0 %}
+    {% set liabilities = 0 %}
+    <table class="balance_sheet">
+        <tr>
+            <th colspan="2" class="text-center">ASSETS</th>
+        </tr>
+        <tr>
+            <td>Loans</td>
+            <td>{{ remainLoan |number_format(0, '.', ' ') }}</td>
+            {% set assets = assets + remainLoan %}
+        </tr>
+        <tr>
+            <td>Cash at Bayelle Credit Union</td>
+            <td>{{ bayelleBalance |number_format(0, '.', ' ') }}</td>
+            {% set assets = assets + bayelleBalance %}
+        </tr>
+        <tr>
+            <td>Cash at UB</td>
+            <td>{{ ubBalance |number_format(0, '.', ' ') }}</td>
+        </tr>
+        <tr>
+            <td>Cash in hand</td>
+            <td>{{ cashOnHand |number_format(0, '.', ' ') }}</td>
+            {% set assets = assets + cashOnHand %}
+        </tr>
+        <tr>
+            <td>Opening of Account at Bayelle</td>
+            <td>{{ openingAccountBayelleBalance |number_format(0, '.', ' ') }}</td>
+            {% set assets = assets + openingAccountBayelleBalance %}
+        </tr>
+        <tr>
+            <td>Opening of Account at UB</td>
+            <td>{{ openingAccountUBBalance |number_format(0, '.', ' ') }}</td>
+            {% set assets = assets + openingAccountUBBalance %}
+        </tr>
+        <tr>
+            <td><b>Total</b></td>
+            <td><b>{{ assets |number_format(0, '.', ' ') }}</b></td>
+        </tr>
+        <tr>
+            <th colspan="2" class="text-center">LIABILITIES</th>
+
+        </tr>
+        <tr>
+            <td>Shares</td>
+            <td>{{ shares |number_format(0, '.', ' ') }}</td>
+            {% set liabilities = liabilities + shares %}
+        </tr>
+        <tr>
+            <td>Savings</td>
+            <td>{{ savings |number_format(0, '.', ' ') }}</td>
+            {% set liabilities = liabilities + savings %}
+        </tr>
+        <tr>
+            <td>Deposit</td>
+            <td>{{ deposit |number_format(0, '.', ' ') }}</td>
+            {% set liabilities = liabilities + deposit %}
+        </tr>
+        <tr>
+            <td>Building fees</td>
+            <td>{{ buildingFees |number_format(0, '.', ' ') }}</td>
+            {% set liabilities = liabilities + buildingFees %}
+        </tr>
+        <tr>
+            <td>Daily Savings</td>
+            <td>{{ totalDailySavings |number_format(0, '.', ' ') }}</td>
+            {% set liabilities = liabilities + totalDailySavings %}
+        </tr>
+        <tr>
+            <td>Reserves</td>
+            <td>{{ reserves |number_format(0, '.', ' ') }}</td>
+            {% set liabilities = liabilities + reserves %}
+        </tr>
+        <tr>
+            <td>Undivided Earnings</td>
+            <td>{{ undividedEarnings |number_format(0, '.', ' ') }}</td>
+            {% set liabilities = liabilities + undividedEarnings %}
+        </tr>
+        <tr>
+            <td><b>Total</b></td>
+            <td><b>{{ liabilities |number_format(0, '.', ' ') }}</b></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td><b>{{ (assets - liabilities) |number_format(0, '.', ' ') }}</b></td>
+        </tr>
+    </table>
+    <br><br>#}
+    <table>
+        <tr>
+            <td class="p-60" style="font-size: 14px">
+                <b>{{ agency.name }}</b> <br/>
+                <b>HEAD OFFICE: {{ agency.town }}</b><br/>
+                <b>TEL: {{ agency.phoneNumber }}</b><br>
+                <b>POX BOX: {{ agency.poBox }}</b>
+            </td>
+            <td class="p-40 pull-right">
+                <img style="height:80px;" src="./assets/images/users/logo_cu1.jpg"  alt="logo">
+            </td>
+        </tr>
+    </table>
+    <table>
+        <tr>
+            <td class="p-100 text-center">
+                <span><strong>STATEMENT OF FINANCIAL POSITION AS AT {{ 'now' | date('d-m-Y') }}</strong></span>
+            </td>
+        </tr>
+    </table>
+    {% set assets = 0 %}
+    {% set liabilities = 0 %}
+    {% set provisions = 0 %}
+    <table class="content">
+        <thead>
+        <tr class="text-center">
+            <th class="p-25">ASSETS</th>
+            <th class="p-10">GROS AMOUNT</th>
+            <th class="p-10">PROVIDED</th>
+            <th class="p-15">NET AMOUNT</th>
+            <th></th>
+            <th class="p-25">CAPITAL/LIABILITIES</th>
+            <th class="p-15">AMOUNT</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td class="bold">1. ASSET EMPLOYED</td>
+            <td class="pull-right"></td>
+            <td class="pull-right"></td>
+            <td class="pull-right"></td>
+            <td></td>
+            <td class="bold">CAPITAL</td>
+            <td class="pull-right"></td>
+        </tr>
+        <tr>
+            <td>Intangible Assets</td>
+            <td class="pull-right">1 000 000</td>
+            <td class="pull-right"></td>
+            <td class="pull-right">1 000 000</td>
+            <td></td>
+            <td>Fully Paid Shares</td>
+            <td class="pull-right">{{ shares |number_format(0, '.', ' ') }}</td>
+        </tr>
+        <tr>
+            <td>Fixed Assets</td>
+            <td class="bold pull-right"></td>
+            <td class="bold pull-right"></td>
+            <td class="bold pull-right"></td>
+            <td></td>
+            <td>Partially Paid Shares</td>
+            <td class="pull-right"></td>
+        </tr>
+        <tr>
+            <td>Land</td>
+            <td class="pull-right"></td>
+            <td class="pull-right"></td>
+            <td class="pull-right"></td>
+            <td></td>
+            <td>Education Reserves</td>
+            <td class="pull-right"></td>
+        </tr>
+        <tr>
+            <td>Building and Premises</td>
+            <td class="pull-right"></td>
+            <td class="pull-right"></td>
+            <td class="pull-right"></td>
+            <td></td>
+            <td>General Reserves</td>
+            <td class="pull-right">{{ reserves |number_format(0, '.', ' ') }}</td>
+        </tr>
+        <tr>
+            <td>Furnitures and Fittings</td>
+            <td class="pull-right"></td>
+            <td class="pull-right"></td>
+            <td class="pull-right"></td>
+            <td></td>
+            <td>Solidarity Fund</td>
+            <td class="pull-right"></td>
+        </tr>
+        <tr>
+            <td>Computers</td>
+            <td class="pull-right"></td>
+            <td class="pull-right"></td>
+            <td class="pull-right"></td>
+            <td></td>
+            <td>Staff gratuity and training fund</td>
+            <td class="pull-right"></td>
+        </tr>
+        <tr>
+            <td>office Vehicle</td>
+            <td class="pull-right"></td>
+            <td class="pull-right"></td>
+            <td class="pull-right"></td>
+            <td></td>
+            <td>Compulsory Reserves</td>
+            <td class="pull-right"></td>
+        </tr>
+        <tr>
+            <td>Office Equipments</td>
+            <td class="pull-right"></td>
+            <td class="pull-right"></td>
+            <td class="pull-right"></td>
+            <td></td>
+            <td>Building Reserves</td>
+            <td class="pull-right"></td>
+        </tr>
+        <tr class="space">
+            <td></td>
+            <td class="pull-right"></td>
+            <td class="pull-right"></td>
+            <td class="pull-right"></td>
+            <td></td>
+            <td></td>
+            <td class="pull-right"></td>
+        </tr>
+        <tr>
+            <td class="bold">Financial Assets</td>
+            <td class="pull-right"></td>
+            <td class="pull-right"></td>
+            <td class="pull-right"></td>
+            <td></td>
+            <td>Other Reserves</td>
+            <td class="pull-right"></td>
+        </tr>
+        <tr>
+            <td>League Shares</td>
+            <td class="pull-right"></td>
+            <td class="pull-right"></td>
+            <td class="pull-right"></td>
+            <td></td>
+            <td>Building Contribution</td>
+            <td class="pull-right">{{ buildingFees |number_format(0, '.', ' ') }}</td>
+        </tr>
+        <tr>
+            <td>Bayelle Coop. Credit Union Shares</td>
+            <td class="pull-right">{{ openingAccountBayelleBalance |number_format(0, '.', ' ') }}</td>
+            <td class="pull-right"></td>
+            <td class="pull-right">{{ openingAccountBayelleBalance |number_format(0, '.', ' ') }}</td>
+            <td></td>
+            <td>Legal Reserves</td>
+            <td class="pull-right"></td>
+        </tr>
+        <tr>
+            <td>Bank Shares</td>
+            <td class="pull-right"></td>
+            <td class="pull-right"></td>
+            <td class="pull-right"></td>
+            <td></td>
+            <td>LIABILITIES</td>
+            <td class="pull-right"></td>
+        </tr>
+        <tr>
+            <td>League Fixed Deposit</td>
+            <td class="pull-right"></td>
+            <td class="pull-right"></td>
+            <td class="pull-right"></td>
+            <td></td>
+            <td class="bold">LONG-TERM</td>
+            <td class="pull-right"></td>
+        </tr>
+        <tr>
+            <td class="bold">2. LOANS TO MEMBERS</td>
+            <td class="pull-right"></td>
+            <td class="pull-right"></td>
+            <td class="pull-right"></td>
+            <td></td>
+            <td>Members Saving</td>
+            <td class="pull-right">{{ savings |number_format(0, '.', ' ') }}</td>
+        </tr>
+        <tr>
+            <td>Loans to Members</td>
+            <td class="pull-right">{{ remainLoan |number_format(0, '.', ' ') }}</td>
+            <td class="pull-right">1 884 216 </td>
+            <td class="pull-right">{{ (remainLoan - 1884216) |number_format(0, '.', ' ') }}</td>
+            <td></td>
+            <td>Members dormant savings</td>
+            <td class="pull-right"></td>
+        </tr>
+        <tr>
+            <td>Special Savings Facility</td>
+            <td class="pull-right"></td>
+            <td class="pull-right"></td>
+            <td class="pull-right"></td>
+            <td></td>
+            <td>R.D.F</td>
+            <td class="pull-right"></td>
+        </tr>
+        <tr>
+            <td class="bold">3. CURRENT ASSETS</td>
+            <td class="pull-right"></td>
+            <td class="pull-right"></td>
+            <td class="pull-right"></td>
+            <td></td>
+            <td>MORTGAGE deposit</td>
+            <td class="pull-right"></td>
+        </tr>
+        <tr>
+            <td>Stocks</td>
+            <td class="pull-right"></td>
+            <td class="pull-right"></td>
+            <td class="pull-right"></td>
+            <td></td>
+            <td class="bold">CURRENT LIABILITIES</td>
+            <td class="bold pull-right"></td>
+        </tr>
+        <tr>
+            <td>Prepaid Security Expense</td>
+            <td class="pull-right"></td>
+            <td class="pull-right"></td>
+            <td class="pull-right"></td>
+            <td></td>
+            <td>Member Deposit</td>
+            <td class="pull-right">{{ deposit |number_format(0, '.', ' ') }}</td>
+        </tr>
+        <tr>
+            <td>Prepayments(rents)</td>
+            <td class="pull-right"></td>
+            <td class="pull-right"></td>
+            <td class="pull-right"></td>
+            <td></td>
+            <td>Daily savings</td>
+            <td class="pull-right">{{ totalDailySavings |number_format(0, '.', ' ') }}</td>
+        </tr>
+        <tr>
+            <td>Mutual Fund Prem Receivables</td>
+            <td class="pull-right"></td>
+            <td class="pull-right"></td>
+            <td class="pull-right"></td>
+            <td></td>
+            <td>Expense Payable</td>
+            <td class="pull-right"></td>
+        </tr>
+        <tr>
+            <td>Ledger Difference</td>
+            <td class="pull-right"></td>
+            <td class="pull-right"></td>
+            <td class="pull-right"></td>
+            <td></td>
+            <td>Interest on Payable savings</td>
+            <td class="pull-right"></td>
+        </tr>
+        <tr>
+            <td>League GSM Deposit</td>
+            <td class="pull-right"></td>
+            <td class="pull-right"></td>
+            <td class="pull-right"></td>
+            <td></td>
+            <td>Term Deposit Account</td>
+            <td class="pull-right"></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td class="pull-right"></td>
+            <td class="pull-right"></td>
+            <td class="pull-right"></td>
+            <td></td>
+            <td>Interest on closed accounts</td>
+            <td class="pull-right"></td>
+        </tr>
+        <tr>
+            <td class="bold">4. FINANCIAL INSTITUTIONS</td>
+            <td class="pull-right"></td>
+            <td class="pull-right"></td>
+            <td class="pull-right"></td>
+            <td></td>
+            <td>VAT COLLECTED</td>
+            <td class="pull-right"></td>
+        </tr>
+        <tr>
+            <td>Bayelle Coop. Credit Union Savings</td>
+            <td class="pull-right">{{ bayelleBalance |number_format(0, '.', ' ') }}</td>
+            <td class="pull-right">{{ openingAccountUBBalance |number_format(0, '.', ' ') }}</td>
+            <td class="pull-right"></td>
+            <td></td>
+            <td class="bold">FINANCIAL INSTITUTIONS</td>
+            <td class="pull-right"></td>
+        </tr>
+        <tr>
+            <td>UBA savings</td>
+            <td class="pull-right"></td>
+            <td class="pull-right"></td>
+            <td class="pull-right"></td>
+            <td></td>
+            <td>Bank Overdraft</td>
+            <td class="pull-right"></td>
+        </tr>
+        <tr>
+            <td>League Regular Deposit</td>
+            <td class="pull-right"></td>
+            <td class="pull-right"></td>
+            <td class="pull-right"></td>
+            <td></td>
+            <td>Other libilities</td>
+            <td class="pull-right"></td>
+        </tr>
+        <tr>
+            <td>1 <sup>st</sup> Trust Bank Account</td>
+            <td class="pull-right"></td>
+            <td class="pull-right"></td>
+            <td class="pull-right"></td>
+            <td></td>
+            <td>Accruals</td>
+            <td class="pull-right"></td>
+        </tr>
+        <tr>
+            <td>Cash on hand</td>
+            <td class="pull-right">{{ cashOnHand |number_format(0, '.', ' ') }}</td>
+            <td class="pull-right"></td>
+            <td class="pull-right"></td>
+            <td></td>
+            <td></td>
+            <td class="pull-right"></td>
+        </tr>
+        <tr>
+            <td class="bold">LIASON ACCOUNTS</td>
+            <td class="pull-right"></td>
+            <td class="pull-right"></td>
+            <td class="pull-right"></td>
+            <td></td>
+            <td></td>
+            <td class="pull-right"></td>
+        </tr>
+        <tr>
+            <td>Bamenda Branch</td>
+            <td class="pull-right"></td>
+            <td class="pull-right"></td>
+            <td class="pull-right"></td>
+            <td></td>
+            <td class="bold">Undived Earnings</td>
+            <td class="pull-right">{{ undividedEarnings |number_format(0, '.', ' ') }}</td>
+        </tr>
+        <tr>
+            <td>Total Assets</td>
+            <td class="bold pull-right"></td>
+            <td class="bold pull-right"></td>
+            <td></td>
+            <td></td>
+            <td class="bold">Total Liabilities</td>
+            <td class="bold pull-right"></td>
+        </tr>
+        </tbody>
+    </table>
+    <table>
+        <tr>
+            <td class="p-50" style="text-align: center; font-size: 15px; font-weight: bold;">MANAGER</td>
+            <td class="p-50" style="text-align: center; font-size: 15px; font-weight: bold;">PRESIDENT</td>
+        </tr>
+    </table>
+</page>

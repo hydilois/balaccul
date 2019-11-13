@@ -1602,4 +1602,113 @@ class ReportController extends Controller
             $html2PdfService->create('P', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 10));
             return $html2PdfService->generatePdf($template, $title . '.pdf', 'ledgers', $title, 'FI');
     }
+
+    /**
+     * @Route("/current/financial/position", name="current_financial_position")
+     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
+     * @return Response
+     */
+    public function currentFinancialPosition()
+    {
+        $em = $this->getDoctrine()->getManager();
+        $agency = $em->getRepository('ConfigBundle:Agency')->findOneBy([], ['id' => 'ASC']);
+
+
+        $endDate = new \DateTime('now');
+        $yearStart = new \DateTime("01-01-" . $endDate->format('Y'));
+        $members = $em->getRepository('MemberBundle:Member')->getMemberRegisteredBefore($endDate);
+
+        $shares = 0;
+        $savings = 0;
+        $deposit = 0;
+        $buildingFees = 0;
+        $remainLoan = 0;
+        foreach ($members as $member) {
+            $tmpLoan = $em->getRepository(Loan::class)->getMemberLoans($member, $endDate);
+
+            $member = $em->getRepository(Operation::class)->getSituationAt($member, $endDate);
+            $shares += $member->getShare();
+            $savings += $member->getSaving();
+            $deposit += $member->getDeposit();
+            $buildingFees += $member->getBuildingFees();
+
+            if ($tmpLoan) {
+                $loan = $em->getRepository(LoanHistory::class)->getActiveLoanPerMember($tmpLoan, $endDate);
+                if ($loan) {
+                    if ($loan->getLoanHistory()) {
+                        $remainLoan += $loan->getLoanHistory()->getRemainAmount();
+                    } else {
+                        $remainLoan += $loan->getLoanAmount();
+                    }
+                }
+            }
+        }
+        /* Get the cash at Bayelle */
+        $ds1 = $em->getRepository('ClassBundle:InternalAccount')->find(38);
+        $ds1Balance = $em->getRepository('ReportBundle:GeneralLedgerBalance')->getGLBHistoryInternalAccount($endDate, $ds1);
+
+        $ds2 = $em->getRepository('ClassBundle:InternalAccount')->find(39);
+        $ds2Balance = $em->getRepository('ReportBundle:GeneralLedgerBalance')->getGLBHistoryInternalAccount($endDate, $ds2);
+
+        $ds3 = $em->getRepository('ClassBundle:InternalAccount')->find(40);
+        $ds3Balance = $em->getRepository('ReportBundle:GeneralLedgerBalance')->getGLBHistoryInternalAccount($endDate, $ds3);
+
+        $ds4 = $em->getRepository('ClassBundle:InternalAccount')->find(41);
+        $ds4Balance = $em->getRepository('ReportBundle:GeneralLedgerBalance')->getGLBHistoryInternalAccount($endDate, $ds4);
+
+
+        $openingAccountBayelle = $em->getRepository('ClassBundle:InternalAccount')->find(18);
+        $openingAccountBayelleBalance = $em->getRepository('ReportBundle:GeneralLedgerBalance')->getGLBHistoryInternalAccount($endDate, $openingAccountBayelle);
+
+        $openingAccountUB = $em->getRepository('ClassBundle:InternalAccount')->find(21);
+        $openingAccountUBBalance = $em->getRepository('ReportBundle:GeneralLedgerBalance')->getGLBHistoryInternalAccount($endDate, $openingAccountUB);
+
+        $totalDailySavings = $ds1Balance + $ds2Balance + $ds3Balance + $ds4Balance;
+
+        /* Get the cash at Bayelle */
+        $bayelleAccount = $em->getRepository('ClassBundle:InternalAccount')->find(82);
+        $bayelleBalance = $em->getRepository('ReportBundle:GeneralLedgerBalance')->getGLBHistoryBayelle($endDate, $bayelleAccount);
+
+
+        /* Get the cash the UB bank */
+        $ubAccount = $em->getRepository('ClassBundle:InternalAccount')->find(76);
+        $ubBalance = $em->getRepository('ReportBundle:GeneralLedgerBalance')->getGLBHistoryUB($endDate, $ubAccount);
+
+        /*Get the total cash on hand*/
+        $cashOnHand = $em->getRepository('ReportBundle:GeneralLedgerBalance')->getGLBHistoryCashOnHand($endDate);
+
+        /* Get the cash in the General Reserve */
+        $internalGeneralReserve = $em->getRepository('ClassBundle:InternalAccount')->find(3);
+        $internalGeneralReserveBalance = $em->getRepository('ReportBundle:GeneralLedgerBalance')->getGLBHistoryInternalAccount($endDate, $internalGeneralReserve);
+
+
+        /* Get the cash the UB bank */
+        $otherReserveAccount = $em->getRepository('ClassBundle:InternalAccount')->find(10);
+        $otherReserveAccountBalance = $em->getRepository('ReportBundle:GeneralLedgerBalance')->getGLBHistoryInternalAccount($endDate, $otherReserveAccount);
+
+        $template = $this->renderView('pdf_files/current_financial_position.html.twig', [
+            'numberNumber' => count($members),
+            'agency' => $agency,
+            'members' => $members,
+            'shares' => $shares,
+            'savings' => $savings,
+            'deposit' => $deposit,
+            'buildingFees' => $buildingFees,
+            'reserves' => $internalGeneralReserveBalance + $otherReserveAccountBalance,
+            'remainLoan' => $remainLoan,
+            'totalDailySavings' => $totalDailySavings,
+            'bayelleBalance' => $bayelleBalance,
+            'undividedEarnings' => $this->undividedEarnings($yearStart, $endDate),
+            'ubBalance' => $ubBalance,
+            'cashOnHand' => $cashOnHand,
+            'end' => $endDate,
+            'openingAccountBayelleBalance' => $openingAccountBayelleBalance,
+            'openingAccountUBBalance' => $openingAccountUBBalance,
+        ]);
+
+        $title = 'Balance_Sheet_' . $endDate->format('Y');
+        $html2PdfService = $this->get('app.html2pdf');
+        $html2PdfService->create('L', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 10));
+        return $html2PdfService->generatePdf($template, $title . '.pdf', 'ledgers', $title, 'FI');
+    }
 }

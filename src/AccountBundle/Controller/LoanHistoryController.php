@@ -62,7 +62,7 @@ class LoanHistoryController extends Controller
     /**
      * Lists all loanHistory entities.
      *
-     * @Route("/new/payement", name="loanhistory_new_payement")
+     * @Route("/new/payment", name="loanhistory_new_payement")
      * @Method("GET")
      */
     public function loanPaymentAction(){

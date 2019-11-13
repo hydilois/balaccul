@@ -12,53 +12,52 @@
       Monthly Report
     </li>
   </ol>
-    <div class="row" style="margin-top: 45px;">
-        <fieldset>
-            <legend>
-                MONTHLY REPORT
-            </legend>
-        <div class=" col-lg-offset-2 col-lg-8 col-md-8 col-sm-8 col-xs-8">
-            <div class="portlet">
-                <div class="portlet-heading bg-custom">
-                    <div class="portlet-widgets pull-left">
-                        <span class="divider"></span>
-                        <span class="divider"></span>
-                    </div>
-                        <h3 class="portlet-title text-center">
-                            DATE RANGE
-                        </h3>
-                    <div class="clearfix"></div>
-                </div>
-                <div id="bg-info1" class="panel-collapse collapse" style="display:block">
-                    <div class="portlet-body">
-                        <div class="p-20">
-                            <form target="_blank" method="POST" action="{{ path('report_month') }}" class="form-horizontal">
-                                <div class="form-group">
-                                    <label class="control-label col-sm-4"> From </label>
-                                    <div class="col-sm-6">
-                                        <div class="input-daterange input-group" id="date-range">
-                                            <input type="text" class="form-control" name="start" />
-                                            <span class="input-group-addon bg-custom b-0 text-white">To</span>
-                                            <input type="text" class="form-control" name="end" />
+    <div class="row">
+        <div class="col-lg-6">
+            <fieldset>
+                <legend>MONTHLY REPORT</legend>
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <div class="portlet">
+                        <div class="portlet-heading bg-custom">
+                            <div class="portlet-widgets">
+                                <span class="divider"></span>
+                                <span class="divider"></span>
+                            </div>
+                            <h3 class="portlet-title text-center">
+                                DATE RANGE
+                            </h3>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div id="bg-info1" class="panel-collapse collapse" style="display:block;">
+                            <div class="portlet-body">
+                                <div>
+                                    <form target="_blank" method="POST" action="{{ path('report_month') }}" class="form-horizontal">
+                                        <div class="form-group">
+                                            <label class="control-label col-sm-4"> From </label>
+                                            <div class="col-sm-6">
+                                                <div class="input-daterange input-group" id="date-range">
+                                                    <input type="text" class="form-control" name="start" />
+                                                    <span class="input-group-addon bg-custom b-0 text-white">To</span>
+                                                    <input type="text" class="form-control" name="end" />
+                                                </div>
+                                                <br>
+                                                <input  type="submit" class="btn btn-default" value="Validate"/>
+                                            </div>
                                         </div>
-                                        <br>
-                                        <input  type="submit" class="btn btn-default" value="Validate"/>
-                                    </div>
+                                    </form>
                                 </div>
-                            </form>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </fieldset>
         </div>
-        </fieldset>
-        </div> <!-- End row -->
-    <div class="row">
+        <div class="col-lg-6">
         <fieldset>
             <legend>
                 INDIVIDUAL LEDGER EXTRACTION
             </legend>
-            <div class=" col-lg-offset-2 col-lg-8 col-md-8 col-sm-8 col-xs-8 ">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
                 <div class="portlet">
                     <div class="portlet-heading bg-blue">
                         <div class="portlet-widgets pull-left">
@@ -72,7 +71,7 @@
                     </div>
                     <div id="bg-info1" class="panel-collapse collapse" style="display:block">
                         <div class="portlet-body">
-                            <div class="p-20">
+                            <div>
                                 <form target="_blank" method="POST" action="{{ path('members_individual_ledger_pdf') }}" class="form-horizontal">
                                     <div class="form-group">
                                         <label class="control-label col-sm-4">Day</label>
@@ -93,50 +92,17 @@
                 </div>
             </div>
         </fieldset>
-    </div> <!-- End row -->
-
-        <div class="row">
-            <fieldset>
-                <legend>OTHER DOCUMENTS</legend>
-                     <div class="well">
-                             <button type="button" class="btn btn-success waves-effect waves-light">Generate
-                                 <span class="btn-label btn-label-right"><i class="fa fa-arrow-right"></i>
-                                 </span>
-                             </button>
-                              <div class="btn-group dropdown">
-                                   <button type="button" class="btn btn-info waves-effect waves-light">Members</button>
-                                   <button type="button" class="btn btn-info dropdown-toggle waves-effect waves-light" data-toggle="dropdown" aria-expanded="false"><i class="caret"></i></button>
-                                       <ul class="dropdown-menu" role="menu" >
-                                           <li><a href="{{path('report_generate_document', {status:'allMembers', type:'Members' })}}" target="_blank">All Members</a></li>
-                                            <li><a href="{{path('report_generate_document', {status:'activeMembers', type:'Members'})}}" target="_blank">Active Members</a></li>
-                                            <li><a href="{{path('report_generate_document', {status:'inactiveMembers', type:'Members'})}}" target="_blank">Inactive Members</a></li>
-                                            <li><a href="{{path('report_generate_document', {status:'foundingMembers', type:'Members'})}}" target="_blank">Founding Members</a></li>
-                                       </ul>
-                               </div>
-                                {# <div class="btn-group dropdown">
-                                     <button type="button" class="btn btn-info waves-effect waves-light">Loans</button>
-                                     <button type="button" class="btn btn-info dropdown-toggle waves-effect waves-light" data-toggle="dropdown" aria-expanded="false"><i class="caret"></i></button>
-                                         <ul class="dropdown-menu" role="menu">
-                                           <li><a href="{{path('report_generate_document', {status:'allLoans', type:'Loans'})}}" target="_blank">All Loans</a></li>
-                                           <li><a href="{{path('report_generate_document', {status:'activeLoans', type:'Loans'})}}" target="_blank">Active Loans</a></li>
-                                           <li><a href="{{path('report_generate_document', {status:'inactiveLoans', type:'Loans'})}}" target="_blank">Inactive Loans</a></li>
-                                         </ul>
-                                 </div>                                   #}
-                         <a class="btn btn-default" target="_blank" href="{{ path('all_situations_pdf') }}">Main Accounts Situation</a>
-                         <a class="btn btn-primary" target="_blank" href="{{ path('current_balance_sheet') }}">Financial Affairs</a>
-                      <!--/section-->
-                    </div>
-            </fieldset>
         </div>
-
-    <div class="row" style="margin-top: 45px;">
+    </div> <!-- End row -->
+    <div class="row">
+        <div class="col-lg-6 col-md-6 col-sm-12">
         <fieldset>
             <legend>
                 MONTHLY REPORT DETAILS
             </legend>
-            <div class=" col-lg-offset-2 col-lg-8 col-md-8 col-sm-8 col-xs-8">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <div class="portlet">
-                    <div class="portlet-heading bg-custom">
+                    <div class="portlet-heading bg-success">
                         <div class="portlet-widgets pull-left">
                             <span class="divider"></span>
                             <span class="divider"></span>
@@ -148,18 +114,18 @@
                     </div>
                     <div id="bg-info1" class="panel-collapse collapse" style="display:block">
                         <div class="portlet-body">
-                            <div class="p-20">
+                            <div>
                                 <form target="_blank" method="POST" action="{{ path('details_report_month') }}" class="form-horizontal">
                                     <div class="form-group">
                                         <label class="control-label col-sm-4"> From </label>
                                         <div class="col-sm-6">
                                             <div class="input-daterange input-group" id="date-range2">
                                                 <input type="text" class="form-control" name="start" />
-                                                <span class="input-group-addon bg-custom b-0 text-white">To</span>
+                                                <span class="input-group-addon bg-success b-0 text-white">To</span>
                                                 <input type="text" class="form-control" name="end" />
                                             </div>
                                             <br>
-                                            <input  type="submit" class="btn btn-default" value="Validate"/>
+                                            <input  type="submit" class="btn btn-success" value="Validate"/>
                                         </div>
                                     </div>
                                 </form>
@@ -169,6 +135,28 @@
                 </div>
             </div>
         </fieldset>
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-12">
+            <fieldset>
+                <legend>OTHER DOCUMENTS</legend>
+                <div class="well">
+                    <div class="btn-group dropdown">
+                        <button type="button" class="btn btn-info waves-effect waves-light">Members</button>
+                        <button type="button" class="btn btn-info dropdown-toggle waves-effect waves-light" data-toggle="dropdown" aria-expanded="false"><i class="caret"></i></button>
+                        <ul class="dropdown-menu" role="menu" >
+                            <li><a href="{{path('report_generate_document', {status:'allMembers', type:'Members' })}}" target="_blank">All Members</a></li>
+                            <li><a href="{{path('report_generate_document', {status:'activeMembers', type:'Members'})}}" target="_blank">Active Members</a></li>
+                            <li><a href="{{path('report_generate_document', {status:'inactiveMembers', type:'Members'})}}" target="_blank">Inactive Members</a></li>
+                            <li><a href="{{path('report_generate_document', {status:'foundingMembers', type:'Members'})}}" target="_blank">Founding Members</a></li>
+                        </ul>
+                    </div>
+                    <a class="btn btn-default" target="_blank" href="{{ path('all_situations_pdf') }}">Main Accounts Situation</a>
+                    <a class="btn btn-primary" target="_blank" href="{{ path('current_balance_sheet') }}">Financial Affairs</a>
+                    <a class="btn btn-success" target="_blank" href="{{ path('current_financial_position') }}">BALANCE SHEET</a>
+                    <!--/section-->
+                </div>
+            </fieldset>
+        </div>
     </div> <!-- End row -->
 
     {% include '/report/extras_report.css.html.twig' %}
