@@ -71,7 +71,10 @@
         </tr>
         <tr>
             <td>Cash at UB</td>
-            <td>{{ ubBalance |number_format(0, '.', ' ') }}</td>
+            <td>
+                {{ ubBalance |number_format(0, '.', ' ') }}
+                {% set assets = assets + ubBalance %}
+            </td>
         </tr>
         <tr>
             <td>Cash in hand</td>
@@ -80,13 +83,21 @@
         </tr>
         <tr>
             <td>Opening of Account at Bayelle</td>
-            <td>{{ openingAccountBayelleBalance |number_format(0, '.', ' ') }}</td>
-            {% set assets = assets + openingAccountBayelleBalance %}
+            <td>62 000</td>
+            {#<td>{{ openingAccountBayelleBalance |number_format(0, '.', ' ') }}</td>#}
+            {% set assets = assets + 62000 %}
         </tr>
         <tr>
             <td>Opening of Account at UB</td>
-            <td>{{ openingAccountUBBalance |number_format(0, '.', ' ') }}</td>
-            {% set assets = assets + openingAccountUBBalance %}
+            {#<td>{{ openingAccountUBBalance |number_format(0, '.', ' ') }}</td>#}
+            <td>62 000</td>
+            {% set assets = assets +  62000 %}
+        </tr>
+        <tr>
+            <td>Pertes diverses</td>
+            {#<td>{{ openingAccountUBBalance |number_format(0, '.', ' ') }}</td>#}
+            <td>1 950 840</td>
+            {% set assets = assets +  1950840 %}
         </tr>
         <tr>
             <td><b>Total</b></td>

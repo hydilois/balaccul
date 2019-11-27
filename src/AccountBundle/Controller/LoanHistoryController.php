@@ -2,6 +2,7 @@
 
 namespace AccountBundle\Controller;
 
+use AccountBundle\Entity\Loan;
 use AccountBundle\Entity\LoanHistory;
 use ConfigBundle\Entity\TransactionIncome;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -45,7 +46,16 @@ class LoanHistoryController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
         $agency = $em->getRepository('ConfigBundle:Agency')->findOneBy([],['id' => 'ASC']);
-        $loans = $em->getRepository(LoanHistory::class)->getAllActiveLoans();
+        $members = $em->getRepository('MemberBundle:Member')->findBy([], ['memberNumber' => 'ASC']);
+        $loans = [];
+        foreach ($members as $member) {
+            $tmpLoan = $em->getRepository(Loan::class)->getMemberLoans($member, New \DateTime('now'));
+
+            if ($tmpLoan) {
+                $loan = $em->getRepository(LoanHistory::class)->getActiveLoanPerMember($tmpLoan, new \DateTime('now'));
+                array_push($loans, $loan);
+            }
+        }
 
         $template =  $this->renderView('loanhistory/members_loans_situation_pdf.html.twig', [
             'agency' => $agency,

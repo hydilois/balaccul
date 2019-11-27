@@ -29,7 +29,7 @@ class LoanHistoryRepository extends EntityRepository
                 ->from('AccountBundle:LoanHistory', 'lh')
                 ->innerJoin('AccountBundle:Loan', 'l', 'WITH','lh.loan = l.id')
                 ->where('l.id = :loan')
-                ->setParameter('loan', $loan)
+                ->andWhere('l.status = true')
                 ->getQuery()
                 ->getSingleScalarResult();
 
