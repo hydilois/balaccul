@@ -142,7 +142,7 @@ class ReportController extends Controller
             $agency = $em->getRepository(Agency::class)->findOneBy([], ['id' => 'ASC']);
             $currentDate = new \DateTime('now');
 
-            $currentUser = $this->get('security.token_storage')->getToken()->getUser();
+            $currentUser = $this->getUser();
             $date = $request->get('currentDate');
             $date = explode("/", substr($date, strrpos($date, " ")));
 
@@ -1221,6 +1221,7 @@ class ReportController extends Controller
         $em = $this->getDoctrine()->getManager();
         $agency = $em->getRepository('ConfigBundle:Agency')->findOneBy([], ['id' => 'ASC']);
         $members = $em->getRepository('MemberBundle:Member')->findBy([], ['memberNumber' => 'ASC']);
+
 
         foreach ($members as $member) {
             $tmpLoan = $em->getRepository(Loan::class)->getMemberLoans($member, $date);

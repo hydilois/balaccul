@@ -10,7 +10,7 @@
 
         <title>{% block title %} HYMIF |  {% endblock %}</title>
     </head>
-    <body
+    <body>
 
         {% if app.request.hasPreviousSession %}
             {% for type, messages in app.session.flashbag.all() %}

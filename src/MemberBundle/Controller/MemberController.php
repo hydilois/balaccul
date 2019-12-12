@@ -36,6 +36,8 @@ class MemberController extends Controller
 
         $members = $entityManager->getRepository(Member::class)->findAll();
 
+//        dump(count($members));die;
+
         return $this->render('member/index.html.twig', array(
             'members' => $members,
         ));
