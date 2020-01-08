@@ -59,6 +59,7 @@
                             <li><a href="{{path('trial_balance_report')}}">Trial Balance</a></li>
                             <li><a href="{{ path('agency_index') }}">Agency</a></li>
                             <li><a href="{{ path('backup_index') }}"> Databases</a></li>
+                            <li><a href="{{ path('interest_on_savings') }}"> Interest on savings</a></li>
                             {% if is_granted("ROLE_ADMINISTRATOR") %}
                                 <li><a href="{{ path('account_transfer') }}"> Account to Account Transfer</a></li>
                                 <li><a href="{{ path('special_transactions') }}"> Special Transactions</a></li>

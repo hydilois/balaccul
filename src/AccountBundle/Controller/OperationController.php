@@ -212,7 +212,6 @@ class OperationController extends Controller
         // Get the current user connected
         $currentUser  = $this->get('security.token_storage')->getToken()->getUser();
         if ($request->getMethod() == 'POST') {
-
             $db_user = $this->getParameter('database_user');
             $db_pass = $this->getParameter('database_password');
             $db_name = $this->getParameter('database_name');
@@ -505,8 +504,6 @@ class OperationController extends Controller
         $currentUser    = $entityManager->getRepository(Utilisateur::class)->find($currentUserId);
 
         if ($request->getMethod() == 'POST') {
-
-
             $db_user = $this->getParameter('database_user');
             $db_pass = $this->getParameter('database_password');
             $db_name = $this->getParameter('database_name');
@@ -1033,5 +1030,55 @@ class OperationController extends Controller
         ]);
     }
 
+    /**
+     * @param Request $request
+     * @param DatabaseBackupManager $databaseBackupManager
+     * @param FileUploader $fileUploader
+     * @return Response
+     * @Route("/interest_on/savings", name="interest_on_savings", methods={"GET", "POST"})
+     */
+    public function interestOnSaving(Request $request, DatabaseBackupManager $databaseBackupManager, FileUploader $fileUploader)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $members = $em->getRepository(Member::class)->findBy([], ['memberNumber' => 'ASC']);
 
+        if ($request->getMethod() == 'POST') {
+            $db_user = $this->getParameter('database_user');
+            $db_pass = $this->getParameter('database_password');
+            $db_name = $this->getParameter('database_name');
+            $databaseBackupManager->backup($db_user, $db_pass, $db_name, $fileUploader,  'Interest on member savings');
+            $dateOp = $request->get('dateOperation');
+
+            // Format the date of the operation to be synchronized
+            $dateOperation = $this->dateConcatenation($dateOp);
+            $currentUser = $this->getUser();
+            $representative = 'MANAGEMENT';
+            foreach ($members as $member) {
+                $savings = intval($request->request->get($member->getId()));
+                if ($savings !== 0 && $savings >= 1) {
+                    /*History for member situation first step */
+                    $em->getRepository(Member::class)->saveMemberSavingsOperation($currentUser, $dateOperation, $member, $savings, $representative);
+
+                    /**Member situation updated second step **/
+                    $member->setSaving($member->getSaving() + $savings);
+
+                    /*Update the member saving account third step*/
+                    $memberSavings = $em->getRepository(InternalAccount::class)->find(44);
+                    $memberSavings->setBalance($memberSavings->getBalance() + $savings);
+
+                    $classSav = $em->getRepository(Classe::class)->find($memberSavings->getClasse()->getId());
+                    $classSav->setBalance($classSav->getBalance() + $savings);
+
+                    $em->getRepository(Member::class)->saveMemberSavingsInGeneralLedger($savings, $currentUser, $dateOperation, $memberSavings, $member, $representative);
+                    /* Make record */
+                    $em->flush();
+                }
+            }
+            $this->addFlash('success', 'The Interest on savings for the member has been registered successfully');
+            return $this->redirectToRoute('member_index');
+        }
+        return $this->render('saving/interest_on_saving.html.twig', [
+            'members' => $members,
+        ]);
+    }
 }

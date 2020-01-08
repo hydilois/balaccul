@@ -1,0 +1,80 @@
+{% extends 'base.html.twig' %}
+{% block title %}{{parent()}} New Account{% endblock %}
+
+{% block contenu %}
+
+    <ol class="breadcrumb">
+        <li>
+            <a href="#">HYMIF</a>
+        </li>
+        <li>
+            <a href="#">Saving Accounts</a>
+        </li>
+        <li class="active">
+            new
+        </li>
+    </ol>
+
+    <!-- Row -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-primary">
+                    <h2 class="m-b-0 text-white text-center" style="font-size: 20px">Input the amount of savings</h2>
+                </div>
+                <br>
+                <div class="card-body">
+                    <div class="form-body">
+                        <form name="notes" class="fill-notes" action="{{ path('interest_on_savings')}}" method="post">
+                            <div class="row">
+                                <div class="col-md-offset-5 col-md-2">
+                                    <div class="form-group">
+                                        <label class="control-label">Day of the Operation</label>
+                                        <div>
+                                            <div class="input-group">
+                                                <input type="text" required class="form-control" placeholder="day/month/year" id="datepicker-autoclose" name="dateOperation">
+                                                <span class="input-group-addon bg-custom b-0 text-white"><i class="icon-calender"></i></span>
+                                            </div><!-- input-group -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <table class="table table-stripped">
+                                <thead>
+                                    <tr>
+                                        <th>N°</th>
+                                        <th>Name</th>
+                                        <th>Account Number</th>
+                                        <th>Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                {% set line = 1 %}
+                                    {% for member in members %}
+                                        <tr>
+                                            <td>{{line}}</td>
+                                            <td class="font-weight-bold text-uppercase">{{ member.name }}</td>
+                                            <td class="font-weight-bold text-uppercase">{{ member.memberNumber }}</td>
+                                            <td><input autocomplete="off" {% if(loop.index == 1) %} autofocus {% endif %} onkeydown="next(event, {{ line }})" id="entry{{ line }}" test() type="text" min="0" name="{{ member.id }}" class="form-control" placeholder="saving-{{ member.memberNumber }}"></td>
+                                        </tr>
+                                        {% set line = line + 1 %}
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            <div>
+                                <a class="btn btn-dark" href="{{ path('homepage') }}">
+                                    Cancel
+                                </a>
+                                <input class="btn btn-primary pull-right" type="submit" value="Save" />
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Row -->
+    <script src="{{ asset('assets/js/main/helper.js') }}"></script>
+    {% include 'operation/extras.css.html.twig' %}
+    {% include 'operation/extras_cash_in.js.html.twig' %}
+{% endblock %}
