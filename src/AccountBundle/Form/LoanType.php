@@ -3,7 +3,6 @@
 namespace AccountBundle\Form;
 
 use AccountBundle\Entity\Loan;
-use MemberBundle\Entity\Client;
 use MemberBundle\Entity\Member;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;

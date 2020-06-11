@@ -57,7 +57,6 @@ class LoanController extends Controller
      */
     public function receipt(Loan $loan)
     {
-
         $em = $this->getDoctrine()->getManager();
         $agency = $em->getRepository('ConfigBundle:Agency')->findOneBy([], ['id' => 'ASC']);
 
@@ -144,6 +143,32 @@ class LoanController extends Controller
         }
 
         return $this->render('loan/new.html.twig', [
+            'loan' => $loan,
+            'form' => $form->createView(),
+        ]);
+    }
+
+    /**
+     * Creates a new loan entity.
+     *
+     * @Route("/{id}/update", name="loan_update")
+     * @Method({"GET", "POST"})
+     * @param Request $request
+     * @param ObjectManager $manager
+     * @param Loan $loan
+     * @return Response
+     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
+     */
+    public function update(Request $request, ObjectManager $manager, Loan $loan)
+    {
+        $form = $this->createForm('AccountBundle\Form\LoanEditType', $loan);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $manager->flush();
+            return $this->redirectToRoute('loan_index');
+        }
+        return $this->render('loan/edit.html.twig', [
             'loan' => $loan,
             'form' => $form->createView(),
         ]);

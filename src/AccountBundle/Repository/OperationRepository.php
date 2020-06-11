@@ -2,6 +2,8 @@
 
 namespace AccountBundle\Repository;
 
+use AccountBundle\Entity\Loan;
+use AccountBundle\Entity\LoanHistory;
 use AccountBundle\Entity\Operation;
 use MemberBundle\Entity\Member;
 use UserBundle\Entity\Utilisateur;
@@ -201,5 +203,88 @@ class OperationRepository extends EntityRepository
         }
 
         return $member;
+    }
+
+    /**
+     * @param Loan $loan
+     * @return Loan
+     */
+    public function getMemberLoanSituationAtToday($loan)
+    {
+        $em = $this->getEntityManager();
+        $loan->setSavings($loan->getPhysicalMember()->getSaving());
+        $loanHistories = $em->getRepository(LoanHistory::class)->findByLoan($loan);
+
+        $i = $totalDelinquentAmount = $numberPrincipalPaid = $delinquentInstallment = 0;
+        $len = count($loanHistories);
+        foreach ($loanHistories as $loanHistory) {
+            /* @var $loanHistory LoanHistory*/
+            //if ($loanHistory->getMonthlyPayement() != 0) {
+                $totalDelinquentAmount += $loan->getMonthlyPayment() - $loanHistory->getMonthlyPayement();
+                if ($loan->getMonthlyPayment() - $loanHistory->getMonthlyPayement() > 0){
+                    $delinquentInstallment += 1;
+                }
+           // }
+            if ($i === $len - 1){
+                $loan->setLoanHistory($loanHistory->getRemainAmount());
+                $loan->setInterestToPayAt($loanHistory->getUnpaidInterest());
+            }
+            $i++;
+        }
+        if (count($loanHistories) === 0){
+            $loan->setLoanHistory($loan->getLoanAmount());
+        }
+        $numberRealInstallments = $this->numberOfMonthsBetweenTwoDates($loan->getDateLoan());
+        $installmentNotPaid = $numberRealInstallments - count($loanHistories);
+        $delinquentAmountNotPaid  = 0;
+        if ($installmentNotPaid > 0) {
+            $delinquentAmountNotPaid += $loan->getMonthlyPayment() *  $installmentNotPaid;
+            $delinquentInstallment += $installmentNotPaid;
+        }
+        $totalDelinquentAmount += $delinquentAmountNotPaid;
+        $loan->setDelinquentAmount($totalDelinquentAmount);
+        $loan->setRiskAmount($loan->getLoanHistory() - $loan->getPhysicalMember()->getSaving());
+        $loan->setNumberOfInstallments($numberRealInstallments);
+        $loan->setNumberInstallmentsPaid(count($loanHistories));
+        $fines = ($totalDelinquentAmount * $delinquentInstallment)/100;
+        $loan->setFines($fines);
+        $loan->setNumberDelinquentInstallment($delinquentInstallment);
+
+        /*if (($len - $numberPrincipalPaid) > $numberRealInstallments) {
+            die("Installment paid: ".($len - $numberPrincipalPaid). " // Number of Installments supposed to pay: ".$numberRealInstallments.' Name: '.$loan->getPhysicalMember()->getName());
+        }*/
+
+        return $loan;
+    }
+
+    /**
+     * @param \DateTime $date
+     * @return integer
+     */
+    private function numberOfMonthsBetweenTwoDates($date)
+    {
+        $dateLoan = $date->format('Y-m-d');
+        $today = (new \DateTime())->format('Y-m-d');
+
+        $ts1 = strtotime($dateLoan);
+        $ts2 = strtotime($today);
+
+        $year1 = date('Y', $ts1);
+        $year2 = date('Y', $ts2);
+
+        $month1 = date('m', $ts1);
+        $month2 = date('m', $ts2);
+
+        $diff = (($year2 - $year1) * 12) + ($month2 - $month1);
+
+        $dayLoan = getdate($ts1);
+        $dayToday = getdate($ts2);
+        $dayLoan = $dayLoan['mday'];
+        $dayToday = $dayToday['mday'];
+
+        if ($dayToday < $dayLoan){
+            return $diff - 1;
+        }
+        return $diff;
     }
 }

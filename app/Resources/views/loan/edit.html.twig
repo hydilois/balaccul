@@ -1,21 +1,48 @@
 {% extends 'base.html.twig' %}
+{% block title %}{{parent()}} New Loan{% endblock %}
 
-{% block body %}
-    <h1>Loan edit</h1>
+{% block contenu %}
 
-    {{ form_start(edit_form) }}
-        {{ form_widget(edit_form) }}
-        <input type="submit" value="Edit" />
-    {{ form_end(edit_form) }}
-
-    <ul>
+    <ol class="breadcrumb">
         <li>
-            <a href="{{ path('loan_index') }}">Back to the list</a>
+            <a href="#">HYMIF</a>
         </li>
         <li>
-            {{ form_start(delete_form) }}
-                <input type="submit" value="Delete">
-            {{ form_end(delete_form) }}
+            <a href="{{ path('loan_index') }}">Loans</a>
         </li>
-    </ul>
+        <li class="active">
+            Edit Loan
+        </li>
+    </ol>
+    <!-- Forms -->
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card-box">
+                <div class="row">
+                    <div class="col-md-offset-1 col-md-10">
+                        <fieldset>
+                            <legend>Edit a loan</legend>
+                            {{ form_start(form) }}
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                <div class="form-group">
+                                    {{form_label(form.monthlyPayment, 'Installment Amount')}}
+                                    {{form_widget(form.monthlyPayment, {'attr' : {'class':'form-control'}})}}
+                                    {{form_errors(form.monthlyPayment)}}
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <input class="btn btn-default" type="submit" value="Save" />
+                                <a class="btn btn-white" href="{{ path('loan_index') }}">Back to the list</a>
+                            </div>
+                            {{ form_end(form) }}
+                        </fieldset>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% include 'loan/extras.css.html.twig' %}
+    {% include 'operation/extras_cash_in.js.html.twig' %}
+
 {% endblock %}

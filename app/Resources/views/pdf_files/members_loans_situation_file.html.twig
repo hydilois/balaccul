@@ -1,0 +1,189 @@
+<style type="text/css">
+    table {
+        width: 100%;
+        line-height: 5mm;
+        border-collapse: collapse;
+    }
+    .p-2 {width: 2%}
+    .p-3 {width: 3%}
+    .p-5 {width: 5%;}
+    .p-8 {width: 8%;}
+    .p-15 { width: 15%;}
+    .p-60 { width: 60%;}
+    .p-40 {width: 40%}
+    .p-50 {width: 50%}
+    .p-100 {width: 100%;}
+
+    .info td, .info th {
+        border: 1px solid black;
+        height: 15px;
+        font-size: 10px;
+    }
+
+    .info th {
+        background: gray;
+        text-align: center;
+        font-size: 10px;
+    }
+    .text-center {
+        text-align: center;
+    }
+
+    img {
+        height: 80px;
+    }
+</style>
+
+<page footer="page;" backbottom="5mm">
+    <page_footer>
+        <hr>
+        <span>{{agency.abreviation}}</span> <span style="margin-left:400px;">&copy; <b>HYMIF</b> made by GreenSoft-Group Technologies</span>
+    </page_footer>
+    <table>
+        <tr>
+            <td class="p-60">
+                 <b>{{agency.name}}</b> <br/>
+                 <b>HEAD OFFICE: {{agency.town}}</b><br/>
+                 <b>TEL: {{agency.phoneNumber}}</b><br>
+                 <b>PO BOX: {{agency.poBox}}</b>
+            </td>
+            <td  style="text-align: right;" class="p-40">
+                <img src="./assets/images/users/logo_cu1.jpg"  alt="logo">
+            </td>
+        </tr>
+    </table>
+    <table>
+        <tr>
+            <td class="p-100">
+                <h3 class="text-center"><strong>Members Loans Situation at {{ date | date('d-m-Y') }} </strong></h3>
+            </td>
+        </tr>
+    </table>
+        <table class="info">
+            <tr>
+                <th class="p-3 text-center">S/N</th>
+                <th class="p-15">Members</th>
+                <th class="p-5">Date of the loan</th>
+                <th class="p-8">Loan Amount</th>
+                <th class="p-8">Monthly Payment</th>
+                <th class="p-8">Loan Balance</th>
+                <th class="p-8">Delinquent Amount</th>
+                <th class="p-8">Delinquent Interest</th>
+                <th class="p-8">Fines</th>
+                <th class="p-8">Total Recoverable</th>
+                <th class="p-8">Savings</th>
+                <th class="p-8">Risk Amount</th>
+                <th class="p-5">Remarks</th>
+            </tr>
+            {% set totalShares = 0 %}
+            {% set totalSavings = 0 %}
+            {% set totalDeposits = 0 %}
+            {% set totaLoanss = 0 %}
+            {% set totalLoans = 0 %}
+            {% set totalRemainAmount = 0 %}
+            {% set totalInterestToPayAt = 0 %}
+            {% for loan in loans %}
+                {% set totalRecoverable = 0 %}
+                {% if loop.index == 23 %}
+                    <tr>
+                        <th class="p-3 text-center">S/N</th>
+                        <th class="p-15">Members</th>
+                        <th class="p-5">Date of the loan</th>
+                        <th class="p-8">Loan Amount</th>
+                        <th class="p-8">Monthly Payment</th>
+                        <th class="p-8">Loan Balance</th>
+                        <th class="p-8">Delinquent Amount</th>
+                        <th class="p-8">Delinquent Interest</th>
+                        <th class="p-8">Fines</th>
+                        <th class="p-8">Total Recoverable</th>
+                        <th class="p-8">Savings</th>
+                        <th class="p-8">Risk Amount</th>
+                        <th class="p-5">Remarks</th>
+                    </tr>
+                {% endif %}
+                {% if loop.index > 23 and (loop.index - 23) % 28 == 0 %}
+                    <tr>
+                        <th class="p-3 text-center">S/N</th>
+                        <th class="p-15">Members</th>
+                        <th class="p-5">Date of the loan</th>
+                        <th class="p-8">Loan Amount</th>
+                        <th class="p-8">Monthly Payment</th>
+                        <th class="p-8">Loan Balance</th>
+                        <th class="p-8">Delinquent Amount</th>
+                        <th class="p-8">Delinquent Interest</th>
+                        <th class="p-8">Fines</th>
+                        <th class="p-8">Total Recoverable</th>
+                        <th class="p-8">Savings</th>
+                        <th class="p-8">Risk Amount</th>
+                        <th class="p-5">Remarks</th>
+                    </tr>
+                {% endif %}
+                <tr>
+                    <td class="text-center">{{ loop.index }}</td>
+                    <td>
+                        {% if loan.physicalMember.name %}
+                            {% set array = loan.physicalMember.name|split(' ') %}
+                            {{ attribute(array, 0) }}
+                            {% if array| length >= 2 %}
+                                {{ attribute(array, 1) }}
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                    <td class="text-center">{{ loan.dateLoan | date('d-m-Y') }}</td>
+                    <td class="text-center">
+                        {{ loan.loanAmount |number_format(0, '.', ',') }}
+                        {% set totalLoans = totalLoans + loan.loanAmount %}
+                    </td>
+                    <td class="text-center">{{ loan.monthlyPayment |number_format(0, '.', ',')  }}</td>
+                    <td class="text-center">
+                            {{ loan.loanHistory |number_format(0, '.', ',') }}
+                            {% set totalRemainAmount = totalRemainAmount + loan.loanHistory %}
+                    </td>
+                    <td class="text-center">
+                        {{ loan.delinquentAmount |number_format(0, '.', ',') }}
+                        {% set totalRecoverable = totalRecoverable + loan.delinquentAmount %}
+                    </td>
+                    <td class="text-center">
+                        {{ loan.interestToPayAt |number_format(0, '.', ',') }}
+                        {% set totalRecoverable = totalRecoverable + loan.interestToPayAt %}
+                    </td>
+                    <td class="text-center">
+                        {{ loan.fines | number_format(0, '.', ',') }}
+                        {% set totalRecoverable = totalRecoverable + loan.fines %}
+                    </td>
+                    <td class="text-center">{{ totalRecoverable | number_format(0, '.', ',') }}</td>
+                    <td class="text-center">
+                        {{ loan.physicalMember.saving |number_format(0, '.', ',') }}
+                        {% set totalSavings = totalSavings + loan.physicalMember.saving %}
+                    </td>
+                    <td class="text-center">
+                        {{ loan.riskAmount |number_format(0, '.', ',') }}
+                    </td>
+                    <td class="text-center">
+                        {#{{ member.loan.numberOfDays}}#}
+                    </td>
+                    {#<td></td>#}
+                </tr>
+            {% endfor %}
+            {#<tr>
+                <td class="text-center" colspan="3"><b>Total</b></td>
+                <td class="text-center"><b>{{ totalShares |number_format(0, '.', ',') }}</b></td>
+                <td class="text-center"><b>{{ totalSavings |number_format(0, '.', ',') }}</b></td>
+                <td class="text-center"><b>{{ totalDeposits |number_format(0, '.', ',') }}</b></td>
+                <td class="text-center"><b>{{ totalLoans |number_format(0, '.', ',') }}</b></td>
+                <td></td>
+                <td class="text-center"><b>{{ totalRemainAmount |number_format(0, '.', ',') }}</b></td>
+                <td class="text-center"><b>{{ totalInterestToPayAt |number_format(0, '.', ',') }}</b></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>#}
+        </table>
+    <br><br>
+    <table>
+        <tr>
+            <td class="p-50" style="text-align: center; font-size: 15px; font-weight: bold;">MANAGER</td>
+            <td class="p-50" style="text-align: center; font-size: 15px; font-weight: bold;">PRESIDENT</td>
+        </tr>
+    </table>
+</page>

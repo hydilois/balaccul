@@ -24,7 +24,7 @@
                             <th>Code</th>
                             <th>Member</th>
                             <th>Date of loan</th>
-                            <th>Dead line</th>
+                            <th>Monthly Payment</th>
                             <th>Rate</th>
                             <th>Interest</th>
                             <th>Amount</th>
@@ -42,7 +42,7 @@
                               {{loan.moralMember}}
                             {% endif %}</td>
                         <td>{% if loan.dateLoan %}{{ loan.dateLoan|date('d-m-Y') }}{% endif %}</td>
-                        <td>{% if loan.deadline %}{{ loan.deadline|date('d-m-Y') }}{% endif %}</td>
+                        <td>{{ loan.monthlyPayment }}</td>
                         <td>{{ loan.rate }}%</td>
                         <td>{% set interest = (loan.loanAmount * loan.rate)/100 %} {{ interest }}</td>
                         <td>{{ loan.loanAmount }}</td>
@@ -54,6 +54,11 @@
                             <a href="{{ path('loan_show', {id : loan.id}) }}" style="color:#2bf0e3 !important;">
                                 <i class="fa fa-eye-slash"></i> Show
                             </a>
+                            {% if is_granted('ROLE_ADMINISTRATOR') %}
+                                <a href="{{ path('loan_update', {id : loan.id}) }}" style="color:#002a80 !important;">
+                                    <i class="fa fa-pencil"></i>
+                                </a>
+                            {% endif %}
                         </td>
                     </tr>
             {% endfor %}

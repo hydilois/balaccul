@@ -35,6 +35,11 @@ jQuery(document).ready(function() {
                 	autoclose: true,
                 	todayHighlight: true
                 });
+                jQuery('#datepicker-autoclose4').datepicker({
+                	format: "dd/mm/yyyy",
+                	autoclose: true,
+                	todayHighlight: true
+                });
 
                 jQuery('#datepicker-inline').datepicker();
                 jQuery('#datepicker-multiple-date').datepicker({

@@ -144,11 +144,47 @@ class Loan{
     /**
      * @var int
      */
+    private $numberOfInstallments;
+
+    /**
+     * @var int
+     */
     private $numberOfDelinquent;
 
+    /**
+     * @var int
+     */
+    private $savings;
+
+    /**
+     * @var int
+     */
+    private $delinquentAmount;
+
+    /**
+     * @var int
+     */
+    private $riskAmount;
+
+    /**
+     * @var int
+     */
+    private $numberInstallmentsPaid;
+
+    /**
+     * @var int
+     */
+    private $numberDelinquentInstallment;
+
+    /**
+     * @var int
+     */
+    private $fines;
 
 
-
+    /**
+     * Loan constructor.
+     */
     public function __construct(){
         //The default status of the account is true
         $this->status = true;
@@ -166,11 +202,12 @@ class Loan{
 
         $this->deadline = new \DateTime('now') ;
         $this->deadline->setTimestamp(strtotime('+1 month'));
-
-
     }
 
 
+    /**
+     * @return string
+     */
     public function __toString(){
         return $this->loanCode;
     }
@@ -185,6 +222,21 @@ class Loan{
         return $this->id;
     }
 
+    /**
+     * @return int
+     */
+    public function getNumberDelinquentInstallment()
+    {
+        return $this->numberDelinquentInstallment;
+    }
+
+    /**
+     * @param int $numberDelinquentInstallment
+     */
+    public function setNumberDelinquentInstallment($numberDelinquentInstallment)
+    {
+        $this->numberDelinquentInstallment = $numberDelinquentInstallment;
+    }
     /**
      * Set deadline
      *
@@ -463,4 +515,99 @@ class Loan{
         $this->numberOfDelinquent = $numberOfDelinquent;
     }
 
+    /**
+     * @return int
+     */
+    public function getSavings()
+    {
+        return $this->savings;
+    }
+
+    /**
+     * @param int $savings
+     */
+    public function setSavings($savings)
+    {
+        $this->savings = $savings;
+    }
+
+    /**
+     * @return int
+     */
+    public function getDelinquentAmount()
+    {
+        return $this->delinquentAmount;
+    }
+
+    /**
+     * @param int $delinquentAmount
+     */
+    public function setDelinquentAmount($delinquentAmount)
+    {
+        $this->delinquentAmount = $delinquentAmount;
+    }
+
+    /**
+     * @return int
+     */
+    public function getRiskAmount()
+    {
+        return $this->riskAmount;
+    }
+
+    /**
+     * @param int $riskAmount
+     */
+    public function setRiskAmount($riskAmount)
+    {
+        $this->riskAmount = $riskAmount;
+    }
+
+    /**
+     * @return int
+     */
+    public function getNumberOfInstallments()
+    {
+        return $this->numberOfInstallments;
+    }
+
+    /**
+     * @param int $numberOfInstallments
+     */
+    public function setNumberOfInstallments($numberOfInstallments)
+    {
+        $this->numberOfInstallments = $numberOfInstallments;
+    }
+
+    /**
+     * @return int
+     */
+    public function getNumberInstallmentsPaid()
+    {
+        return $this->numberInstallmentsPaid;
+    }
+
+    /**
+     * @param int $numberInstallmentsPaid
+     */
+    public function setNumberInstallmentsPaid($numberInstallmentsPaid)
+    {
+        $this->numberInstallmentsPaid = $numberInstallmentsPaid;
+    }
+
+    /**
+     * @return int
+     */
+    public function getFines()
+    {
+        return $this->fines;
+    }
+
+    /**
+     * @param int $fines
+     */
+    public function setFines($fines)
+    {
+        $this->fines = $fines;
+    }
 }

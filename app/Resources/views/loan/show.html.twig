@@ -130,6 +130,7 @@
                             <div class="p-20">
                                 <table class="table table-striped">
                                     <tr>
+                                        <th>#</th>
                                         <th>Date</th>
                                         <th>Loan Repaid</th>
                                         <th>Interest Paid</th>
@@ -139,6 +140,7 @@
                                     {% if loanHistories %}
                                         {% for item in loanHistories %}
                                             <tr>
+                                                <td>{{ loop.index }}</td>
                                                 <td>{{ item.dateOperation |date('d-m-Y') }}</td>
                                                 <td>{{ item.monthlyPayement }}</td>
                                                 <td>{{ item.interest }}</td>
@@ -154,7 +156,6 @@
                 </div>
             </div>
         </div>
-    </div>
     </div>
     {# Hidden Input #}
     {% if loanHistory %}

@@ -1212,7 +1212,6 @@ class ReportController extends Controller
             return new RedirectResponse($this->container->get('router')->generate('fos_user_security_login'));
         }
 
-
         $currentDate = $request->get('currentDate');
         $date = explode("/", substr($currentDate, strrpos($currentDate, " ")));
 
@@ -1222,12 +1221,9 @@ class ReportController extends Controller
         $agency = $em->getRepository('ConfigBundle:Agency')->findOneBy([], ['id' => 'ASC']);
         $members = $em->getRepository('MemberBundle:Member')->findBy([], ['memberNumber' => 'ASC']);
 
-
         foreach ($members as $member) {
             $tmpLoan = $em->getRepository(Loan::class)->getMemberLoans($member, $date);
-
             $member = $em->getRepository(Operation::class)->getSituationAt($member, $date);
-
             if ($tmpLoan) {
                 $loan = $em->getRepository(LoanHistory::class)->getActiveLoanPerMember($tmpLoan, $date);
                 $member->setLoan($loan);
@@ -1710,6 +1706,38 @@ class ReportController extends Controller
         $title = 'Balance_Sheet_' . $endDate->format('Y');
         $html2PdfService = $this->get('app.html2pdf');
         $html2PdfService->create('L', 'A4', 'en', true, 'UTF-8', array(10, 10, 10, 10));
+        return $html2PdfService->generatePdf($template, $title . '.pdf', 'ledgers', $title, 'FI');
+    }
+
+    /**
+     * @Route("/members/loans/pdf", name="members_loans_situation_pdf")
+     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
+     * @return Response
+     */
+    public function membersLoanSituations()
+    {
+        // Test is the user does not have the default role
+        if (!$this->container->get('security.authorization_checker')->isGranted('ROLE_USER')) {
+            return new RedirectResponse($this->container->get('router')->generate('fos_user_security_login'));
+        }
+        $em = $this->getDoctrine()->getManager();
+        $agency = $em->getRepository('ConfigBundle:Agency')->findOneBy([], ['id' => 'ASC']);
+        $loans = $em->getRepository(Loan::class)->findBy(['status' => true], ['dateLoan' => 'ASC']);
+
+        foreach ($loans  as $loan) {
+            $em->getRepository(Operation::class)->getMemberLoanSituationAtToday($loan);
+        }
+
+        $template = $this->renderView('pdf_files/members_loans_situation_file.html.twig', [
+            'loansCount' => count($loans),
+            'loans' => $loans,
+            'agency' => $agency,
+            'date' => new \DateTime(),
+        ]);
+
+        $title = 'All_Members_General_Situation';
+        $html2PdfService = $this->get('app.html2pdf');
+        $html2PdfService->create('L', 'A4', 'en', true, 'UTF-8', array(5, 10, 10, 10));
         return $html2PdfService->generatePdf($template, $title . '.pdf', 'ledgers', $title, 'FI');
     }
 }

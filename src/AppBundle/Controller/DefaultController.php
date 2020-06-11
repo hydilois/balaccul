@@ -21,7 +21,6 @@ class DefaultController extends Controller
      */
     public function index()
     {
-        
         $em = $this->getDoctrine()->getManager();
         $agency = $em->getRepository('ConfigBundle:Agency')->findOneBy([],['id' => 'ASC']);
         $members = $em->getRepository('MemberBundle:Member')->findAll();
