@@ -73,8 +73,7 @@ $(function(){
 					beforeSend		: function(){
 					},
 					success 	: function(returnedData){
-						returnedDataParsed = JSON.parse(returnedData);
-						console.log(returnedDataParsed);
+						var returnedDataParsed = JSON.parse(returnedData);
 						data = returnedDataParsed.data;
 						$('#numberNotif').text(data.length);
 

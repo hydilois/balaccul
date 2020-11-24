@@ -16,6 +16,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use ReportBundle\Entity\GeneralLedgerBalance;
 use Symfony\Component\HttpFoundation\Response;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 /**
  * Member controller.
@@ -35,8 +36,6 @@ class MemberController extends Controller
         $entityManager = $this->getDoctrine()->getManager();
 
         $members = $entityManager->getRepository(Member::class)->findAll();
-
-//        dump(count($members));die;
 
         return $this->render('member/index.html.twig', array(
             'members' => $members,
@@ -74,6 +73,7 @@ class MemberController extends Controller
      * @Route("/new", name="member_new")
      * @Method({"GET", "POST"})
      * @param Request $request
+     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
      */
     public function newAction(Request $request)
@@ -92,11 +92,11 @@ class MemberController extends Controller
             return $this->redirectToRoute('member_index');
         }
 
-        return $this->render('member/new.html.twig', array(
+        return $this->render('member/new.html.twig', [
             'member' => $member,
             'bForm' => $bForm->createView(),
             'form' => $form->createView(),
-        ));
+        ]);
     }
 
 

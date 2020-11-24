@@ -69,7 +69,7 @@ $(function() {
             this.setCreateFormModalShow();
             this.setEditFormModalShow();
             this.validateCloseAccountListener();
-        }
+        };
 
 
         /**
@@ -81,7 +81,7 @@ $(function() {
                 $mtmtForm.find('legend b').text(++(memberEndpoint.beneficiaryNumber));
                 $mtmtForm.appendTo("div#beneficiary div div.beneficiary_form_container").slideDown("slow");
             });//end on click #addBeneficiary event
-        }
+        };
 
 
         MemberEndpoint.prototype.setRemoveBeneficiaryListener = function(){
@@ -95,12 +95,20 @@ $(function() {
                     // alert('You have to add at least one beneficiary');
                 }
             });//end on click #removeBeneficiary event
-        }
+        };
 
         MemberEndpoint.prototype.validateRegisterMemberListener = function(){
             $('#submit').on('click', function(event){
                 event.preventDefault();
-
+                var data = memberEndpoint.member.getJSONValues();
+                var ratio = 0;
+                $.each(data.beneficiary, function (index, element) {
+                    ratio += parseInt(element.ratio);
+                });
+                if (ratio !== 100 && ratio !== 0){
+                   memberEndpoint.feedbackHelper.showMessageWithPrompt("Warning", "The total of ratio shoul be equal to 100", "warning");
+                    return
+                }
                 var feedbackMessage = JSON.parse(JSON.stringify({
                     'title' : 'Confirmation of the information',
                     'message' : 'You agree that the information of the member are correct?',
@@ -112,7 +120,7 @@ $(function() {
                 memberEndpoint.feedbackHelper.showLoaderMessage(feedbackMessage.title, feedbackMessage.message, feedbackMessage.type, feedbackMessage.confirmeButtonText, memberEndpoint.setRegisterMemberListener);
             });
 
-        }
+        };
 
         MemberEndpoint.prototype.setRegisterMemberListener = function(){
                 var data = memberEndpoint.member.getJSONValues();
@@ -125,7 +133,7 @@ $(function() {
                         success     : function(returnedData){
                             returnedData = JSON.parse(returnedData);
                             console.log(returnedData);
-                            if(returnedData.status == "success"){
+                            if(returnedData.status === "success"){
                                 memberEndpoint.feedbackHelper.showAutoCloseMessage("Member Registred", "The member is registred successfully", "success", 3000);
                                 window.location.href = URL_ROOT + "/member";
                             }else{
@@ -138,17 +146,17 @@ $(function() {
                         }
                     });
 
-        }
+        };
 
 
         MemberEndpoint.prototype.setCreateFormModalShow = function() {
             $('body').on('click','a[name="add-beneficiary"]', function() {
-                id = $(this).data('value');
+               var  id = $(this).data('value');
                 $('#beneficiary-form').load(URL_ROOT+'/member/beneficiary/'+id+'/new', function(){
                     $('.modal-add-beneficiary').modal('show');
                 });
             })
-        }
+        };
 
         MemberEndpoint.prototype.validateCloseAccountListener = function(){
             $('body').on('click', 'a[name="account-status"]', function(){
@@ -208,13 +216,11 @@ $(function() {
                     $('.modal-edit-beneficiary').modal('show');
                 });
             })
-        }
+        };
 
         //this should be at the end
         memberEndpoint.initializeView();
         memberEndpoint.setListeners();
         memberEndpoint.postActions();
-
-
     });
 });

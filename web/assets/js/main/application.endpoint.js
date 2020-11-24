@@ -63,8 +63,8 @@ $(function(){
                 beforeSend      : function(){
                 },
                 success     : function(returnedData){
-                    returnedDataParsed = JSON.parse(returnedData);
-                    balance = returnedDataParsed.data;
+                   var returnedDataParsed = JSON.parse(returnedData);
+                    var balance = returnedDataParsed.data;
 
                     var canvas = $("#myChart");
 
