@@ -358,3 +358,7 @@ Component: timeline
 .bg-maroon {
   background-color: #85144b !important;
 }
+
+.datepicker {
+  z-index: 1000;
+}

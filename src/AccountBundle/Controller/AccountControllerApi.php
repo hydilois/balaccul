@@ -1,6 +1,7 @@
 <?php 
 namespace AccountBundle\Controller;
 
+use MemberBundle\Entity\Member;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -18,6 +19,9 @@ class AccountControllerApi extends FOSRestController{
     /**
      * get an account instance
      * @Rest\Get("/account_api/{id}/{accountCategory}", name="api_account_saving")
+     * @param $id
+     * @param $accountCategory
+     * @return array
      */
     public function getAccountAction($id, $accountCategory){
         $accountService = $this->get('app.account_service');
@@ -130,7 +134,7 @@ class AccountControllerApi extends FOSRestController{
                 default:
                     break;
             }
-        }catch(Exception $ex){
+        }catch(\Exception $ex){
                 return json_encode([
                     "message" => "Error while pulling informations", 
                     "params" => $request, 
@@ -141,13 +145,13 @@ class AccountControllerApi extends FOSRestController{
     }
 
 
-
     /**
-     * get an loanHistor instance
+     * get an loanHistory instance
      * @Rest\Get("/loan_api/{id}", name="api_loan")
+     * @param $id
+     * @return array
      */
     public function getLoanAction($id){
-        $em = $this->getDoctrine()->getManager();
         $accountService = $this->get('app.account_service');
         
         $loan  = $accountService->getLoan($id);
@@ -173,24 +177,40 @@ class AccountControllerApi extends FOSRestController{
 
             $interestToPay = $dailyInterestPayment * floor(($dateNow - $date)/(60*60*24));
         }
-                    $beneficiaries = $accountService->getAccountBeneficiary($loan->getPhysicalMember()->getId());
-                    return [
-                        "message" => "Entite Loan", 
-                        "status" => "success", 
-                        "data" => $loan,
-                        "beneficiaries" => $beneficiaries,
-                        "loanhistory" => $loanHistory,
-                        "interestToPay" => round($interestToPay)
-                    ];
+        $beneficiaries = $accountService->getAccountBeneficiary($loan->getPhysicalMember()->getId());
+        return [
+            "message" => "Entite Loan",
+            "status" => "success",
+            "data" => $loan,
+            "beneficiaries" => $beneficiaries,
+            "loanhistory" => $loanHistory,
+            "interestToPay" => round($interestToPay)
+        ];
     }
 
+    /**
+     * get a Member instance
+     * @Rest\Get("/member_api/{id}", name="api_member")
+     * @param $id
+     * @return array
+     */
+    public function getMemberAction($id)
+    {
+        $member  = $this->getDoctrine()->getManager()->getRepository(Member::class)->find($id);
+        return [
+            "message" => "Entite Member",
+            "status" => "success",
+            "data" => $member,
+        ];
+    }
 
     /**
      * get an account instance
      * @Rest\Get("/client_api/{id}", name="api_client")
+     * @param $id
+     * @return array
      */
     public function getClientAction($id){
-        $em = $this->getDoctrine()->getManager();
 
         $accountService = $this->get('app.account_service');
         
@@ -206,9 +226,10 @@ class AccountControllerApi extends FOSRestController{
     /**
      * get an account instance
      * @Rest\Get("/internalaccount_api/{id}", name="api_internalaccount")
+     * @param $id
+     * @return array
      */
     public function getInternalAccountAction($id){
-        $em = $this->getDoctrine()->getManager();
 
         $accountService = $this->get('app.account_service');
         

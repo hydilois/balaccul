@@ -106,7 +106,7 @@ $(function() {
                     ratio += parseInt(element.ratio);
                 });
                 if (ratio !== 100 && ratio !== 0){
-                   memberEndpoint.feedbackHelper.showMessageWithPrompt("Warning", "The total of ratio shoul be equal to 100", "warning");
+                   memberEndpoint.feedbackHelper.showMessageWithPrompt("Warning", "The total of ratio should be equal to 100", "warning");
                     return
                 }
                 var feedbackMessage = JSON.parse(JSON.stringify({

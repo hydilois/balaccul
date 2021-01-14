@@ -38,13 +38,8 @@ $(function() {
          */
         OperationEndpoint.prototype.initializeView = function() {
             console.log("here stands CASH IN");
-            $('.choice').iCheck({
-                            checkboxClass: 'icheckbox_square-purple'
-                        });
-            // $('.paymentOp').iCheck({
-            //                 checkboxClass: 'icheckbox_square-blue'
-            //             });
-        }
+            $('.choice').iCheck({checkboxClass: 'icheckbox_square-purple'});
+        };
 
         /**
          * allow to set a whole bunch of listeners
@@ -56,7 +51,8 @@ $(function() {
             this.purposeInputKeyUpListener();
             this.analyticInputKeyUpListener();
             this.setCustomiseButton();
-        }
+            this.setMemberSelectorListener();
+        };
 
         OperationEndpoint.prototype.purposeInputKeyUpListener = function() {
             $('body').on('keyup', '.purpose', function(){
@@ -81,7 +77,7 @@ $(function() {
                     $('input.total').val(total);
                 }
             });
-        }
+        };
 
         OperationEndpoint.prototype.analyticInputKeyUpListener = function() {
             $('body').on('keyup', '.analytic', function(){
@@ -115,7 +111,7 @@ $(function() {
                     $('input.totalCash').val(total);                 
                 }
             });
-        }
+        };
 
 
 
@@ -123,7 +119,7 @@ $(function() {
         $('body').on('click', 'a[name="btn-other"]', function(){
             $("#otherItem").removeClass('hide');
         });
-    }
+    };
 
     OperationEndpoint.prototype.setAddOtherItem = function(){
         $('body').on('change', '#otherItem', function(){
@@ -142,7 +138,7 @@ $(function() {
                 $("#otherItem").addClass('hide');
             }
         });
-    }
+    };
 
 
     OperationEndpoint.prototype.setResetForm = function(){
@@ -160,9 +156,7 @@ $(function() {
             });
             $('input.total').val(total);
     });
-    }
-
-
+    };
     OperationEndpoint.prototype.setCustomiseButton = function(){
         $('body').on('change', '#memberNumber', function(){
             if ($(this).val() == "") {
@@ -176,13 +170,45 @@ $(function() {
                 $("#bouton").removeClass('hide')
             }
         });
-    }
+    };
 
+        OperationEndpoint.prototype.setMemberSelectorListener = function () {
+            $('body').on('change', '#accountNumber', function () {
+
+                $("#detailLoan").addClass('hide');
+                $("#physicalOwnerDetails").addClass('hide');
+                $("#details").addClass('hide');
+                var that = this;
+                var memberId = $(this).val();
+                if (memberId) {
+                    $.ajax({
+                        type: "GET",
+                        url: "../../member_api/" + memberId,//AccountControllerApi
+                        dataType: "JSON",
+                        beforeSend: function () {
+                            $(that).LoadingOverlay('show');
+                        },
+                        success: function (response) {
+                            $("#shares").text(response.data.share);
+                            $("#savings").text(response.data.saving);
+                            $("#deposits").text(response.data.deposit);
+                            $("#fees").text(response.data.building_fees);
+                        },
+                        error: function (response) {
+                            OperationEndpoint.feedbackHelper.showMessageWithPrompt("Désolé", "A problem occur during the request, please contact the administrator", "error");
+                            console.log(response);
+                        },
+                        complete: function () {
+                            $(that).LoadingOverlay('hide');
+                        }
+                    });
+                } else {
+                    OperationEndpoint.feedbackHelper.showMessageWithPrompt("Warning", "The loan code cannot be null.  Please select a valid loan  code", "warning");
+                }
+            });
+        };
         //this should be at the end
         operationEndpoint.initializeView();
         operationEndpoint.setListeners();
-
-
     });
-
 });

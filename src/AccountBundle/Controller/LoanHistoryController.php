@@ -4,6 +4,7 @@ namespace AccountBundle\Controller;
 
 use AccountBundle\Entity\Loan;
 use AccountBundle\Entity\LoanHistory;
+use AccountBundle\Form\LoanHistoryType;
 use ConfigBundle\Entity\TransactionIncome;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -81,7 +82,7 @@ class LoanHistoryController extends Controller
         $loans = $em->getRepository('AccountBundle:Loan')->findBy(['status' => true]);
 
         $loanHistory = new Loanhistory();
-        $form = $this->createForm('AccountBundle\Form\LoanHistoryType', $loanHistory);
+        $form = $this->createForm(LoanHistoryType::class, $loanHistory);
 
         return $this->render('loanhistory/loan_payement.html.twig', array(
             'loans' => $loans,

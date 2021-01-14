@@ -31,15 +31,13 @@ class MemberController extends Controller
      * @Route("/", name="member_index")
      * @Method("GET")
      */
-    public function index(){
-        
+    public function index()
+    {
         $entityManager = $this->getDoctrine()->getManager();
-
         $members = $entityManager->getRepository(Member::class)->findAll();
-
-        return $this->render('member/index.html.twig', array(
+        return $this->render('member/index.html.twig', [
             'members' => $members,
-        ));
+        ]);
     }
 
     /**
